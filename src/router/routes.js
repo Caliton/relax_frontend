@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/',
@@ -9,7 +8,17 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '/events', name: 'events', component: () => import('pages/Index.vue') },
+      {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: () => import('pages/Index.vue')
+      },
+
+      {
+        path: '/colaborator',
+        name: 'colaborator',
+        component: () => import('pages/Colaborator.vue')
+      }
     ]
   }
 ]

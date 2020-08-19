@@ -14,10 +14,10 @@
     "build:test": "cross-env MY_API=http://falta_ambiente_de_teste/ quasar build"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.9.3",
     "axios": "^0.18.1",
     "cross-env": "^5.2.0",
-    "quasar": "^1.9.12",
+    "quasar": "^1.12.13",
     "vue-i18n": "^8.0.0",
     "vue-moment": "^4.1.0",
     "vue-tilt.js": "^1.1.1",
@@ -25,7 +25,7 @@
     "vuedraggable": "^2.23.2"
   },
   "devDependencies": {
-    "@quasar/app": "^1.0.0",
+    "@quasar/app": "^1.9.6",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
