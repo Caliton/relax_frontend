@@ -33,14 +33,8 @@
           />
         </div>
 
-        <div class="row  q-gutter-md">
-          <q-input
-            filled
-            dense
-            v-model="person.hiringDate"
-            class="col-md-4"
-            placeholder="Admissão"
-          >
+        <div class="row q-gutter-md">
+          <q-input filled dense v-model="person.hiringDate" class="col-md-4" placeholder="Admissão">
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -52,11 +46,7 @@
             <template v-slot:append>
               <q-icon name="access_time" class="cursor-pointer">
                 <q-popup-proxy transition-show="scale" transition-hide="scale">
-                  <q-time
-                    v-model="person.hiringDate"
-                    mask="DD-MM-YYYY"
-                    format24h
-                  />
+                  <q-time v-model="person.hiringDate" mask="DD-MM-YYYY" format24h />
                 </q-popup-proxy>
               </q-icon>
             </template>
@@ -80,11 +70,7 @@
             <template v-slot:append>
               <q-icon name="access_time" class="cursor-pointer">
                 <q-popup-proxy transition-show="scale" transition-hide="scale">
-                  <q-time
-                    v-model="person.birthDay"
-                    mask="DD-MM-YYYY"
-                    format24h
-                  />
+                  <q-time v-model="person.birthDay" mask="DD-MM-YYYY" format24h />
                 </q-popup-proxy>
               </q-icon>
             </template>
@@ -92,18 +78,9 @@
         </div>
       </q-card-section>
 
-      <q-card-section> </q-card-section>
-      <q-card-actions
-        style="margin: 10px;"
-        class="text-teal container-card absolute-bottom-right"
-      >
-        <q-btn
-          color="light-blue"
-          dense
-          no-caps
-          label="Salvar!"
-          @click="confirm"
-        />
+      <q-card-section></q-card-section>
+      <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
+        <q-btn color="light-blue" dense no-caps label="Salvar!" @click="confirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -111,7 +88,7 @@
 
 <script>
 import { EventBus } from "src/functions/event_bus.js";
-import moment from 'moment'
+import moment from "moment";
 
 export default {
   name: "di-collaborator",
@@ -119,7 +96,7 @@ export default {
   events: ["on-close"],
 
   created() {
-    EventBus.$on("on-edit-person", person => {
+    EventBus.$on("on-edit-person", (person) => {
       this.onShow = true;
       this.person = person;
     });
@@ -136,7 +113,7 @@ export default {
   computed: {
     draggingInfo() {
       return this.dragging ? "under drag" : "";
-    }
+    },
   },
 
   data() {
@@ -146,8 +123,8 @@ export default {
         firstName: "",
         lastName: "",
         hiringDate: "",
-        birthDay: ""
-      }
+        birthDay: "",
+      },
     };
   },
 
@@ -170,49 +147,50 @@ export default {
       this.onShow = false;
     },
 
-    async confirm () {
+    async confirm() {
       try {
-        let axiosFunction = this.$axios.post
-        let url = 'person'
+        let axiosFunction = this.$axios.post;
+        let url = "person";
 
-        let result = {}
+        let result = {};
 
-        this.person.birthDay =  moment(Date.now()).format('YYYY-MM-DD')
-        this.person.hiringDate =  moment(Date.now()).format('YYYY-MM-DD')
+        this.person.birthDay = moment(Date.now()).format("YYYY-MM-DD");
+        this.person.hiringDate = moment(Date.now()).format("YYYY-MM-DD");
 
         if (!this.person.id) {
-          result = await axiosFunction(url, {})
-          this.person.id = result.data.id
+          result = await axiosFunction(url, this.person);
+          this.person.id = result.data.id;
         }
 
         if (this.person.id) {
-          url += `/${this.person.id}/`
-          axiosFunction = this.$axios.patch
+          url += `/${this.person.id}/`;
+          axiosFunction = this.$axios.put;
 
-          await axiosFunction(url, this.organizerSend())
-          EventBus.$emit('on-refresh-evaluation')
+          await axiosFunction(url, this.person);
+          EventBus.$emit("on-refresh-evaluation");
         }
 
-         EventBus.$emit('on-refresh-person')
-         this.onHideModal();
+        EventBus.$emit("on-refresh-person");
+        this.onHideModal();
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     },
 
-
     canceled() {
       this.onHideModal();
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="stylus">
-.list-guest
-  list-style none
+.list-guest {
+  list-style: none;
 
-  .q-field--focused .q-field__control
-    box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
-    background: #F2F2F2 !important
+  .q-field--focused .q-field__control {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+    background: #F2F2F2 !important;
+  }
+}
 </style>

@@ -138,7 +138,6 @@ export default {
     },
 
     goPage(page) {
-      console.log("Entra nessa merda:");
       this.$router.push(page);
     },
 
