@@ -18,6 +18,12 @@ const routes = [
         path: '/colaborator',
         name: 'colaborator',
         component: () => import('pages/Colaborator.vue')
+      },
+
+      {
+        path: '/reserva',
+        name: 'reserva',
+        component: () => import('pages/Reserva.vue')
       }
     ]
   }

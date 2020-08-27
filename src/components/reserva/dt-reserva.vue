@@ -6,7 +6,7 @@
       :columns="columns"
       row-key="id"
       :pagination.sync="pagination"
-      no-data-label="Ainda não temos colaboradores cadastrados"
+      no-data-label="Ainda não temos solicitações de reservas"
       :loading="loading"
       :filter="filter"
       @request="onRequest"
@@ -18,7 +18,7 @@
         <q-btn
           color="primary"
           :disable="loading"
-          label="Adicionar Colaborador"
+          label="Solicitar Reserva"
           no-caps
           @click="openDialog"
         />
