@@ -43,22 +43,6 @@
             </q-item-section>
           </q-item>
 
-          <q-item
-            v-for="link in links2"
-            :key="link.text"
-            v-ripple
-            clickable
-            :active="link.page === currentRoute()"
-            @click="goPage(link.page)"
-          >
-            <q-item-section avatar>
-              <q-icon :color="link.page === currentRoute()? 'blue': 'grey'" :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
           <q-separator class="q-mt-md q-mb-lg" />
 
           <q-item v-ripple clickable @click="logoutNow">
@@ -108,13 +92,10 @@ export default {
         name: localStorage.getItem("userName"),
       },
       leftDrawerOpen: false,
-      links1: [{ icon: "home", text: "Inicio", page: "dashboard" }],
-      links2: [
-        {
-          icon: "perm_contact_calendar",
-          text: "Colaboradores",
-          page: "colaborator",
-        },
+      links1: [
+        { icon: "home", text: "Inicio", page: "dashboard" },
+        { icon: "person", text: "Colaboradores", page: "colaborator" },
+        { icon: "far fa-address-book", text: "Reservas", page: "reserva" },
       ],
     };
   },
