@@ -6,7 +6,7 @@ module.exports = function (ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
-    boot: ['i18n', 'axios', 'tilt', 'vMoment'],
+    boot: ['i18n', 'axios', 'tilt', 'vMoment', 'vuelidate'],
 
     css: ['app.styl'],
 
@@ -124,7 +124,7 @@ module.exports = function (ctx) {
       // preloadChunks: false,
       // extractCSS: false,
       devtool: 'source-map',
-      extendWebpack (cfg) {
+      extendWebpack(cfg) {
         // cfg.module.rules.push({
         //   enforce: 'pre',
         //   test: /\.(js|vue)$/,
@@ -230,7 +230,7 @@ module.exports = function (ctx) {
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack (cfg) {
+      extendWebpack(cfg) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       }

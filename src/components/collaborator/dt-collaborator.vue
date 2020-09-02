@@ -2,16 +2,16 @@
   <div class="q-pa-md">
     <q-table
       title="Treats"
+      row-key="id"
       :data="data"
       :columns="columns"
-      row-key="id"
-      :pagination.sync="pagination"
-      no-data-label="Ainda não temos colaboradores cadastrados"
+      :visible-columns="visibleColumns"
       :loading="loading"
       :filter="filter"
+      :pagination.sync="pagination"
       @request="onRequest"
-      :visible-columns="visibleColumns"
       rows-per-page-label="Registros por páginas"
+      no-data-label="Ainda não temos colaboradores cadastrados"
       binary-state-sort
     >
       <template v-slot:top>
@@ -23,7 +23,8 @@
           @click="openDialog"
         />
         <q-space />
-        <q-input borderless dense debounce="300" color="primary" v-model="filter">
+
+        <q-input filled dense debounce="300" label="Pesquisar" color="primary" v-model="filter">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -51,7 +52,6 @@
           </q-td>
 
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
-          <q-td auto-width :props="props" key="lastName">{{props.row.lastName}}</q-td>
           <q-td
             auto-width
             :props="props"
@@ -98,20 +98,14 @@
         </q-tr>
       </template>
 
-      <div
-        v-if="false"
-        slot="bottom"
-        slot-scope="props"
-        class="flex flex-center"
-        style="width: 100%;"
-      >
-        <div class="q-pa-lg flex flex-center absolute-bottom" style="margin-top: 10rem !important">
+      <div slot="bottom" slot-scope="props" class="flex flex-center" style="width: 100%">
+        <div class="q-pa-lg flex flex-center absolute-bottom">
           <q-pagination
             v-model="props.pagination.page"
-            :max="props.pagesNumber"
+            :max="1"
             :direction-links="true"
             @input="setPagination"
-          />
+          ></q-pagination>
         </div>
       </div>
     </q-table>
@@ -140,159 +134,152 @@
 </template>
 
 <script>
-import { EventBus } from "src/functions/event_bus.js";
-import moment from "moment";
+import { EventBus } from 'src/functions/event_bus.js'
+// eslint-disable-next-line no-unused-vars
+import moment from 'moment'
 
 export default {
-  name: "dt-colaborator",
+  name: 'dt-colaborator',
 
-  props: ["btn-primary"],
+  props: ['btn-primary'],
 
-  data() {
+  data () {
     return {
-      filter: "",
+      filter: '',
       showDelete: false,
       loading: false,
       pagination: {
-        sortBy: "desc",
+        sortBy: 'desc',
         descending: false,
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10,
+        rowsNumber: 10
       },
-      visibleColumns: ["status", "name", "hiringDate", "birthDay"],
+      visibleColumns: ['status', 'name', 'hiringDate', 'birthDay'],
       columns: [
-        { align: "left", name: "id", label: "id", field: "id", sortable: true },
+        { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
-          align: "left",
-          name: "status",
-          label: "Status",
-          field: "status",
+          align: 'left',
+          name: 'status',
+          label: 'Status',
+          field: 'status',
           sortable: true,
-          style: "width: 10px",
-          headerStyle: "width: 50px",
+          style: 'width: 10px',
+          headerStyle: 'width: 50px'
         },
         {
-          align: "left",
-          name: "name",
-          label: "Nome",
-          field: "name",
-          sortable: true,
+          align: 'left',
+          name: 'name',
+          label: 'Nome',
+          field: 'name',
+          sortable: true
         },
         {
-          align: "left",
-          name: "lastName",
-          label: "Sobrenome",
-          field: "lastName",
-          sortable: true,
+          align: 'left',
+          name: 'hiringDate',
+          label: 'Data de admissão',
+          field: 'hiringDate',
+          sortable: true
         },
         {
-          align: "left",
-          name: "hiringDate",
-          label: "Data de admissão",
-          field: "hiringDate",
-          sortable: true,
-        },
-        {
-          align: "left",
-          name: "birthDay",
-          label: "Aniversário",
-          field: "birthDay",
-          sortable: true,
-        },
+          align: 'left',
+          name: 'birthDay',
+          label: 'Aniversário',
+          field: 'birthDay',
+          sortable: true
+        }
       ],
-      data: [],
-    };
+      data: []
+    }
   },
 
-  created() {
-    EventBus.$on("on-refresh-person", (event) => {
-      this.refresh();
-    });
-    EventBus.$emit("on-new-vacation-request", null);
+  created () {
+    EventBus.$on('on-refresh-person', () => {
+      this.onRequest({ pagination: this.pagination, filter: this.filter })
+    })
   },
 
-  beforeDestroy() {
-    EventBus.$off("on-refresh-person");
+  beforeDestroy () {
+    EventBus.$off('on-refresh-person')
   },
 
-  mounted() {
-    this.refresh();
+  mounted () {
+    this.refresh()
   },
   methods: {
-    openDialog() {
-      EventBus.$emit("on-new-person");
+
+    setPagination (value) {
+      this.pagination.page = value
+      this.onRequest({ pagination: this.pagination, filter: this.filter })
     },
 
-    async onRequest(props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination;
-      const filter = props.filter;
+    openDialog () {
+      EventBus.$emit('on-new-person')
+    },
 
-      this.loading = true;
+    async onRequest (props) {
+      const { page, rowsPerPage, sortBy, descending } = props.pagination
 
-      const fetchCount =
-        rowsPerPage === 0 ? this.pagination.rowsNumber : rowsPerPage;
+      this.loading = true
 
-      const startRow = (page - 1) * rowsPerPage;
-
-      let returnedData = await this.$axios.get("person");
+      const returnedData = await this.$axios.get(`person?page=${page}`)
 
       returnedData.data.forEach((item, i) => {
-        returnedData.data[i].status = true;
-      });
+        returnedData.data[i].status = true
+      })
 
-      this.data.splice(0, this.data.length, ...returnedData.data);
+      this.data.splice(0, this.data.length, ...returnedData.data)
 
-      this.pagination.page = page;
-      this.pagination.rowsPerPage = rowsPerPage;
-      this.pagination.sortBy = sortBy;
-      this.pagination.descending = descending;
+      this.pagination.page = page
+      this.pagination.rowsPerPage = rowsPerPage
+      this.pagination.sortBy = sortBy
+      this.pagination.descending = descending
 
-      this.loading = false;
+      this.loading = false
     },
 
-    openEdit(person) {
-      EventBus.$emit("on-edit-person", person);
+    openEdit (person) {
+      EventBus.$emit('on-edit-person', person)
     },
 
-    openDelete(evaluation) {
-      this.showDelete = true;
-      this.evaluationFocus = Object.assign({}, evaluation);
+    openDelete (evaluation) {
+      this.showDelete = true
+      this.evaluationFocus = Object.assign({}, evaluation)
     },
 
-    openVacation(data) {
-      EventBus.$emit("on-show-vacation-request", data.id)
+    openVacation (data) {
+      EventBus.$emit('on-show-vacation-request', data.id)
     },
 
-    refresh() {
+    refresh () {
       this.onRequest({
         pagination: this.pagination,
-        filter: undefined,
-      });
+        filter: undefined
+      })
     },
 
-    async deletePerson() {
+    async deletePerson () {
       try {
-        this.loading = true;
+        this.loading = true
 
         await this.$axios.delete(
-          `${"/person/{id}".replace("{id}", this.evaluationFocus.id)}/`
-        );
+          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
+        )
 
         this.$q.notify({
-          color: "positive",
-          type: "positive",
-          message: "Colaborador Excluido com Sucesso!",
-        });
+          color: 'positive',
+          type: 'positive',
+          message: 'Colaborador Excluido com Sucesso!'
+        })
 
-        this.evaluationFocus = undefined;
-        this.refresh();
-        this.loading = false;
+        this.evaluationFocus = undefined
+        this.refresh()
+        this.loading = false
       } catch (e) {
-        this.loading = false;
-        console.log(e);
+        this.loading = false
+        console.log(e)
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>

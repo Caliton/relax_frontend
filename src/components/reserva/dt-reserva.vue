@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      title="Treats"
+      title="Reservas"
       :data="data"
       :columns="columns"
       row-key="id"
@@ -15,13 +15,7 @@
       binary-state-sort
     >
       <template v-slot:top>
-        <q-btn
-          color="primary"
-          :disable="loading"
-          label="Solicitar Reserva"
-          no-caps
-          @click="openDialog"
-        />
+        <span style="font-size: 24px">Reservas</span>
         <q-space />
         <q-input borderless dense debounce="300" color="primary" v-model="filter">
           <template v-slot:append>
@@ -37,53 +31,24 @@
             :key="col.name"
             :props="props"
           >{{ col.label }}</q-th>
-
-          <q-th auto-width />
         </q-tr>
       </template>
 
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td :props="props" key="status">
-            <q-icon v-if="true" color="green" name="eva-checkmark-circle-outline" />
-            <q-icon v-else color="red" name="eva-close-circle-outline" />
-          </q-td>
-
-          <q-td auto-width :props="props" key="firstName">{{props.row.firstName}}</q-td>
-          <q-td auto-width :props="props" key="lastName">{{props.row.lastName}}</q-td>
+          <q-td auto-width :props="props" key="person">{{props.row.person}}</q-td>
           <q-td
             auto-width
             :props="props"
-            key="hiringDate"
-          >{{ props.row.hiringDate | moment('DD-MM-YYYY')}}</q-td>
+            key="startDate"
+          >{{props.row.startDate | moment('DD-MM-YYYY')}}</q-td>
           <q-td
             auto-width
             :props="props"
-            key="birthDay"
-          >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
-
-          <q-td auto-width>
-            <q-btn
-              size="sm"
-              flat
-              class="q-ma-xs bg-white"
-              color="light-blue"
-              round
-              dense
-              icon="eva-edit-outline"
-              @click="openEdit(props.row)"
-            />
-            <q-btn
-              size="sm"
-              flat
-              class="q-ma-xs bg-white"
-              color="red"
-              round
-              dense
-              icon="eva-trash-2-outline"
-              @click="openDelete(props.row)"
-            />
-          </q-td>
+            key="finalDate"
+          >{{props.row.finalDate | moment('DD-MM-YYYY')}}</q-td>
+          <q-td auto-width :props="props" key="days">{{props.row.days}}</q-td>
+          <q-td auto-width :props="props" key="vacationStatus">{{props.row.vacationStatus}}</q-td>
         </q-tr>
       </template>
 
@@ -129,154 +94,161 @@
 </template>
 
 <script>
-import { EventBus } from "src/functions/event_bus.js";
-import moment from "moment";
+import { EventBus } from 'src/functions/event_bus.js'
 
 export default {
-  name: "dt-colaborator",
+  name: 'dt-colaborator',
 
-  props: ["btn-primary"],
+  props: ['btn-primary'],
 
-  data() {
+  data () {
     return {
-      filter: "",
+      filter: '',
       showDelete: false,
       loading: false,
       pagination: {
-        sortBy: "desc",
+        sortBy: 'desc',
         descending: false,
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10,
+        rowsNumber: 10
       },
-      visibleColumns: ["status", "firstName", "hiringDate", "birthDay"],
-      columns: [
-        { align: "left", name: "id", label: "id", field: "id", sortable: true },
-        {
-          align: "left",
-          name: "status",
-          label: "Status",
-          field: "status",
-          sortable: true,
-          style: "width: 10px",
-          headerStyle: "width: 50px",
-        },
-        {
-          align: "left",
-          name: "firstName",
-          label: "Nome",
-          field: "firstName",
-          sortable: true,
-        },
-        {
-          align: "left",
-          name: "lastName",
-          label: "Sobrenome",
-          field: "lastName",
-          sortable: true,
-        },
-        {
-          align: "left",
-          name: "hiringDate",
-          label: "Data de admissão",
-          field: "hiringDate",
-          sortable: true,
-        },
-        {
-          align: "left",
-          name: "birthDay",
-          label: "Aniversário",
-          field: "birthDay",
-          sortable: true,
-        },
+      visibleColumns: [
+        'person',
+        'startDate',
+        'finalDate',
+        'days',
+        'vacationStatus'
       ],
-      data: [],
-    };
+      columns: [
+        { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
+        {
+          align: 'left',
+          name: 'person',
+          label: 'Colaborador',
+          field: 'person',
+          sortable: true,
+          style: 'width: 10px',
+          headerStyle: 'width: 50px'
+        },
+        {
+          align: 'left',
+          name: 'startDate',
+          label: 'Inicio de Férias',
+          field: 'startDate',
+          sortable: true
+        },
+        {
+          align: 'left',
+          name: 'finalDate',
+          label: 'Final de Férias',
+          field: 'finalDate',
+          sortable: true
+        },
+        {
+          align: 'left',
+          name: 'days',
+          label: 'Quantidades de dias',
+          field: 'days',
+          sortable: true
+        },
+        {
+          align: 'left',
+          name: 'vacationStatus',
+          label: 'Status da Solicitação',
+          field: 'vacationStatus',
+          sortable: true
+        }
+      ],
+      data: []
+    }
   },
 
-  created() {
-    EventBus.$on("on-refresh-person", (event) => {
-      this.refresh();
-    });
+  created () {
+    EventBus.$on('on-refresh-person', (event) => {
+      this.refresh()
+    })
   },
 
-  beforeDestroy() {
-    EventBus.$off("on-refresh-person");
+  beforeDestroy () {
+    EventBus.$off('on-refresh-person')
   },
 
-  mounted() {
-    this.refresh();
+  mounted () {
+    this.refresh()
   },
   methods: {
-    openDialog() {
-      EventBus.$emit("on-new-person");
+    openDialog () {
+      EventBus.$emit('on-new-person')
     },
 
-    async onRequest(props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination;
-      const filter = props.filter;
+    async onRequest (props) {
+      const { page, rowsPerPage, sortBy, descending } = props.pagination
 
-      this.loading = true;
+      this.loading = true
 
-      const fetchCount =
-        rowsPerPage === 0 ? this.pagination.rowsNumber : rowsPerPage;
+      const result = await this.$axios.get('requests')
+      const cleanDataResult = {}
+      const listVacations = []
+      result.data.forEach((item) => {
+        cleanDataResult.id = item.id
+        cleanDataResult.person = item.person.name
+        cleanDataResult.startDate = item.startDate
+        cleanDataResult.finalDate = item.finalDate
+        cleanDataResult.days = item.days
+        cleanDataResult.vacationStatus = item.vacationStatus.description
 
-      const startRow = (page - 1) * rowsPerPage;
+        listVacations.push(cleanDataResult)
+      })
 
-      let returnedData = await this.$axios.get("person");
+      this.data.splice(0, this.data.length, ...listVacations)
 
-      returnedData.data.forEach((item, i) => {
-        returnedData.data[i].status = true;
-      });
+      this.pagination.page = page
+      this.pagination.rowsPerPage = rowsPerPage
+      this.pagination.sortBy = sortBy
+      this.pagination.descending = descending
 
-      this.data.splice(0, this.data.length, ...returnedData.data);
-
-      this.pagination.page = page;
-      this.pagination.rowsPerPage = rowsPerPage;
-      this.pagination.sortBy = sortBy;
-      this.pagination.descending = descending;
-
-      this.loading = false;
+      this.loading = false
     },
 
-    openEdit(person) {
-      EventBus.$emit("on-edit-person", person);
+    openEdit (person) {
+      EventBus.$emit('on-edit-person', person)
     },
 
-    openDelete(evaluation) {
-      this.showDelete = true;
-      this.evaluationFocus = Object.assign({}, evaluation);
+    openDelete (evaluation) {
+      this.showDelete = true
+      this.evaluationFocus = Object.assign({}, evaluation)
     },
 
-    refresh() {
+    refresh () {
       this.onRequest({
         pagination: this.pagination,
-        filter: undefined,
-      });
+        filter: undefined
+      })
     },
 
-    async deletePerson() {
+    async deletePerson () {
       try {
-        this.loading = true;
+        this.loading = true
 
         await this.$axios.delete(
-          `${"/person/{id}".replace("{id}", this.evaluationFocus.id)}/`
-        );
+          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
+        )
 
         this.$q.notify({
-          color: "positive",
-          type: "positive",
-          message: "Colaborador Excluido com Sucesso!",
-        });
+          color: 'positive',
+          type: 'positive',
+          message: 'Colaborador Excluido com Sucesso!'
+        })
 
-        this.evaluationFocus = undefined;
-        this.refresh();
-        this.loading = false;
+        this.evaluationFocus = undefined
+        this.refresh()
+        this.loading = false
       } catch (e) {
-        this.loading = false;
-        console.log(e);
+        this.loading = false
+        console.log(e)
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>

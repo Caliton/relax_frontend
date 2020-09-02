@@ -7,15 +7,23 @@
 </template>
 
 <script>
-import dtReserva from "components/reserva/dt-reserva";
+import dtReserva from 'components/reserva/dt-reserva'
 
 export default {
-  name: "PageReserva",
+  name: 'PageReserva',
   components: {
-    "dt-reserva": dtReserva,
+    'dt-reserva': dtReserva
   },
-  data() {
-    return {};
-  },
-};
+  data () {
+    return {}
+  }
+}
 </script>
+
+<style lang="stylus">
+.events-page {
+  width: 90%;
+  min-height: 80vmin;
+  border-radius: 6px;
+}
+</style>

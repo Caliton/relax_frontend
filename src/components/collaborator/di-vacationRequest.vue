@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale">
-    <q-card style="width: 800px; max-width: 80vw;">
+    <q-card style="width:450px; max-width: 80vw;">
       <q-card-section class="q-gutter-lg">
         <div class="row">
           <p style="color: #4caf50; font-size: 20pt">Período</p>
@@ -20,13 +20,10 @@
           >
             <template v-slot:after>
               <q-btn round dense icon="add" color="green">
-                <q-menu
-                  anchor="top left"
-                  self="top left"
-                >
+                <q-menu anchor="top left" self="top left">
                   <div class="row no-wrap q-pa-md">
                     <div class="column q-gutter-sm">
-                      <div class="text-h6 q-mb-md">Inserir novo periodo</div>
+                      <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
 
                       <q-input
                         filled
@@ -44,52 +41,12 @@
                         lazy-rules
                       />
 
-                      <q-input filled dense v-model="vacationTime.hiringDate" class="col-md-4" label="Admissão">
-                        <template v-slot:prepend>
-                          <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy transition-show="scale" transition-hide="scale">
-                              <q-date v-model="vacationTime.hiringDate" mask="DD-MM-YYYY" />
-                            </q-popup-proxy>
-                          </q-icon>
-                        </template>
-
-                        <template v-slot:append>
-                          <q-icon name="access_time" class="cursor-pointer">
-                            <q-popup-proxy transition-show="scale" transition-hide="scale">
-                              <q-time v-model="vacationTime.hiringDate" mask="DD-MM-YYYY" format24h />
-                            </q-popup-proxy>
-                          </q-icon>
-                        </template>
-                      </q-input>
-
-                      <q-input
-                        filled
-                        dense
-                        v-model="vacationTime.birthDay"
-                        class="col-md-4 q-mr-sm"
-                        label="Salve"
-                      >
-                        <template v-slot:prepend>
-                          <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy transition-show="scale" transition-hide="scale">
-                              <q-date v-model="vacationTime.birthDay" mask="DD-MM-YYYY" />
-                            </q-popup-proxy>
-                          </q-icon>
-                        </template>
-
-                        <template v-slot:append>
-                          <q-icon name="access_time" class="cursor-pointer">
-                            <q-popup-proxy transition-show="scale" transition-hide="scale">
-                              <q-time v-model="vacationTime.birthDay" mask="DD-MM-YYYY" format24h />
-                            </q-popup-proxy>
-                          </q-icon>
-                        </template>
-                      </q-input>
-
                       <q-btn
                         color="primary"
+                        class="q-mt-lg"
                         label="Salvar"
-                        @click="registerVacation"
+                        :loading="loadingVacationTime"
+                        @click="registerVacationTime"
                         push
                         size="sm"
                         v-close-popup
@@ -102,168 +59,207 @@
           </q-select>
         </div>
 
-
         <div class="row q-gutter-md">
-
-          <div v-if="vacationSelected.id" >
-            <span class="vacations-label">Dias de Direito: </span> 
-              {{vacationSelected.daysAllowed }} </br>
-            
-            <span class="vacations-label">Dias  Usufruídos: </span>  
-              {{vacationSelected.daysEnjoyed }} </br>
-            
-            <span class="vacations-label">Dias Saldos: </span> 
-              {{vacationSelected.daysBalance}} </br>
-            
-            <span class="vacations-label">Data Limite: </span> 
-              {{vacationSelected.limitDate  | moment('DD-MM-YYYY') }} -----> {{vacationSelected.limitDate }} </br>
-            
-            <span class="vacations-label">Limite com 6 meses: </span> 
-              {{vacationSelected.limit6Months | moment('DD-MM-YYYY') }} ---> {{vacationSelected.limit6Months}}</br>
+          <div v-if="vacationSelected.id">
+            <span class="vacations-label">Dias de Direito:</span>
+            {{vacationSelected.daysAllowed }}
+            <br />
+            <span class="vacations-label">Dias Usufruídos:</span>
+            {{vacationSelected.daysEnjoyed }}
+            <br />
+            <span class="vacations-label">Dias Saldos:</span>
+            {{vacationSelected.daysBalance}}
+            <br />
+            <span class="vacations-label">Data Limite:</span>
+            {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
+            <br />
+            <span class="vacations-label">Limite com 6 meses:</span>
+            {{vacationSelected.limit6Months | moment('DD-MM-YYYY') }}
+            <br />
           </div>
-
         </div>
       </q-card-section>
 
       <q-card-section>
         <p style="color: #4caf50; font-size: 20pt">Solicitação</p>
+
+        <v-date-picker v-model="attributes" mode="range" is-inline />
       </q-card-section>
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
-        <q-btn color="light-blue" dense no-caps label="Salvar!" @click="confirm" />
+        <q-btn
+          color="green"
+          dense
+          no-caps
+          label="Salvar"
+          @click="registerVacationRequest"
+          v-close-popup
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
-import { EventBus } from "src/functions/event_bus.js";
+import { EventBus } from 'src/functions/event_bus.js'
 
-
-import moment from "moment";
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
-  name: "di-vacation-request",
+  name: 'di-vacation-request',
 
-  events: ["on-close"],
-  
-  created() {
-    EventBus.$on("on-show-vacation-request", (data) => {
-      this.onShow = true;
-      if (data) {
-        this.getVacationsTimes(data);
-      }
-    });
+  components: {
+    'v-date-picker': DatePicker
   },
 
-  beforeDestroy() {
-    EventBus.$off("on-show-vacation-request");
+  events: ['on-close'],
+
+  created () {
+    EventBus.$on('on-show-vacation-request', (data) => {
+      this.onShow = true
+      if (data) {
+        this.personId = data
+        this.getVacationsTimes(data)
+      }
+    })
+  },
+
+  beforeDestroy () {
+    EventBus.$off('on-show-vacation-request')
   },
 
   computed: {
-    draggingInfo() {
-      return this.dragging ? "under drag" : "";
-    },
+    draggingInfo () {
+      return this.dragging ? 'under drag' : ''
+    }
   },
 
-  data() {
+  data () {
     return {
       onShow: false,
       vacations: [],
-      vacationSelected: {},
-      vacationTime: {
-        vacationYear: "",
-        daysAllowed: 30,
+      attributes: [],
+      loadingVacationTime: false,
+      vacationRequest: {
+        requestUserId: 0,
+        vacationTimeId: 0,
+        startDate: '',
+        finalDate: ''
       },
-      model: "2019-02-22 21:02",
+      vacationSelected: {},
+      personId: undefined,
+      vacationTime: {
+        vacationYear: '',
+        daysAllowed: ''
+      },
       showInputVacationTime: false,
       vacationsCombo: [],
-      selectedOption: {label: 'Carregando', value: 2020} ,
-    };
+      selectedOption: { label: '-', value: 0 }
+    }
   },
 
   methods: {
-    removeAt(idx) {
-      this.guests.splice(idx, 1);
+    removeAt (idx) {
+      this.guests.splice(idx, 1)
     },
 
-    add() {
-      this.id++;
-      this.guests.push({ id: this.id, name: "", relationShip: "" });
+    add () {
+      this.id++
+      this.guests.push({ id: this.id, name: '', relationShip: '' })
     },
 
-    onShowModal() {
-      this.onShow = true;
+    onShowModal () {
+      this.onShow = true
     },
 
-    onHideModal() {
-      this.$emit("on-close");
-      this.onShow = false;
+    onHideModal () {
+      this.$emit('on-close')
+      this.onShow = false
     },
-    openNewVacationTime() {
-      this.showInputVacationTime = true;
+    openNewVacationTime () {
+      this.showInputVacationTime = true
     },
 
     setVacationCombo (vacationSelected) {
-
       this.vacationSelected = this.vacations.find((item) => item.id === vacationSelected.value)
-
-
-      console.log('Deu certo safado;: ', this.vacationSelected)
-
     },
 
     async getVacationsTimes (personId) {
       try {
-        let result = await this.$axios.get('person/{id}/vacationtime'.replace('{id}', personId));
+        const result = await this.$axios.get('person/{id}/vacationtime'.replace('{id}', personId || this.personId))
 
         this.vacationsCombo = []
         this.vacations = result.data
 
         result.data.forEach((item) => {
-          this.vacationsCombo.push({label: item.vacationDate.split('-')[0], value: item.id})
+          this.vacationsCombo.push({ label: item.vacationDate.split('-')[0], value: item.id })
         })
-        console.log('Olha o nego ai: ', result)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     },
 
-
-    async confirm() {
+    async registerVacationRequest () {
       try {
-        let axiosFunction = this.$axios.post;
-        let url = "person";
+        this.vacationRequest.startDate = this.attributes.start
+        this.vacationRequest.finalDate = this.attributes.end
+        this.vacationRequest.vacationTimeId = this.vacationSelected.id
+        this.vacationRequest.requestUserId = this.personId
 
-        let result = {};
+        const result = await this.$axios.post('/requests', this.vacationRequest)
+        console.log(result)
+      } catch (e) {
+        console.log(e)
+      }
+    },
 
-        this.person.birthDay = moment(Date.now()).format("YYYY-MM-DD");
-        this.person.hiringDate = moment(Date.now()).format("YYYY-MM-DD");
+    async registerVacationTime () {
+      try {
+        this.loadingVacationTime = true
+
+        const result = await this.$axios.post(`person/${this.personId}/vacationtime`, { daysAllowed: this.vacationTime.daysAllowed, vacationYear: this.vacationTime.vacationYear })
+
+        this.getVacationsTimes()
+        this.loadingVacationTime = false
+
+        console.log(result)
+      } catch (e) {
+        console.log(e)
+        this.loadingVacationTime = false
+      }
+    },
+
+    async confirm () {
+      try {
+        let axiosFunction = this.$axios.post
+        let url = 'person'
+
+        let result = {}
 
         if (!this.person.id) {
-          result = await axiosFunction(url, this.person);
-          this.person.id = result.data.id;
+          result = await axiosFunction(url, this.person)
+          this.person.id = result.data.id
         }
 
         if (this.person.id) {
-          url += `/${this.person.id}/`;
-          axiosFunction = this.$axios.put;
+          url += `/${this.person.id}/`
+          axiosFunction = this.$axios.put
 
-          await axiosFunction(url, this.person);
-          EventBus.$emit("on-refresh-evaluation");
+          await axiosFunction(url, this.person)
+          EventBus.$emit('on-refresh-evaluation')
         }
 
-        EventBus.$emit("on-refresh-person");
-        this.onHideModal();
+        EventBus.$emit('on-refresh-person')
+        this.onHideModal()
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     },
 
-    canceled() {
-      this.onHideModal();
-    },
-  },
-};
+    canceled () {
+      this.onHideModal()
+    }
+  }
+}
 </script>
 
 <style lang="stylus">
@@ -276,6 +272,7 @@ export default {
   }
 }
 
-.vacations-label
-  color $green
+.vacations-label {
+  color: $green;
+}
 </style>
