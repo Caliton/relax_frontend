@@ -43,13 +43,14 @@
       </template>
 
       <template v-slot:body="props">
+        <!-- {{ props.row}} -->
         <q-tr :props="props">
           <q-td :props="props" key="status">
             <q-icon v-if="true" color="green" name="eva-checkmark-circle-outline" />
             <q-icon v-else color="red" name="eva-close-circle-outline" />
           </q-td>
 
-          <q-td auto-width :props="props" key="firstName">{{props.row.firstName}}</q-td>
+          <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
           <q-td auto-width :props="props" key="lastName">{{props.row.lastName}}</q-td>
           <q-td
             auto-width
@@ -63,6 +64,16 @@
           >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
 
           <q-td auto-width>
+            <q-btn
+              size="sm"
+              flat
+              class="q-ma-xs bg-white"
+              color="green"
+              round
+              dense
+              icon="eva-sun-outline"
+              @click="openVacation(props.row)"
+            />
             <q-btn
               size="sm"
               flat
@@ -149,7 +160,7 @@ export default {
         rowsPerPage: 10,
         rowsNumber: 10,
       },
-      visibleColumns: ["status", "firstName", "hiringDate", "birthDay"],
+      visibleColumns: ["status", "name", "hiringDate", "birthDay"],
       columns: [
         { align: "left", name: "id", label: "id", field: "id", sortable: true },
         {
@@ -163,9 +174,9 @@ export default {
         },
         {
           align: "left",
-          name: "firstName",
+          name: "name",
           label: "Nome",
-          field: "firstName",
+          field: "name",
           sortable: true,
         },
         {
@@ -198,6 +209,7 @@ export default {
     EventBus.$on("on-refresh-person", (event) => {
       this.refresh();
     });
+    EventBus.$emit("on-new-vacation-request", null);
   },
 
   beforeDestroy() {
@@ -246,6 +258,10 @@ export default {
     openDelete(evaluation) {
       this.showDelete = true;
       this.evaluationFocus = Object.assign({}, evaluation);
+    },
+
+    openVacation(data) {
+      EventBus.$emit("on-show-vacation-request", data.id)
     },
 
     refresh() {
