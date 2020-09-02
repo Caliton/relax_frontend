@@ -78,9 +78,13 @@ export default {
     EventBus.$on('on-edit-person', (person) => {
       this.onShow = true
       this.person = person
+      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
     })
 
     EventBus.$on('on-new-person', () => {
+      this.person = {}
+      this.$nextTick(() => { this.$v.$reset() })
       this.onShow = true
     })
   },
