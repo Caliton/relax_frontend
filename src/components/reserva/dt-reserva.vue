@@ -94,161 +94,165 @@
 </template>
 
 <script>
-import { EventBus } from 'src/functions/event_bus.js'
+import { EventBus } from "src/functions/event_bus.js";
 
 export default {
-  name: 'dt-colaborator',
+  name: "dt-colaborator",
 
-  props: ['btn-primary'],
+  props: ["btn-primary"],
 
-  data () {
+  data() {
     return {
-      filter: '',
+      filter: "",
       showDelete: false,
       loading: false,
       pagination: {
-        sortBy: 'desc',
+        sortBy: "desc",
         descending: false,
         page: 1,
         rowsPerPage: 10,
-        rowsNumber: 10
+        rowsNumber: 10,
       },
       visibleColumns: [
-        'person',
-        'startDate',
-        'finalDate',
-        'days',
-        'vacationStatus'
+        "person",
+        "startDate",
+        "finalDate",
+        "days",
+        "vacationStatus",
       ],
       columns: [
-        { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
+        { align: "left", name: "id", label: "id", field: "id", sortable: true },
         {
-          align: 'left',
-          name: 'person',
-          label: 'Colaborador',
-          field: 'person',
+          align: "left",
+          name: "person",
+          label: "Colaborador",
+          field: "person",
           sortable: true,
-          style: 'width: 10px',
-          headerStyle: 'width: 50px'
+          style: "width: 10px",
+          headerStyle: "width: 50px",
         },
         {
-          align: 'left',
-          name: 'startDate',
-          label: 'Inicio de Férias',
-          field: 'startDate',
-          sortable: true
+          align: "left",
+          name: "startDate",
+          label: "Inicio de Férias",
+          field: "startDate",
+          sortable: true,
         },
         {
-          align: 'left',
-          name: 'finalDate',
-          label: 'Final de Férias',
-          field: 'finalDate',
-          sortable: true
+          align: "left",
+          name: "finalDate",
+          label: "Final de Férias",
+          field: "finalDate",
+          sortable: true,
         },
         {
-          align: 'left',
-          name: 'days',
-          label: 'Quantidades de dias',
-          field: 'days',
-          sortable: true
+          align: "left",
+          name: "days",
+          label: "Quantidades de dias",
+          field: "days",
+          sortable: true,
         },
         {
-          align: 'left',
-          name: 'vacationStatus',
-          label: 'Status da Solicitação',
-          field: 'vacationStatus',
-          sortable: true
-        }
+          align: "left",
+          name: "vacationStatus",
+          label: "Status da Solicitação",
+          field: "vacationStatus",
+          sortable: true,
+        },
       ],
-      data: []
-    }
+      data: [],
+    };
   },
 
-  created () {
-    EventBus.$on('on-refresh-person', (event) => {
-      this.refresh()
-    })
+  created() {
+    EventBus.$on("on-refresh-person", (event) => {
+      this.refresh();
+    });
   },
 
-  beforeDestroy () {
-    EventBus.$off('on-refresh-person')
+  beforeDestroy() {
+    EventBus.$off("on-refresh-person");
   },
 
-  mounted () {
-    this.refresh()
+  mounted() {
+    this.refresh();
   },
   methods: {
-    openDialog () {
-      EventBus.$emit('on-new-person')
+    openDialog() {
+      EventBus.$emit("on-new-person");
     },
 
-    async onRequest (props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination
+    async onRequest(props) {
+      const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-      this.loading = true
+      this.loading = true;
 
-      const result = await this.$axios.get('requests')
-      const cleanDataResult = {}
-      const listVacations = []
+      const result = await this.$axios.get("requests");
+      let cleanDataResult = {};
+      const listVacations = [];
       result.data.forEach((item) => {
-        cleanDataResult.id = item.id
-        cleanDataResult.person = item.person.name
-        cleanDataResult.startDate = item.startDate
-        cleanDataResult.finalDate = item.finalDate
-        cleanDataResult.days = item.days
-        cleanDataResult.vacationStatus = item.vacationStatus.description
+        cleanDataResult = Object.assign({}, cleanDataResult);
+        cleanDataResult.id = item.id;
+        cleanDataResult.person = item.person.name;
+        cleanDataResult.startDate = item.startDate;
+        cleanDataResult.finalDate = item.finalDate;
+        cleanDataResult.days = item.days;
+        cleanDataResult.vacationStatus = item.vacationStatus.description;
 
-        listVacations.push(cleanDataResult)
-      })
+        console.log(cleanDataResult);
+        listVacations.push(cleanDataResult);
+      });
 
-      this.data.splice(0, this.data.length, ...listVacations)
+      console.log(listVacations);
 
-      this.pagination.page = page
-      this.pagination.rowsPerPage = rowsPerPage
-      this.pagination.sortBy = sortBy
-      this.pagination.descending = descending
+      this.data.splice(0, this.data.length, ...listVacations);
 
-      this.loading = false
+      this.pagination.page = page;
+      this.pagination.rowsPerPage = rowsPerPage;
+      this.pagination.sortBy = sortBy;
+      this.pagination.descending = descending;
+
+      this.loading = false;
     },
 
-    openEdit (person) {
-      EventBus.$emit('on-edit-person', person)
+    openEdit(person) {
+      EventBus.$emit("on-edit-person", person);
     },
 
-    openDelete (evaluation) {
-      this.showDelete = true
-      this.evaluationFocus = Object.assign({}, evaluation)
+    openDelete(evaluation) {
+      this.showDelete = true;
+      this.evaluationFocus = Object.assign({}, evaluation);
     },
 
-    refresh () {
+    refresh() {
       this.onRequest({
         pagination: this.pagination,
-        filter: undefined
-      })
+        filter: undefined,
+      });
     },
 
-    async deletePerson () {
+    async deletePerson() {
       try {
-        this.loading = true
+        this.loading = true;
 
         await this.$axios.delete(
-          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
-        )
+          `${"/person/{id}".replace("{id}", this.evaluationFocus.id)}/`
+        );
 
         this.$q.notify({
-          color: 'positive',
-          type: 'positive',
-          message: 'Colaborador Excluido com Sucesso!'
-        })
+          color: "positive",
+          type: "positive",
+          message: "Colaborador Excluido com Sucesso!",
+        });
 
-        this.evaluationFocus = undefined
-        this.refresh()
-        this.loading = false
+        this.evaluationFocus = undefined;
+        this.refresh();
+        this.loading = false;
       } catch (e) {
-        this.loading = false
-        console.log(e)
+        this.loading = false;
+        console.log(e);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
