@@ -24,11 +24,11 @@
         />
         <q-space />
 
-        <q-input filled dense debounce="300" label="Pesquisar" color="primary" v-model="filter">
+        <!-- <q-input filled dense debounce="300" label="Pesquisar" color="primary" v-model="filter">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
-        </q-input>
+        </q-input>-->
       </template>
 
       <template v-slot:header="props">

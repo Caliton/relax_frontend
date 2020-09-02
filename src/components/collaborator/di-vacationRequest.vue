@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale">
-    <q-card style="width:450px; max-width: 80vw;">
+    <q-card style="width:600px; max-width: 80vw;">
       <q-card-section class="q-gutter-lg">
         <div class="row">
           <p style="color: #4caf50; font-size: 20pt">Período</p>
@@ -83,7 +83,7 @@
       <q-card-section>
         <p style="color: #4caf50; font-size: 20pt">Solicitação</p>
 
-        <v-date-picker v-model="attributes" mode="range" is-inline />
+        <v-date-picker class v-model="attributes" mode="range" is-inline />
       </q-card-section>
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
         <q-btn

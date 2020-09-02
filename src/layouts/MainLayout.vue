@@ -64,74 +64,74 @@
 </template>
 
 <script>
-import { EventBus } from "../functions/event_bus.js";
-import { fabYoutube } from "@quasar/extras/fontawesome-v5";
+import { EventBus } from '../functions/event_bus.js'
+import { fabYoutube } from '@quasar/extras/fontawesome-v5'
 
 export default {
-  name: "MainLayout",
+  name: 'MainLayout',
 
-  created() {
-    if (!localStorage.getItem("access_token")) {
-      this.$router.push("/");
+  created () {
+    if (!localStorage.getItem('access_token')) {
+      this.$router.push('/')
     }
   },
 
-  beforeCreate() {
-    EventBus.$on("showNotify", (notification) => {
-      this.showNotify(notification);
-    });
+  beforeCreate () {
+    EventBus.$on('showNotify', (notification) => {
+      this.showNotify(notification)
+    })
 
-    EventBus.$on("expiredToken", () => {
-      this.logoutNow();
-    });
+    EventBus.$on('expiredToken', () => {
+      this.logoutNow()
+    })
   },
 
-  data() {
+  data () {
     return {
       user: {
-        name: localStorage.getItem("userName"),
+        name: localStorage.getItem('userName')
       },
       leftDrawerOpen: false,
       links1: [
-        { icon: "home", text: "Inicio", page: "dashboard" },
-        { icon: "person", text: "Colaboradores", page: "colaborator" },
-        { icon: "far fa-address-book", text: "Reservas", page: "reserva" },
-      ],
-    };
+        { icon: 'home', text: 'Inicio', page: 'dashboard' },
+        { icon: 'person', text: 'Colaboradores', page: 'colaborator' },
+        { icon: 'far fa-address-book', text: 'Reservas', page: 'reserva' }
+      ]
+    }
   },
 
-  created() {
-    this.fabYoutube = fabYoutube;
+  created () {
+    this.fabYoutube = fabYoutube
   },
 
   methods: {
-    currentRoute() {
-      return this.$route.name;
+    currentRoute () {
+      return this.$route.name
     },
 
-    logoutNow() {
-      this.$q.localStorage.remove("access_token");
-      this.$q.localStorage.remove("userId");
-      this.$q.localStorage.remove("userName");
-      this.$q.localStorage.remove("userProfile");
-      this.$q.localStorage.remove("userDepartament");
-      this.$router.push("/");
+    logoutNow () {
+      this.$q.localStorage.remove('access_token')
+      this.$q.localStorage.remove('userId')
+      this.$q.localStorage.remove('userName')
+      this.$q.localStorage.remove('userProfile')
+      this.$q.localStorage.remove('userDepartament')
+      this.$router.push('/')
     },
 
-    goPage(page) {
-      this.$router.push(page);
+    goPage (page) {
+      this.$router.push(page)
     },
 
-    showNotify(notification) {
+    showNotify (notification) {
       this.$q.notify({
         color: notification.color,
-        textColor: "white",
+        textColor: 'white',
         icon: notification.icon,
-        message: notification.message,
-      });
-    },
-  },
-};
+        message: notification.message
+      })
+    }
+  }
+}
 </script>
 
 <style lang="stylus">

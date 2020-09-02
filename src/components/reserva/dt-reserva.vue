@@ -17,11 +17,11 @@
       <template v-slot:top>
         <span style="font-size: 24px">Reservas</span>
         <q-space />
-        <q-input borderless dense debounce="300" color="primary" v-model="filter">
+        <!-- <q-input borderless dense debounce="300" color="primary" v-model="filter">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
-        </q-input>
+        </q-input>-->
       </template>
 
       <template v-slot:header="props">

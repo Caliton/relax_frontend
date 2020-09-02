@@ -4,18 +4,18 @@
 
 <script>
 export default {
-  name: "PageIndex",
+  name: 'PageIndex',
 
   components: {},
 
-  data() {
+  data () {
     return {
-      idUser: localStorage.getItem("userId"),
-    };
+      idUser: localStorage.getItem('userId')
+    }
   },
 
-  methods: {},
-};
+  methods: {}
+}
 </script>
 
 <style lang="stylus"></style>
