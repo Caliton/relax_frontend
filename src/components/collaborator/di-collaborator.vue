@@ -87,6 +87,8 @@ export default {
 
   beforeDestroy () {
     EventBus.$off('on-edit-person')
+
+    EventBus.$off('on-new-person')
   },
 
   computed: {
@@ -144,8 +146,8 @@ export default {
 
         let result = {}
 
-        this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format()
-        this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format()
+        this.person.birthDay = moment(this.person.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
+        this.person.hiringDate = moment(this.person.hiringDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
 
         if (!this.person.id) {
           result = await axiosFunction(url, this.person)
@@ -160,6 +162,8 @@ export default {
           EventBus.$emit('on-refresh-person')
         }
 
+        this.person = {}
+        this.$nextTick(() => { this.$v.$reset() })
         EventBus.$emit('on-refresh-person')
         this.onHideModal()
       } catch (e) {
