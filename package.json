@@ -11,7 +11,7 @@
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
     "build:prod": "cross-env MY_API=http://localhost:5000/api/ quasar build",
-    "build:test": "cross-env MY_API=http://falta_ambiente_de_teste/ quasar build"
+    "build:test": "cross-env MY_API=https://relax-heroku.herokuapp.com/ quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.9.3",

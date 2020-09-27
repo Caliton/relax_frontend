@@ -87,101 +87,101 @@
 </template>
 
 <script>
-import { EventBus } from "src/functions/event_bus.js";
-import moment from "moment";
+import { EventBus } from 'src/functions/event_bus.js'
+import moment from 'moment'
 
 export default {
-  name: "di-collaborator",
+  name: 'di-collaborator',
 
-  events: ["on-close"],
+  events: ['on-close'],
 
-  created() {
-    EventBus.$on("on-edit-person", (person) => {
-      this.onShow = true;
-      this.person = person;
-    });
+  created () {
+    EventBus.$on('on-edit-person', (person) => {
+      this.onShow = true
+      this.person = person
+    })
 
-    EventBus.$on("on-new-person", () => {
-      this.onShow = true;
-    });
+    EventBus.$on('on-new-person', () => {
+      this.onShow = true
+    })
   },
 
-  beforeDestroy() {
-    EventBus.$off("on-edit-person");
+  beforeDestroy () {
+    EventBus.$off('on-edit-person')
   },
 
   computed: {
-    draggingInfo() {
-      return this.dragging ? "under drag" : "";
-    },
+    draggingInfo () {
+      return this.dragging ? 'under drag' : ''
+    }
   },
 
-  data() {
+  data () {
     return {
       onShow: false,
       person: {
-        firstName: "",
-        lastName: "",
-        hiringDate: "",
-        birthDay: "",
-      },
-    };
+        firstName: '',
+        lastName: '',
+        hiringDate: '',
+        birthDay: ''
+      }
+    }
   },
 
   methods: {
-    removeAt(idx) {
-      this.guests.splice(idx, 1);
+    removeAt (idx) {
+      this.guests.splice(idx, 1)
     },
 
-    add() {
-      this.id++;
-      this.guests.push({ id: this.id, name: "", relationShip: "" });
+    add () {
+      this.id++
+      this.guests.push({ id: this.id, name: '', relationShip: '' })
     },
 
-    onShowModal() {
-      this.onShow = true;
+    onShowModal () {
+      this.onShow = true
     },
 
-    onHideModal() {
-      this.$emit("on-close");
-      this.onShow = false;
+    onHideModal () {
+      this.$emit('on-close')
+      this.onShow = false
     },
 
-    async confirm() {
+    async confirm () {
       try {
-        let axiosFunction = this.$axios.post;
-        let url = "person";
+        let axiosFunction = this.$axios.post
+        let url = 'person'
 
-        let result = {};
+        let result = {}
 
-        this.person.birthDay = moment(Date.now()).format("YYYY-MM-DD");
-        this.person.hiringDate = moment(Date.now()).format("YYYY-MM-DD");
+        this.person.birthDay = moment(Date.now()).format('YYYY-MM-DD')
+        this.person.hiringDate = moment(Date.now()).format('YYYY-MM-DD')
 
         if (!this.person.id) {
-          result = await axiosFunction(url, this.person);
-          this.person.id = result.data.id;
+          result = await axiosFunction(url, this.person)
+          this.person.id = result.data.id
         }
 
         if (this.person.id) {
-          url += `/${this.person.id}/`;
-          axiosFunction = this.$axios.put;
+          url += `/${this.person.id}/`
+          axiosFunction = this.$axios.put
 
-          await axiosFunction(url, this.person);
-          EventBus.$emit("on-refresh-evaluation");
+          await axiosFunction(url, this.person)
+          EventBus.$emit('on-refresh-evaluation')
         }
 
-        EventBus.$emit("on-refresh-person");
-        this.onHideModal();
+        EventBus.$emit('on-refresh-person')
+        this.onHideModal()
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     },
 
-    canceled() {
-      this.onHideModal();
-    },
-  },
-};
+    canceled () {
+      this.onHideModal()
+    }
+  }
+}
 </script>
 
 <style lang="stylus">

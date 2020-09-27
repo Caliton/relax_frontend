@@ -112,8 +112,10 @@ module.exports = function (ctx) {
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: ctx.dev
-        ? { API: JSON.stringify('http://localhost:3000/api/v1/') }
-        : { API: JSON.stringify(process.env.MY_API) },
+        ? { API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/') }
+        : {
+          API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/')
+        },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,
@@ -124,7 +126,7 @@ module.exports = function (ctx) {
       // preloadChunks: false,
       // extractCSS: false,
       devtool: 'source-map',
-      extendWebpack(cfg) {
+      extendWebpack (cfg) {
         // cfg.module.rules.push({
         //   enforce: 'pre',
         //   test: /\.(js|vue)$/,
@@ -230,7 +232,7 @@ module.exports = function (ctx) {
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack(cfg) {
+      extendWebpack (cfg) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       }

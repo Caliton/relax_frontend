@@ -47,8 +47,10 @@
         <!-- {{ props.row}} -->
         <q-tr :props="props">
           <q-td :props="props" key="status">
-            <q-icon v-if="true" color="green" name="eva-checkmark-circle-outline" />
-            <q-icon v-else color="red" name="eva-close-circle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
           </q-td>
 
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
@@ -225,7 +227,16 @@ export default {
       const returnedData = await this.$axios.get(`person?page=${page}`)
 
       returnedData.data.forEach((item, i) => {
-        returnedData.data[i].status = true
+        if (!item.vacationNew || item.vacationNew.length === 0) {
+          returnedData.data[i].status = 'INDEFINIDO'
+        } else if (moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+          returnedData.data[i].status = 'CRITICO'
+        } else if (moment(item.vacationNew[0].limit6Months).subtract(1, 'm').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+          returnedData.data[i].status = 'MEDIO'
+        } else {
+          console.log(moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD'))
+          returnedData.data[i].status = 'NORMAL'
+        }
       })
 
       this.data.splice(0, this.data.length, ...returnedData.data)

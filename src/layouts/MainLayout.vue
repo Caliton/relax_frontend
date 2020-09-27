@@ -45,6 +45,15 @@
 
           <q-separator class="q-mt-md q-mb-lg" />
 
+          <q-item v-ripple clickable @click="() => {EventBus.$emit('on-show-news')}">
+            <q-item-section avatar>
+              <q-icon color="grey" name="eva-info-outline" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Informação</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-item v-ripple clickable @click="logoutNow">
             <q-item-section avatar>
               <q-icon color="grey" name="exit_to_app" />
@@ -56,7 +65,7 @@
         </q-list>
       </q-scroll-area>
     </q-drawer>
-
+    <di-news />
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -66,9 +75,14 @@
 <script>
 import { EventBus } from '../functions/event_bus.js'
 import { fabYoutube } from '@quasar/extras/fontawesome-v5'
+import DiNews from '../components/layout/DiNews.vue'
 
 export default {
   name: 'MainLayout',
+
+  components: {
+    'di-news': DiNews
+  },
 
   created () {
     if (!localStorage.getItem('access_token')) {
@@ -88,12 +102,13 @@ export default {
 
   data () {
     return {
+      EventBus: EventBus,
       user: {
         name: localStorage.getItem('userName')
       },
       leftDrawerOpen: false,
       links1: [
-        { icon: 'home', text: 'Inicio', page: 'dashboard' },
+        // { icon: 'home', text: 'Inicio', page: 'dashboard' },
         { icon: 'person', text: 'Colaboradores', page: 'colaborator' },
         { icon: 'far fa-address-book', text: 'Reservas', page: 'reserva' }
       ]
