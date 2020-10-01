@@ -259,7 +259,7 @@ export default {
     },
 
     openVacation (data) {
-      EventBus.$emit('on-show-vacation-request', data.id)
+      EventBus.$emit('on-show-vacation-request', data)
     },
 
     refresh () {

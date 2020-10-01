@@ -1,476 +1,390 @@
 <template>
-  <div class="login-page">
-    <div class="login-page-2">
-      <div class="login-page-3">
-        <div class="col-md-5" style="width: 50%">
-          <img class="sun" src="~assets/sun.png" width="150px" style="float: right;" />
-          <img src="~assets/logo_1.png" width="750px" style="float: right;" />
-        </div>
-
-        <div class="login-page-4">
-          <div class="container-login">
-            <div class="login-logo" style="background: none">
-              <q-tab-panels
-                v-model="tab"
-                animated
-                transition-prev="scale"
-                transition-next="scale"
-                class="text-center"
-              >
-                <q-tab-panel name="btn1">
-                  <q-form @submit="onLogin" class="login-form">
-                    <q-input
-                      v-model="user.username"
-                      input-style="color: #6F6F6F"
-                      color="primary"
-                      rounded
-                      standout="bg-white text-black"
-                      label="Login"
-                      lazy-rules
-                      :rules="[
-                        val =>
-                          (val && val.length > 0) || 'Qual é mesmo o teu login?'
-                      ]"
-                      v-on:keyup.enter="onSubmit"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="person" style="color: #6F6F6F !important" />
-                      </template>
-                    </q-input>
-
-                    <q-input
-                      v-model="user.password"
-                      rounded
-                      icon="eva-lock"
-                      input-style="color: #6F6F6F"
-                      standout="bg-grey-3"
-                      :type="isPwd ? 'password' : 'text'"
-                      label="Password"
-                      lazy-rules
-                      :rules="[
-                        val =>
-                          (val && val.length > 0) ||
-                          'Por favor precisamos saber se é você mesmo'
-                      ]"
-                      v-on:keyup.enter="onSubmit"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="eva-lock" style="color: #6F6F6F !important" />
-                      </template>
-
-                      <template v-slot:append>
-                        <q-icon
-                          :name="isPwd ? 'visibility_off' : 'visibility'"
-                          class="cursor-pointer"
-                          style="color: #6F6F6F !important"
-                          @click="isPwd = !isPwd"
-                        />
-                      </template>
-                    </q-input>
-
-                    <div style="margin-top: 1rem">
-                      <q-btn
-                        unelevated
-                        rounded
-                        class="action-button q-mr-sm full-width"
-                        :loading="loading"
-                        label="Entrar"
-                        no-caps
-                        type="submit"
-                        color="light-blue"
-                      >
-                        <template v-slot:loading>
-                          <q-spinner-bars />
-                        </template>
-                      </q-btn>
-
-                      <!-- <q-btn
-                        unelevated
-                        rounded
-                        class="action-button"
-                        no-caps
-                        label="Sou novo por aqui"
-                        color="primary"
-                        @click="tab = 'btn2'"
-                      >
-                        <template v-slot:loading>
-                          <q-spinner-bars />
-                        </template>
-                      </q-btn>-->
-                    </div>
-                  </q-form>
-                </q-tab-panel>
-
-                <q-tab-panel name="btn2">
-                  <q-form @submit="onSingup" class="login-form">
-                    <q-input
-                      v-model="newUser.name"
-                      input-style="color: #6F6F6F"
-                      color="primary"
-                      rounded
-                      standout="bg-grey-3 text-black"
-                      label="Diga-nos o seu Nome"
-                      lazy-rules
-                      :rules="[
-                        val =>
-                          (val && val.length > 0) ||
-                          'Conte-nos qual é o seu nome?'
-                      ]"
-                      v-on:keyup.enter="onSubmit"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="person" style="color: #6F6F6F !important" />
-                      </template>
-                    </q-input>
-
-                    <q-input
-                      v-model="newUser.email"
-                      input-style="color: #6F6F6F"
-                      color="primary"
-                      rounded
-                      type="email"
-                      standout="bg-grey-3 text-black"
-                      label="Email"
-                      lazy-rules
-                      :rules="[
-                        val =>
-                          (val && val.length > 0) ||
-                          'Qual seu email, prometo que não vou te atormentar XD'
-                      ]"
-                      v-on:keyup.enter="onSubmit"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="fas fa-envelope" style="color: #6F6F6F !important" />
-                      </template>
-                    </q-input>
-
-                    <q-input
-                      v-model="newUser.password"
-                      rounded
-                      icon="eva-lock"
-                      input-style="color: #6F6F6F"
-                      standout="bg-grey-3"
-                      :type="isPwd ? 'password' : 'text'"
-                      label="Password"
-                      lazy-rules
-                      :rules="[
-                        val =>
-                          (val && val.length > 0) ||
-                          'Você precisa de uma senha (vai ser o nosso segredinho)'
-                      ]"
-                      v-on:keyup.enter="onSubmit"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="eva-lock" style="color: #6F6F6F !important" />
-                      </template>
-
-                      <template v-slot:append>
-                        <q-icon
-                          :name="isPwd ? 'visibility_off' : 'visibility'"
-                          class="cursor-pointer"
-                          style="color: #6F6F6F !important"
-                          @click="isPwd = !isPwd"
-                        />
-                      </template>
-                    </q-input>
-
-                    <div style="margin-top: 1rem">
-                      <q-btn
-                        unelevated
-                        rounded
-                        class="action-button q-mr-sm"
-                        no-caps
-                        label="voltar"
-                        color="primary"
-                        @click="tab = 'btn1'"
-                      >
-                        <template v-slot:loading>
-                          <q-spinner-bars />
-                        </template>
-                      </q-btn>
-
-                      <q-btn
-                        unelevated
-                        rounded
-                        class="action-button"
-                        :loading="loading"
-                        label="Me Cadastre Por Favor!!!"
-                        no-caps
-                        type="submit"
-                        color="light-blue"
-                      >
-                        <template v-slot:loading>
-                          <q-spinner-bars />
-                        </template>
-                      </q-btn>
-                    </div>
-                  </q-form>
-                </q-tab-panel>
-              </q-tab-panels>
-            </div>
+  <q-layout>
+    <q-page-container>
+      <q-page>
+        <div class="totalcontainer">
+          <div class="laya-please layer-1">
           </div>
+
+          <div class="laya-please layer-2">
+          </div>
+
+          <div class="container1">
+              <div class="laya-please layer-3">
+              </div>
+              <div class="laya-please layer-4">
+              </div>
+              <div class="laya-please layer-5">
+              </div>
+              <div class="laya-please layer-6">
+              </div>
+          </div>
+
+          <div class="container2">
+              <div class="laya-please layer-7">
+              </div>
+              <div class="laya-please layer-8">
+              </div>
+          </div>
+
+          <q-card class="form-login">
+            <q-img src="~assets/logo_2.png" style="max-width: 750px; position: absolute; transform: translateY(-120px)" />
+            <q-card-section>
+              <q-form @submit="onLogin" class="login-form">
+                <q-input
+                  v-model="user.username"
+                  input-style="color: #6F6F6F"
+                  color="primary"
+                  rounded
+                  standout="bg-white text-black"
+                  label="Login"
+                  lazy-rules
+                  :rules="[
+                    val =>
+                      (val && val.length > 0) || 'Qual é mesmo o teu login?'
+                  ]"
+                  v-on:keyup.enter="onSubmit"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="person" style="color: #6F6F6F !important" />
+                  </template>
+                </q-input>
+
+                <q-input
+                  v-model="user.password"
+                  rounded
+                  icon="eva-lock"
+                  input-style="color: #6F6F6F"
+                  standout="bg-grey-3"
+                  :type="isPwd ? 'password' : 'text'"
+                  label="Password"
+                  lazy-rules
+                  :rules="[
+                    val =>
+                      (val && val.length > 0) ||
+                      'Por favor precisamos saber se é você mesmo'
+                  ]"
+                  v-on:keyup.enter="onSubmit"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="eva-lock" style="color: #6F6F6F !important" />
+                  </template>
+
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      style="color: #6F6F6F !important"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
+
+                <div style="margin-top: 1rem">
+                  <q-btn
+                    unelevated
+                    rounded
+                    class="action-button q-mr-sm full-width"
+                    :loading="loading"
+                    label="Entrar"
+                    no-caps
+                    type="submit"
+                    color="light-blue"
+                  >
+                    <template v-slot:loading>
+                      <q-spinner-bars />
+                    </template>
+                  </q-btn>
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
         </div>
-      </div>
-    </div>
-  </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
-import { EventBus } from "../functions/event_bus.js";
+import { EventBus } from '../functions/event_bus.js'
 
 export default {
-  name: "Login",
-  data() {
+  name: 'Login',
+  data () {
     return {
       user: {
-        username: "",
-        password: "",
+        username: '',
+        password: ''
       },
       newUser: {
-        name: "",
-        login: "",
-        password: "",
+        name: '',
+        login: '',
+        password: '',
         isGuest: false,
         profileId: 2,
-        departamentId: 2,
+        departamentId: 2
       },
       isPwd: true,
       loading: false,
-      tab: "btn1",
-    };
-  },
-
-  created() {
-    if (localStorage.getItem("access_token")) {
-      this.$router.push("/dashboard");
+      tab: 'btn1'
     }
   },
 
-  beforeCreate() {
-    EventBus.$on("showNotify", (notification) => {
-      this.showNotify(notification);
-    });
+  created () {
+    if (localStorage.getItem('access_token')) {
+      this.$router.push('/dashboard')
+    }
   },
 
-  beforeDestroy() {
-    EventBus.$off("showNotify");
+  mounted () {
+    const elems = document.querySelectorAll('.laya-please')
+    const layer2 = document.querySelector('.layer-2')
+    const layer3 = document.querySelector('.layer-3')
+    const layer4 = document.querySelector('.layer-4')
+    const layer5 = document.querySelector('.layer-5')
+    const layer6 = document.querySelector('.layer-6')
+    const layer7 = document.querySelector('.layer-7')
+    const layer8 = document.querySelector('.layer-8')
+
+    setTimeout(function () {
+      elems.forEach(function (elem, index) {
+        elem.style.animation = 'none'
+      })
+    }, 1500)
+
+    document.body.addEventListener('mousemove', function (e) {
+      if (!e.currentTarget.dataset.triggered) {
+        elems.forEach(function (elem, index) {
+          if (elem.getAttribute('style')) {
+            elem.style.transition = 'all .5s'
+            elem.style.transform = 'none'
+          }
+        })
+      }
+      e.currentTarget.dataset.triggered = true
+
+      const width = window.innerWidth / 2
+      const mouseMoved2 = ((width - e.pageX) / 50)
+      const mouseMoved3 = ((width - e.pageX) / 40)
+      const mouseMoved4 = ((width - e.pageX) / 30)
+      const mouseMoved5 = ((width - e.pageX) / 20)
+      const mouseMoved6 = ((width - e.pageX) / 10)
+      const mouseMoved7 = ((width - e.pageX) / 5)
+
+      layer3.style.transform = 'translateX(' + mouseMoved2 + 'px)'
+      layer4.style.transform = 'translateX(' + mouseMoved3 + 'px)'
+      layer5.style.transform = 'translateX(' + mouseMoved4 + 'px)'
+      layer6.style.transform = 'translateX(' + mouseMoved5 + 'px)'
+      layer7.style.transform = 'translateX(' + mouseMoved6 + 'px)'
+      layer8.style.transform = 'translateX(' + mouseMoved7 + 'px)'
+    })
+
+    document.body.addEventListener('mouseleave', function (e) {
+      elems.forEach(function (elem, index) {
+        elem.style.transition = 'all .5s'
+        elem.style.transform = 'none'
+      })
+    })
+
+    document.body.addEventListener('mouseenter', function (e) {
+      elems.forEach(function (elem, index) {
+        setTimeout(function () {
+          elem.style.transition = 'none'
+        }, 500)
+      })
+    })
+  },
+
+  beforeCreate () {
+    EventBus.$on('showNotify', (notification) => {
+      this.showNotify(notification)
+    })
+  },
+
+  beforeDestroy () {
+    EventBus.$off('showNotify')
   },
 
   methods: {
     // submit for the login form
-    async onLogin() {
-      this.loading = true;
+    async onLogin () {
+      this.loading = true
 
       try {
-        var response = await this.$axios.post("auth/login", this.user);
+        var response = await this.$axios.post('auth/login', this.user)
 
-        console.log(
-          "Estou fazendo a requisição e essa é a resposta: ",
-          response
-        );
+        localStorage.setItem('access_token', response.data.token)
+        localStorage.setItem('userName', response.data.name)
+        localStorage.setItem('userId', response.data.id)
+        localStorage.setItem('userProfile', response.data.profileId)
+        localStorage.setItem('userDepartament', response.data.departamentId)
 
-        localStorage.setItem("access_token", response.data.token);
-        localStorage.setItem("userName", response.data.name);
-        localStorage.setItem("userId", response.data.id);
-        localStorage.setItem("userProfile", response.data.profileId);
-        localStorage.setItem("userDepartament", response.data.departamentId);
+        this.$router.push('/dashboard')
 
-        this.$router.push("/dashboard");
-
-        this.loading = false;
+        this.loading = false
         this.$q.notify({
-          color: "positive",
-          type: "positive",
-          message: "Seja Bem Vindo!",
-        });
+          color: 'positive',
+          type: 'positive',
+          message: 'Seja Bem Vindo!'
+        })
       } catch (error) {
-        this.loading = false;
+        this.loading = false
       }
     },
 
-    async onSingup() {
-      this.loading = true;
+    async onSingup () {
+      this.loading = true
 
       try {
-        await this.$axios.post("auth/signup", this.newUser);
+        await this.$axios.post('auth/signup', this.newUser)
 
-        this.user = this.newUser;
-        this.onLogin();
+        this.user = this.newUser
+        this.onLogin()
 
-        this.loading = false;
+        this.loading = false
       } catch (error) {
-        this.loading = false;
+        this.loading = false
       }
     },
 
-    showNotify(notification) {
+    showNotify (notification) {
       this.$q.notify({
         color: notification.color,
-        textColor: "white",
+        textColor: 'white',
         icon: notification.icon,
-        message: notification.message,
-      });
-    },
-  },
-};
+        message: notification.message
+      })
+    }
+  }
+}
 </script>
 
 <style lang="stylus">
-@import url('https://fonts.googleapis.com/css?family=Montserrat:700|Poppins:400,500,700&display=swap');
-
-@font-face {
-  font-family: customfont;
-  src: url('../css/fonts/VeganStylePersonalUse-5Y58.ttf');
+html {
+  overflow-x: hidden;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
 
-.sun {
-  -webkit-animation: spin 20s linear infinite;
-  -moz-animation: spin 20s linear infinite;
-  animation: spin 20s linear infinite;
+.form-login
+  -webkit-transform: translateZ(0)
+  transform: translateZ(0)
+  background-color: var(--md-theme-default-background,#fff)
+  margin 0
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%)    /* 3 */
+  z-index 9999 !important
+
+.totalcontainer {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.container1 {
+  transform: scaleX(1.11);
+}
+.container2 {
+  transform: scaleX(1.25);
+}
+.layer-1 {
+  height: 100vh;
+  width: 100%;
+  background-color: #fed8c1;
 }
 
-@keyframes spin {
+.layer-2 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay2.svg")
+    no-repeat center center fixed;
+  animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.layer-3 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay3.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+.layer-4 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay4.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
+}
+.layer-5 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay5.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.55s both;
+}
+.layer-6 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453881/codepen/lay6.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.75s both;
+}
+.layer-7 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453881/codepen/lay7.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.85s both;
+}
+.layer-8 {
+  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453882/codepen/lay8.svg")
+    no-repeat center center fixed;
+  animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s both;
+}
+.laya-please {
+  position: absolute;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+  top: 0;
+  left: 0px;
+}
+
+@-webkit-keyframes slide-in-bottom {
+  0% {
+    -webkit-transform: translateY(1000px);
+    transform: translateY(1000px);
+    opacity: 0;
+  }
+
   100% {
-    -moz-transform: rotate(360deg);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@keyframes spin {
+@keyframes slide-in-bottom {
+  0% {
+    -webkit-transform: translateY(1000px);
+    transform: translateY(1000px);
+    opacity: 0;
+  }
+
   100% {
-    -webkit-transform: rotate(360deg);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@keyframes spin {
+@keyframes slide-in-top {
+  0% {
+    -webkit-transform: translateY(-1000px);
+    transform: translateY(-1000px);
+    opacity: 0;
+  }
+
   100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-.login-page {
-  font-family: 'Poppins', sans-serif;
-  background-color: #eee;
-  letter-spacing: unset;
-  color: #3c4858;
-
-  .login-page-2 {
-    height: auto;
-    min-height: 100vh;
-  }
-
-  .login-page-3 {
-    // background: #9053c7;
-    // background: -webkit-linear-gradient(-135deg, #ffffff,#A7DFF9);
-    // background: -o-linear-gradient(-135deg, #fff,#A7DFF9);
-    // background: -moz-linear-gradient(-135deg, #fff,#A7DFF9);
-    // background: linear-gradient(-135deg, #fff,#A7DFF9);
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    background-position: top;
-    background-size: cover;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-  }
-
-  .login-page-4 {
-    border-radius: 12px;
-    width: 30%;
-    margin-left: 15rem;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    background-color: white;
-    z-index: 9999 !important;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    position: relative;
-    overflow: unset;
-    font-size: 0.875rem;
-    -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
-    color: #333;
-  }
-
-  .login-form {
-    padding: 15px 20px;
-    line-height: 1.75em;
-    position: relative;
-    font-size: 14px;
-  }
-
-  .bg-text {
-    padding: 15px;
-    z-index: 2;
-    z-stclass = 'text-center' style = 'max-width: 50%';
-  }
-
-  .login-logo {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 1.5rem;
-  }
-
-  .q-field--focused .q-field__control {
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
-    background: #F2F2F2 !important;
-  }
-
-  .action-button {
-    -webkit-transition-property: opacity, -webkit-transform !important;
-    transition-property: opacity, -webkit-transform !important;
-    transition-property: transform, opacity !important;
-    transition-property: transform, opacity, -webkit-transform !important;
-    -webkit-transition-timing-function: ease-in-out !important;
-    transition-timing-function: ease-in-out !important;
-    -webkit-transition-duration: 40ms !important;
-    transition-duration: 40ms !important;
-  }
-
-  .action-button:active {
-    -webkit-transform: scale(0.96);
-    transform: scale(0.96);
-  }
-
-  .container-login {
-    max-width: 80%;
-    transition: 0.3s;
-    margin: 0 auto;
-  }
-
-  .name-login {
-    font-family: customfont;
-    font-size: 1.8rem;
-  }
-
-  @media (max-width: 1440px) {
-    .container-login {
-      max-width: 80%;
-    }
-  }
-
-  @media (max-width: 1366px) {
-    .container-login {
-      max-width: 90%;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    .container-login {
-      max-width: 100%;
-    }
-  }
-}
 </style>

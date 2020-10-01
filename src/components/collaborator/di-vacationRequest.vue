@@ -1,6 +1,11 @@
 <template>
-  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale">
+  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" @before-hide="onHideDialog">
     <q-card style="width:600px; max-width: 80vw;">
+      <q-card-section>
+        <p style="color: #4caf50; font-size: 20pt">{{this.colaborator.name}}</p>
+        Status:<p :style="[{'color': this.getColor(this.colaborator.status)}, 'font-size: 13pt']">{{getNameStatus(this.colaborator.status)}}</p>
+
+      </q-card-section>
       <q-card-section class="q-gutter-lg">
         <div class="row">
           <p style="color: #4caf50; font-size: 20pt">Período</p>
@@ -61,19 +66,20 @@
 
         <div class="row q-gutter-md">
           <div v-if="vacationSelected.id">
-            <span class="vacations-label">Dias de Direito:</span>
+            <span>Dias de Direito:</span>
             {{vacationSelected.daysAllowed }}
             <br />
-            <span class="vacations-label">Dias Usufruídos:</span>
+            <span>Dias Usufruídos:</span>
             {{vacationSelected.daysEnjoyed }}
             <br />
-            <span class="vacations-label">Dias Saldos:</span>
+            <span>Dias Saldos:</span>
             {{vacationSelected.daysBalance}}
             <br />
-            <span class="vacations-label">Data Limite:</span>
+            <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">Data Limite:
             {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
+            </span>
             <br />
-            <span class="vacations-label">Limite com 6 meses:</span>
+            <span>Limite com 6 meses:</span>
             {{vacationSelected.limit6Months | moment('DD-MM-YYYY') }}
             <br />
           </div>
@@ -101,7 +107,7 @@
 
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
-
+import moment from 'moment'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
@@ -116,9 +122,12 @@ export default {
   created () {
     EventBus.$on('on-show-vacation-request', (data) => {
       this.onShow = true
+
+      console.log('VacationRequest: ', data)
       if (data) {
-        this.personId = data
-        this.getVacationsTimes(data)
+        this.colaborator = Object.assign({}, data)
+        this.personId = data.id
+        this.getVacationsTimes(data.id)
       }
     })
   },
@@ -138,6 +147,8 @@ export default {
       onShow: false,
       vacations: [],
       attributes: [],
+      moment: moment,
+      colaborator: {},
       loadingVacationTime: false,
       vacationRequest: {
         requestUserId: 0,
@@ -187,6 +198,8 @@ export default {
       try {
         const result = await this.$axios.get('person/{id}/vacationtime'.replace('{id}', personId || this.personId))
 
+        console.log('adsf: ', result)
+
         this.vacationsCombo = []
         this.vacations = result.data
 
@@ -226,6 +239,78 @@ export default {
         console.log(e)
         this.loadingVacationTime = false
       }
+    },
+
+    getColor (item) {
+      let color = ''
+
+      switch (item) {
+        case 'NORMAL':
+          color = 'green'
+          break
+        case 'MEDIO':
+          color = 'orange'
+          break
+        case 'CRITICO':
+          color = 'red'
+          break
+        case 'INDEFINIDO':
+          color = 'grey'
+          break
+
+        default:
+          color = 'grey'
+          break
+      }
+      return color
+    },
+
+    getNameStatus (item) {
+      let statusName = ''
+
+      switch (item) {
+        case 'NORMAL':
+          statusName = 'Normal'
+          break
+        case 'MEDIO':
+          statusName = 'Esta se Aproximando do prazo Crítico'
+          break
+        case 'CRITICO':
+          statusName = 'Este colaborador passou o mês Crítico'
+          break
+        case 'INDEFINIDO':
+          statusName = 'Este colaborador não teve seu periodo configurado'
+          break
+
+        default:
+          statusName = 'Status não identificado'
+          break
+      }
+      return statusName
+    },
+
+    onHideDialog () {
+      this.vacations = []
+      this.attributes = []
+      this.colaborator = {}
+      this.loadingVacationTime = false
+      this.vacationRequest = {
+        requestUserId: 0,
+        vacationTimeId: 0,
+        startDate: '',
+        finalDate: ''
+      }
+
+      this.vacationSelected = {}
+      this.personId = undefined
+      this.vacationTime = {
+        vacationYear: '',
+        daysAllowed: ''
+      }
+
+      this.showInputVacationTime = false
+      this.vacationsCombo = []
+      this.selectedOption = { label: '-', value: 0 }
     },
 
     async confirm () {
