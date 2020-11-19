@@ -24,6 +24,12 @@ const routes = [
         path: '/reserva',
         name: 'reserva',
         component: () => import('pages/Reserva.vue')
+      },
+
+      {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('pages/Setting.vue')
       }
     ]
   }

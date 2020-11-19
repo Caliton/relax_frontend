@@ -112,7 +112,7 @@ module.exports = function (ctx) {
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: ctx.dev
-        ? { API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/') }
+        ? { API: JSON.stringify('http://localhost:3000/api/v1/') }
         : {
           API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/')
         },

@@ -110,7 +110,8 @@ export default {
       links1: [
         // { icon: 'home', text: 'Inicio', page: 'dashboard' },
         { icon: 'person', text: 'Colaboradores', page: 'colaborator' },
-        { icon: 'far fa-address-book', text: 'Reservas', page: 'reserva' }
+        { icon: 'far fa-address-book', text: 'Reservas', page: 'reserva' },
+        // { icon: 'fas fa-sliders-h', text: 'Configurações', page: 'settings' }
       ]
     }
   },

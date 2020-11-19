@@ -51,6 +51,9 @@
             <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
             <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
             <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
+            <q-tooltip content-class="bg-green-5" :delay="300" content-style="font-size: 13px" :offset="[10, 10]">
+              {{ getNameStatus(props.row.status) }}
+            </q-tooltip>
           </q-td>
 
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
@@ -249,6 +252,30 @@ export default {
       this.loading = false
     },
 
+    getNameStatus (item) {
+      let statusName = ''
+
+      switch (item) {
+        case 'NORMAL':
+          statusName = 'Normal'
+          break
+        case 'MEDIO':
+          statusName = 'Esta se Aproximando do prazo Crítico'
+          break
+        case 'CRITICO':
+          statusName = 'Este colaborador passou o mês Crítico'
+          break
+        case 'INDEFINIDO':
+          statusName = 'Este colaborador não teve seu periodo configurado'
+          break
+
+        default:
+          statusName = 'Status não identificado'
+          break
+      }
+      return statusName
+    },
+    
     openEdit (person) {
       EventBus.$emit('on-edit-person', person)
     },
