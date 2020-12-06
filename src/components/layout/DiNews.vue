@@ -30,7 +30,7 @@
       </q-card-section>
 
       <q-card-actions class="text-teal absolute-bottom-right">
-        <q-btn rounded color="light-blue" dense no-caps label="Fechar" @click="confirm" />
+        <q-btn rounded color="primary" dense no-caps label="Fechar" @click="confirm" />
       </q-card-actions>
 
       <q-card-actions class="text-teal absolute-bottom-left">

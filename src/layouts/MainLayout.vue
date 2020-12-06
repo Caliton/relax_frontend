@@ -36,7 +36,7 @@
             @click="goPage(link.page)"
           >
             <q-item-section avatar>
-              <q-icon :color="link.page === currentRoute()? 'blue': 'grey'" :name="link.icon" />
+              <q-icon :color="link.page === currentRoute()? '#4CAF50': 'grey'" :name="link.icon" />
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ link.text }}</q-item-label>

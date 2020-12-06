@@ -3,6 +3,7 @@
     <q-table
       title="Treats"
       row-key="id"
+      class="my-sticky-header-table"
       :data="data"
       :columns="columns"
       :visible-columns="visibleColumns"
@@ -15,21 +16,75 @@
       binary-state-sort
     >
       <template v-slot:top>
-        <q-btn
-          color="primary"
-          :disable="loading"
-          label="Adicionar Colaborador"
-          no-caps
-          @click="openDialog"
-        />
-        <q-space />
+        <div style="width: 100%">
+          <div class="row">
+            <div class="col" style="display: block">
+              <q-icon name="eva-people-outline" color="primary" size="md" style="display: block;"/>
+              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Colaboradores</span>
+              <p class="subtitle">Lista de todos os funcionários de sua empresa.</p>
+            </div>
 
-        <!-- <q-input filled dense debounce="300" label="Pesquisar" color="primary" v-model="filter">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>-->
+            <div class="col-md-3 bg-grey-3 offset-md-3 row justify-around" style="border-radius: 1rem; transform: scale(.7);">
+              <div class="column justify-center text-center">
+                <span style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">{{data.length}} </span>
+                <span class="text-weight-regular text-h6">Colaboradores</span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <!-- <div class="column justify-center text-center">
+                <span style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">{{data.filter((item) => item.status === 'CRITICO').length}} </span>
+                <span class="text-weight-regular text-h6">Aviso</span>
+              </div> -->
+            </div>
+          </div>
+
+          <div
+            class="row justify-end"
+            :class="{'justify-center': $q.screen.lt.sm}"
+            style="width: 100%; margin-top: 1rem"
+          >
+            <div class="col-md-2 col-sm-4">
+              <q-btn
+                label="Adicionar Colaborador"
+                dense
+                flat
+                no-caps
+                color="primary"
+                icon="add"
+                @click="openDialogColaborador"
+              />
+            </div>
+
+            <div class="col-md-2 col-sm-4">
+              <q-btn
+                label="Importar lista de Colaboradores"
+                dense
+                flat
+                no-caps
+                color="primary"
+                icon="eva-cloud-upload-outline"
+                @click="openDialogImportColaborador"
+              />
+            </div>
+
+            <div class="col-md-8 col-sm-5">
+              <q-input
+                class="q-ml-lg float-right"
+                dense
+                filled
+                debounce="300"
+                v-model="filter"
+                placeholder="Busca"
+                style="max-width: 40%"
+              >
+                <q-icon slot="append" name="search" />
+              </q-input>
+            </div>
+          </div>
+        </div>
       </template>
+      
 
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -51,9 +106,20 @@
             <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
             <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
             <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
-            <q-tooltip content-class="bg-green-5" :delay="300" content-style="font-size: 13px" :offset="[10, 10]">
-              {{ getNameStatus(props.row.status) }}
+
+            <q-tooltip
+              content-class="bg-grey-1 "
+              content-style="font-size: 16px; color: #575858; border: 2px solid #BDBDBF; width: 300px"
+              :offset="[10, 10]"
+              :delay="300"
+            >
+              <div>
+                &nbsp;<q-icon size="22px" :name="getIconStatus(props.row.status)" :color="getColorStatus(props.row.status)" />&nbsp;
+                <span :style="{color: getColorStatus(props.row.status)}">{{props.row.status}}</span> <br>
+                <span class="subtitle" style="font-size: .9rem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getNameStatus(props.row.status)}}</span>
+              </div>
             </q-tooltip>
+
           </q-td>
 
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
@@ -103,8 +169,8 @@
         </q-tr>
       </template>
 
-      <div slot="bottom" slot-scope="props" class="flex flex-center" style="width: 100%">
-        <div class="q-pa-lg flex flex-center absolute-bottom">
+      <div slot="bottom" slot-scope="props" style="margin: 0 auto">
+        <div>
           <q-pagination
             v-model="props.pagination.page"
             :max="1"
@@ -135,6 +201,13 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <di-import-colaborador
+      ref="di-import-colaborador"
+      :columns="columns"
+      :data="data"
+    />
+
   </div>
 </template>
 
@@ -142,11 +215,17 @@
 import { EventBus } from 'src/functions/event_bus.js'
 // eslint-disable-next-line no-unused-vars
 import moment from 'moment'
+import DiImportColaborador from './di-import-collaborator'
+
 
 export default {
   name: 'dt-colaborator',
 
   props: ['btn-primary'],
+
+  components: {
+    'di-import-colaborador': DiImportColaborador,
+  },
 
   data () {
     return {
@@ -166,7 +245,7 @@ export default {
         {
           align: 'left',
           name: 'status',
-          label: 'Status',
+          label: 'Situação',
           field: 'status',
           sortable: true,
           style: 'width: 10px',
@@ -218,8 +297,12 @@ export default {
       this.onRequest({ pagination: this.pagination, filter: this.filter })
     },
 
-    openDialog () {
+    openDialogColaborador () {
       EventBus.$emit('on-new-person')
+    },
+
+    openDialogImportColaborador () {
+      this.$refs['di-import-colaborador'].showDialog()
     },
 
     async onRequest (props) {
@@ -257,10 +340,10 @@ export default {
 
       switch (item) {
         case 'NORMAL':
-          statusName = 'Normal'
+          statusName = 'Aparentemente não há pendência ou atrasos em requisitar férias, Colaborador ok :)'
           break
         case 'MEDIO':
-          statusName = 'Esta se Aproximando do prazo Crítico'
+          statusName = 'Este Colaborador esta se aproximando de um prazo Crítico'
           break
         case 'CRITICO':
           statusName = 'Este colaborador passou o mês Crítico'
@@ -275,7 +358,53 @@ export default {
       }
       return statusName
     },
-    
+
+    getIconStatus (item) {
+      let statusIcon = ''
+      switch (item) {
+        case 'MEDIO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+        case 'NORMAL':
+          statusIcon = 'eva-checkmark-circle-outline'
+          break
+        case 'CRITICO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+        case 'INDEFINIDO':
+          statusIcon = 'eva-alert-circle-outline'
+          break
+
+        default:
+          statusIcon = 'Status não identificado'
+          break
+      }
+      return statusIcon
+    },
+
+    getColorStatus (item) {
+      let statusIcon = ''
+      switch (item) {
+        case 'MEDIO':
+          statusIcon = 'yellow'
+          break
+        case 'NORMAL':
+          statusIcon = 'green'
+          break
+        case 'CRITICO':
+          statusIcon = 'red'
+          break
+        case 'INDEFINIDO':
+          statusIcon = 'grey-5'
+          break
+
+        default:
+          statusIcon = 'Status não identificado'
+          break
+      }
+      return statusIcon
+    },
+
     openEdit (person) {
       EventBus.$emit('on-edit-person', person)
     },
@@ -321,3 +450,30 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.subtitle
+  color: #555d61;
+  font: 16px/24px Avenir Next W01,Helvetica,Arial,sans-serif;
+
+.my-sticky-header-table
+  /* height or max-height is important */
+  height: 80vh
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th
+    /* bg color is important for th; just specify one */
+    background-color: #c1f4cd
+
+  thead tr th
+    position: sticky
+    z-index: 1
+  thead tr:first-child th
+    top: 0
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+</style>

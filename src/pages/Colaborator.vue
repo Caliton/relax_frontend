@@ -3,7 +3,7 @@
     <div class="events-page">
       <dt-collaborator />
     </div>
-    <di-collaborator />
+    <di-collaborator style="height: auto !important"/>
     <di-vacation-request />
   </q-page>
 </template>

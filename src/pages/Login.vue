@@ -295,41 +295,41 @@ body {
 .layer-1 {
   height: 100vh;
   width: 100%;
-  background-color: #fed8c1;
+  background-color: #00adef;
 }
 
 .layer-2 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay2.svg")
+  background: url("../statics/colorido/lay2.svg")
     no-repeat center center fixed;
   animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 .layer-3 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay3.svg")
+  background: url("../statics/colorido/lay3.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
 }
 .layer-4 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay4.svg")
+  background: url("../statics/colorido/lay4.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
 }
 .layer-5 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453880/codepen/lay5.svg")
+  background: url("../statics/colorido/lay6.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.55s both;
 }
 .layer-6 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453881/codepen/lay6.svg")
+  background: url("../statics/colorido/lay5.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.75s both;
 }
 .layer-7 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453881/codepen/lay7.svg")
+  background: url("../statics/colorido/lay7.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.85s both;
 }
 .layer-8 {
-  background: url("https://res.cloudinary.com/dkgrf00g1/image/upload/v1536453882/codepen/lay8.svg")
+  background: url("../statics/colorido/teste2.svg")
     no-repeat center center fixed;
   animation: slide-in-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s both;
 }

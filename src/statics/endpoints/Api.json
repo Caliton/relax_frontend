@@ -1,0 +1,19 @@
+{
+  "signin": "auth/signin",
+  "categories": "categories",
+  "employees": "employees",
+  "employeesMany": "employees/many",
+  "companies": "companies",
+  "bonus": "bonus",
+  "users": "users",
+  "admin": "users/admin",
+  "sendRecoverEmail": "/auth/send-recover-email",
+  "resetPassword": "auth/reset-password/{token}",
+  "changePassword": "auth/{id}/change-password",
+  "absence": "days-off",
+  "absenceReasons": "days-off-reasons",
+  "kpis": "kpis",
+  "charts": "charts",
+  "reportOptions": "reports-options",
+  "reports": "reports/{id}"
+}
