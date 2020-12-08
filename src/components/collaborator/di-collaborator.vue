@@ -72,7 +72,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="person.hiringDate" mask="DD/MM/YYYY" :locale="myLocale">
+                  <q-date v-model="person.hiringDate" mask="DD/MM/YYYY" default-view="Years" :locale="myLocale">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                     </div>
@@ -137,7 +137,6 @@
           </v-date-picker> -->
         </div>
 
-
         <!-- <q-btn label="INSERE TUDO" @click="insertMonster" /> -->
         <!-- <q-input outlined v-model="text" :dense="dense" /> -->
       </q-card-section>
@@ -146,6 +145,10 @@
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
         <q-btn color="primary" dense no-caps label="salvar" @click="confirm" />
       </q-card-actions>
+
+      <q-inner-loading :showing="loading">
+        <q-spinner-facebook color="light-blue" />
+      </q-inner-loading>
     </q-card>
   </q-dialog>
 </template>
@@ -155,6 +158,7 @@ import { EventBus } from 'src/functions/event_bus.js'
 import { required } from 'vuelidate/lib/validators'
 import moment from 'moment'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'di-collaborator',
@@ -169,8 +173,8 @@ export default {
     EventBus.$on('on-edit-person', (person) => {
       this.onShow = true
       this.person = person
-      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD-MM-YYYY')
-      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD/MM/YYYY')
+      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD/MM/YYYY')
     })
 
     EventBus.$on('on-new-person', () => {
@@ -195,6 +199,7 @@ export default {
   data () {
     return {
       onShow: false,
+      loading: false,
       person: {
         name: '',
         hiringDate: '',
@@ -247,29 +252,22 @@ export default {
         let axiosFunction = this.$axios.post
         let url = 'person'
 
-        let result = {}
+        let employeePayload = Object.assign({}, this.person)
+        employeePayload.hiringDate = moment(this.person.hiringDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        employeePayload.birthDay = moment(this.person.birthDay, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
-        this.person.birthDay = moment(this.person.birthDay, 'MM-DD-YYYY').format('YYYY-MM-DD')
-        this.person.hiringDate = moment(this.person.hiringDate, 'MM-DD-YYYY').format('YYYY-MM-DD')
-
-        if (!this.person.id) {
-          result = await axiosFunction(url, this.person)
-          this.person.id = result.data.id
-        }
-
-        if (this.person.id) {
-          url += `/${this.person.id}/`
+        if (employeePayload.id) {
+          url += `/${employeePayload.id}/`
           axiosFunction = this.$axios.put
-
-          await axiosFunction(url, this.person)
-          EventBus.$emit('on-refresh-person')
         }
 
-        this.person = {}
-        this.$nextTick(() => { this.$v.$reset() })
-        EventBus.$emit('on-refresh-person')
-        this.onHideModal()
+        this.loading = true
+        await axiosFunction(url, employeePayload)
+        this.loading = false
+
+        this.cleanFields()
       } catch (e) {
+        this.loading = false
         console.log(e)
       }
     },
@@ -278,6 +276,13 @@ export default {
       this.$v.person.$touch()
 
       return !this.$v.person.$error
+    },
+
+    cleanFields () {
+      this.person = {}
+      this.$nextTick(() => { this.$v.$reset() })
+      EventBus.$emit('on-refresh-person')
+      this.onHideModal()
     },
 
     canceled () {

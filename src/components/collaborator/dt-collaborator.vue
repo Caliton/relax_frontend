@@ -1,13 +1,12 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      title="Treats"
       row-key="id"
+      :loading="loading"
       class="my-sticky-header-table"
       :data="data"
       :columns="columns"
       :visible-columns="visibleColumns"
-      :loading="loading"
       :filter="filter"
       :pagination.sync="pagination"
       @request="onRequest"
@@ -15,6 +14,12 @@
       no-data-label="Ainda não temos colaboradores cadastrados"
       binary-state-sort
     >
+      <template v-slot:loading>
+        <q-inner-loading showing color="primary">
+          <q-spinner-facebook size="50px" color="primary" />
+        </q-inner-loading>
+      </template>
+
       <template v-slot:top>
         <div style="width: 100%">
           <div class="row">
@@ -310,7 +315,9 @@ export default {
 
       this.loading = true
 
-      const returnedData = await this.$axios.get(`person?page=${page}`)
+      const returnedData = await this.$axios.get(`person?page=${page}`, {params: {
+            search: this.filter
+          }})
 
       returnedData.data.forEach((item, i) => {
         if (!item.vacationNew || item.vacationNew.length === 0) {

@@ -1,80 +1,184 @@
 <template>
-  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" @before-hide="onHideDialog">
-    <q-card style="width:600px; max-width: 80vw;">
-      <q-card-section>
-        <p style="color: #4caf50; font-size: 20pt">{{this.colaborator.name}}</p>
-        Status:<p :style="[{'color': this.getColor(this.colaborator.status)}, 'font-size: 13pt']">{{getNameStatus(this.colaborator.status)}}</p>
+  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" persistent @before-hide="onHideDialog">
+    <q-card style="max-width: 70vw; min-width: 60vw; min-height: 80vh">
+      <q-toolbar class="text-white shadow-1 bg-green">
+        <q-toolbar-title class="flex flex-center">
+          <q-icon name="far fa-user" class="q-mr-md" color="white" size="sm" style="display: block;"/>
+          {{ this.colaborator.name }}
+        </q-toolbar-title>
+        <q-btn class="float-right" flat round dense icon="close" @click="canceled" />
+      </q-toolbar>
+      
+      <q-card-section
+        class="bg-green flex flex-center q-pt-sm q-pb-sm"
+        :style="[{'background-color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? '#F44336 !important': ''}]"
+      >
+        <div class="text-white">
+          <div class="row" v-if="this.vacationsCombo.length > 0">
+            <q-btn :disable="!(this.number > 0)" @click="setLeftPeriodo" color="white" round flat size="md" class="q-mr-md" icon="eva-chevron-left-outline"/>
+            <span class="text-weight-medium flex-center flex" style="font-size:1.3rem;">{{this.vacationsCombo[this.number].label}}</span>
+            <q-btn :disable="!(this.number < this.vacationsCombo.length -1)" @click="setRightPeriodo" color="white" round flat size="md" class="q-ml-md" icon="eva-chevron-right-outline"/>
+          </div>
 
-      </q-card-section>
-      <q-card-section class="q-gutter-lg">
-        <div class="row">
-          <p style="color: #4caf50; font-size: 20pt">Período</p>
+          <div v-else class="row">
+            <q-btn label="Cadastrar Período" no-caps color="white" rounded outline size="md" class="q-ml-md">
+              <q-menu anchor="top left" self="top left">
+                <div class="row no-wrap q-pa-md">
+                  <div class="column q-gutter-sm">
+                    <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
+
+                    <q-input
+                      filled
+                      v-model="vacationTime.vacationYear"
+                      label="Ano"
+                      dense
+                      lazy-rules
+                    />
+
+                    <q-input
+                      filled
+                      v-model="vacationTime.daysAllowed"
+                      label="Dias de direito"
+                      dense
+                      lazy-rules
+                    />
+
+                    <q-btn
+                      color="primary"
+                      class="q-mt-lg"
+                      label="Salvar"
+                      :loading="loadingVacationTime"
+                      @click="registerVacationTime"
+                      push
+                      size="sm"
+                      v-close-popup
+                    />
+                  </div>
+                </div>
+              </q-menu>
+            </q-btn>
+          </div>
+
         </div>
-        <!-- <q-input outlined v-model="text" :dense="dense" /> -->
+      </q-card-section>
+      
+      <q-card-section class="flex flex-center q-pt-sm q-pb-sm text-subtitle1">
+        <span v-if="this.colaborator.status === 'CRITICO'" style="color: red">
+        {{getNameStatus(this.colaborator.status)}}.
+        </span>
+      </q-card-section>
 
+      <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
+        <div style="width: 100%">
+          <div class="row">
+            <div class="col-md-4" style="display: block">
+              <q-icon name="eva-calendar-outline" color="primary" size="md" style="display: block;"/>
+              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Controle de Férias</span>
+              <p class="subtitle">Aqui você pode gerir solicitações de férias de seus Colaboradores.</p>
+            </div>
+
+
+            <div
+              class="col-md-7 bg-grey-3 offset-md-1 row justify-around"
+              style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
+            >
+              
+              <div class="column justify-center text-center" style="transform: scale(.9);">
+                <span style="display: inline-block;"> {{vacationSelected.daysAllowed}} </span>
+                <span class="text-weight-regular text-h6">Dias Totais</span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <div class="column justify-center text-center" style="transform: scale(.9);">
+                <span style="display: inline-block;"> {{vacationSelected.daysBalance}} </span>
+                <span class="text-weight-regular text-h6">Dias Disponíveis</span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <div class="column justify-center text-center" style="transform: scale(.9);">
+                <span style="display: inline-block;"> {{vacationSelected.daysEnjoyed}}</span>
+                <span class="text-weight-regular text-h6">Dias Tirados</span>
+              </div>
+
+              <q-separator inset />
+
+              <div class="q-pa-sm text-subtitle1">
+                <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">
+                Prazo limite {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <q-btn :disable="!(this.vacationsCombo.length > 0)" label="Solicitar Férias" @click="solicitationVacation" rounded no-caps color="green" outline size="md" />
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
         <div class="row">
-          <q-select
-            label="Período"
-            class="col-md-10 col-sm-10"
-            transition-show="scale"
-            transition-hide="scale"
-            filled
-            @input="setVacationCombo"
-            v-model="selectedOption"
-            :options="vacationsCombo"
-          >
-            <template v-slot:after>
-              <q-btn round dense icon="add" color="green">
-                <q-menu anchor="top left" self="top left">
-                  <div class="row no-wrap q-pa-md">
-                    <div class="column q-gutter-sm">
-                      <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
-
-                      <q-input
-                        filled
-                        v-model="vacationTime.vacationYear"
-                        label="Ano"
-                        dense
-                        lazy-rules
-                      />
-
-                      <q-input
-                        filled
-                        v-model="vacationTime.daysAllowed"
-                        label="Dias de direito"
-                        dense
-                        lazy-rules
-                      />
-
-                      <q-btn
-                        color="primary"
-                        class="q-mt-lg"
-                        label="Salvar"
-                        :loading="loadingVacationTime"
-                        @click="registerVacationTime"
-                        push
-                        size="sm"
-                        v-close-popup
-                      />
+          <div v-if="listRequests.length > 0" class="col-md-5">
+            <ul class="caixa-ul " style="overflow: auto; max-height: 400px; transform">
+              <li v-for="item in listRequests" :key="item.i" class="rows caixa-li">
+                
+                <div class="teste q-ma-md">
+                  <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
+                    <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
+                      Jan
+                    </div>
+                    <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
+                      5
                     </div>
                   </div>
-                </q-menu>
-              </q-btn>
-            </template>
-          </q-select>
-        </div>
+                </div>
 
+                <div class="teste flex">
+                  <q-icon class="flex flex-center" color="grey" size="md" name="eva-arrow-forward-outline" />
+                </div>
+
+                <div class="q-ma-md teste">
+                  <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
+                    <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
+                      Jan
+                    </div>
+                    <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
+                      13
+                    </div>
+                  </div>
+                </div>
+
+                <div class="q-ma-md teste">
+                  <span class="texto">Férias</span>
+                  <br>
+                  <span>7 dias</span>
+                </div>
+
+                <div class="teste flex">
+                  <q-icon class="flex flex-center" color="grey" size="md" name="eva-arrow-forward-outline" />
+                </div>
+              </li>
+            </ul>
+
+          </div>
+
+          <div v-else class="col-md-6">
+            <q-img src="~src/statics/calendar.png" style="max-width: 300px;" />
+            <br>
+            <span v-if="this.vacationsCombo.length > 0" class="text-subtitle1"> Não foram solicitados nenhuma férias em {{this.vacationsCombo[this.number].label}} </span>
+          </div>
+        </div>
+      </q-card-section>
+      <!-- <q-card-section>
+        Status:<p :style="[{'color': this.getColor(this.colaborator.status)}, 'font-size: 13pt']">{{getNameStatus(this.colaborator.status)}}</p>
+      </q-card-section> -->
+
+      <!-- <q-card-section class="q-ml-xl">
         <div class="row q-gutter-md">
           <div v-if="vacationSelected.id">
-            <span>Dias de Direito:</span>
-            {{vacationSelected.daysAllowed }}
-            <br />
-            <span>Dias Usufruídos:</span>
-            {{vacationSelected.daysEnjoyed }}
-            <br />
-            <span>Dias Saldos:</span>
-            {{vacationSelected.daysBalance}}
-            <br />
             <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">Data Limite:
             {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
             </span>
@@ -84,13 +188,13 @@
             <br />
           </div>
         </div>
-      </q-card-section>
+      </q-card-section> -->
 
-      <q-card-section>
+      <!-- <q-card-section>
         <p style="color: #4caf50; font-size: 20pt">Solicitação</p>
 
         <v-date-picker class v-model="attributes" mode="range" is-inline />
-      </q-card-section>
+      </q-card-section> -->
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
         <q-btn
           color="green"
@@ -129,6 +233,12 @@ export default {
         this.personId = data.id
         this.getVacationsTimes(data.id)
       }
+
+      if (this.selectedOption) {
+        this.getRequestSolicitation()
+      }
+
+      console.log('asdf');
     })
   },
 
@@ -145,10 +255,14 @@ export default {
   data () {
     return {
       onShow: false,
+      slide: 'style',
       vacations: [],
       attributes: [],
       moment: moment,
+      number: 0,
       colaborator: {},
+      listRequests: [],
+      // listRequests: [],
       loadingVacationTime: false,
       vacationRequest: {
         requestUserId: 0,
@@ -169,6 +283,31 @@ export default {
   },
 
   methods: {
+
+    async getRequestSolicitation () {
+      
+      const result = await this.$axios.get(`requests/person/${this.colaborator.id}/vacationtime/1/`)
+
+      result.data.forEach((item) => {
+        this.listRequests.push({ label: item.vacationDate.split('-')[0], value: item.id })
+      })
+
+    },
+
+    setLeftPeriodo () {
+      if (this.number > 0) {
+        this.number--    
+        this.setVacationCombo(this.vacationsCombo[this.number])
+      }
+    },
+
+    setRightPeriodo () {
+      if (this.number < this.vacationsCombo.length -1) {
+        this.number++
+        this.setVacationCombo(this.vacationsCombo[this.number])
+      }
+    },
+
     removeAt (idx) {
       this.guests.splice(idx, 1)
     },
@@ -180,6 +319,11 @@ export default {
 
     onShowModal () {
       this.onShow = true
+    },
+
+    solicitationVacation () {
+      this.vacationSelected.personId = this.personId
+      EventBus.$emit('on-new-days-off', this.vacationSelected)
     },
 
     onHideModal () {
@@ -198,14 +342,17 @@ export default {
       try {
         const result = await this.$axios.get('person/{id}/vacationtime'.replace('{id}', personId || this.personId))
 
-        console.log('adsf: ', result)
-
         this.vacationsCombo = []
         this.vacations = result.data
 
         result.data.forEach((item) => {
           this.vacationsCombo.push({ label: item.vacationDate.split('-')[0], value: item.id })
         })
+
+        if(this.vacationsCombo.length > 0) {
+          this.setVacationCombo(this.vacationsCombo[this.number])
+        }
+
       } catch (e) {
         console.log(e)
       }
@@ -232,6 +379,7 @@ export default {
         const result = await this.$axios.post(`person/${this.personId}/vacationtime`, { daysAllowed: this.vacationTime.daysAllowed, vacationYear: this.vacationTime.vacationYear })
 
         this.getVacationsTimes()
+
         this.loadingVacationTime = false
 
         console.log(result)
@@ -246,16 +394,16 @@ export default {
 
       switch (item) {
         case 'NORMAL':
-          color = 'green'
+          color = '#4CAF50'
           break
         case 'MEDIO':
           color = 'orange'
           break
         case 'CRITICO':
-          color = 'red'
+          color = '#F44336'
           break
         case 'INDEFINIDO':
-          color = 'grey'
+          color = '#BDBDBD'
           break
 
         default:
@@ -270,20 +418,20 @@ export default {
 
       switch (item) {
         case 'NORMAL':
-          statusName = 'Normal'
+          statusName = 'Este colaborador se encontra em uma situação normal'
           break
         case 'MEDIO':
-          statusName = 'Esta se Aproximando do prazo Crítico'
+          statusName = 'Esta colaborador esta se aproximando do prazo limite para usufruir suas férias ( 1 mês )'
           break
         case 'CRITICO':
-          statusName = 'Este colaborador passou o mês Crítico'
+          statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 6 meses'
           break
         case 'INDEFINIDO':
-          statusName = 'Este colaborador não teve seu periodo configurado'
+          statusName = 'Este colaborador não teve seu periodo anual criado, clique em cadastrar período'
           break
 
         default:
-          statusName = 'Status não identificado'
+          statusName = 'Situação não identificado'
           break
       }
       return statusName
@@ -359,5 +507,50 @@ export default {
 
 .vacations-label {
   color: $green;
+}
+
+.caixa {
+  box-sizing: border-box;
+  font-family: Avenir Next W01,Helvetica,Arial,sans-serif;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 25px 30px;
+  width: 100%;
+  height: 100%;
+}
+
+.caixa-li {
+  box-sizing: border-box;
+  cursor: pointer;
+  background-color: white;
+  list-style-type: none;
+  align-items: center;
+  border-bottom: 1px solid #dfe3e6;
+}
+
+.caixa-li:hover {
+  background-color: #f2f4f5
+}
+
+.teste {
+  display: inline-block
+}
+
+.texto {
+  color: #1c242b;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.caixa-ul {
+  padding: 0;
+  border: 1px solid #dfe3e6;
+  border-radius: 5px;
+  overflow: hidden;
 }
 </style>
