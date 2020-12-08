@@ -1,5 +1,5 @@
 <template >
-  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" persistent style="height: auto !important">
+  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" style="height: auto !important">
     <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto !important">
       <q-toolbar class="bg-primary text-white shadow-1">
         <q-toolbar-title class="flex flex-center">Solicitar Férias</q-toolbar-title>
@@ -128,13 +128,16 @@ export default {
           axiosFunction = this.$axios.put
         }
 
+        this.loading = true
         const result = await axiosFunction(url, this.vacationRequest)
+        this.loading = false
 
         EventBus.$emit('on-refresh-vacation-request')
         this.onHideModal()
         console.log(result)
       } catch (e) {
         console.log(e)
+        this.loading = false
       }
     },
 
@@ -145,13 +148,6 @@ export default {
       }
 
       return true
-    },
-
-    cleanFields () {
-      this.person = {}
-      this.$nextTick(() => { this.$v.$reset() })
-      EventBus.$emit('on-refresh-person')
-      this.onHideModal()
     },
 
     canceled () {
