@@ -356,6 +356,9 @@ export default {
     },
 
     updateRequest (item) {
+      item.vacationTimeId = this.vacationsCombo[this.number].value
+
+      console.log('DRAGÃO', item.vacationTimeId)
       EventBus.$emit('on-edit-days-off', item)
     },
 

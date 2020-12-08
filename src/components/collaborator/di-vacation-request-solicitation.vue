@@ -62,15 +62,24 @@ export default {
 
   created () {
     EventBus.$on('on-edit-days-off', (request) => {
-      this.onShow = true
-      console.log('Teste: ', request);
+      console.log('OLHAAAAA O REQUESTTT ', request);
+      this.vacationRequest = {}
+      
+      this.vacationRequest.id = request.id
+      this.vacationRequest.requestUserId = request.person.id
+      this.vacationRequest.vacationTimeId = request.vacationTimeId 
+
       this.attributes.from = moment(request.startDate, 'YYYY-MM-DD').format('YYYY/MM/DD')
       this.attributes.to = moment(request.finalDate, 'YYYY-MM-DD').format('YYYY/MM/DD')
-      this.vacationRequest = Object.assign({}, request)
+
+      this.onShow = true
     })
 
     EventBus.$on('on-new-days-off', (info) => {
-      this.info = info
+
+      this.vacationRequest.id = ''
+      this.vacationRequest.requestUserId = info.personId
+      this.vacationRequest.vacationTimeId = info.id 
       this.attributes = { from: '', to: '' }
       this.onShow = true
     })
@@ -115,11 +124,8 @@ export default {
         this.vacationRequest.startDate = this.attributes.from
         this.vacationRequest.finalDate = this.attributes.to
         
-        if (!this.vacationRequest.id) {
-          this.vacationRequest.vacationTimeId = this.info.id
-          this.vacationRequest.requestUserId = this.info.personId
-        }
 
+        console.log('Olha aiiii: ', this.vacationRequest);
         let axiosFunction = this.$axios.post
         let url = 'requests'
 
