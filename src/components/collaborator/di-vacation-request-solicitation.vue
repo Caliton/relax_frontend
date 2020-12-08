@@ -116,6 +116,9 @@ export default {
 
         console.log('EITA EITA EITA EITA: ');
         const result = await this.$axios.post('/requests', this.vacationRequest)
+
+        EventBus.$emmit('on-refresh-vacation-request')
+        this.onHideModal()
         console.log(result)
       } catch (e) {
         console.log(e)

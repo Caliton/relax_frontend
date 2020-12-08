@@ -124,14 +124,13 @@
           <div v-if="listRequests.length > 0" class="col-md-5">
             <ul class="caixa-ul " style="overflow: auto; max-height: 400px; transform">
               <li v-for="item in listRequests" :key="item.i" class="rows caixa-li">
-                
                 <div class="teste q-ma-md">
                   <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
                     <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
-                      Jan
+                      {{getMonth(new Date(item.startDate).getMonth())}}
                     </div>
                     <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
-                      5
+                      {{item.startDate | moment('DD')}}
                     </div>
                   </div>
                 </div>
@@ -143,10 +142,10 @@
                 <div class="q-ma-md teste">
                   <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
                     <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
-                      Jan
+                      {{getMonth(new Date(item.finalDate).getMonth())}}
                     </div>
                     <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
-                      13
+                      {{item.finalDate | moment('DD')}}
                     </div>
                   </div>
                 </div>
@@ -154,11 +153,7 @@
                 <div class="q-ma-md teste">
                   <span class="texto">Férias</span>
                   <br>
-                  <span>7 dias</span>
-                </div>
-
-                <div class="teste flex">
-                  <q-icon class="flex flex-center" color="grey" size="md" name="eva-arrow-forward-outline" />
+                  <span>{{item.days}} dias</span>
                 </div>
               </li>
             </ul>
@@ -228,18 +223,21 @@ export default {
       this.onShow = true
 
       console.log('VacationRequest: ', data)
+      
       if (data) {
         this.colaborator = Object.assign({}, data)
         this.personId = data.id
         this.getVacationsTimes(data.id)
+        
       }
-
-      if (this.selectedOption) {
-        this.getRequestSolicitation()
-      }
-
+      
       console.log('asdf');
     })
+
+    EventBus.$on('on-refresh-vacation-request', (data) => {
+      this.getRequestSolicitation(this.vacationsCombo[0].value)
+    })
+
   },
 
   beforeDestroy () {
@@ -284,14 +282,17 @@ export default {
 
   methods: {
 
-    async getRequestSolicitation () {
-      
-      const result = await this.$axios.get(`requests/person/${this.colaborator.id}/vacationtime/1/`)
+    async getRequestSolicitation (idVacation) {
+      try {
+        console.log('Olha os cara: ', this.vacationsCombo)
+        const result = await this.$axios.get(`requests/person/${this.colaborator.id}/vacationtime/${idVacation}/`)
+        this.listRequests.splice(0, this.listRequests.length, ...result.data)
 
-      result.data.forEach((item) => {
-        this.listRequests.push({ label: item.vacationDate.split('-')[0], value: item.id })
-      })
+        console.log('Resultado: ', result)
 
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     setLeftPeriodo () {
@@ -349,8 +350,11 @@ export default {
           this.vacationsCombo.push({ label: item.vacationDate.split('-')[0], value: item.id })
         })
 
+        
+
         if(this.vacationsCombo.length > 0) {
           this.setVacationCombo(this.vacationsCombo[this.number])
+          this.getRequestSolicitation(this.vacationsCombo[this.number].value)
         }
 
       } catch (e) {
@@ -411,6 +415,10 @@ export default {
           break
       }
       return color
+    },
+
+    getMonth (item) {
+      return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
     },
 
     getNameStatus (item) {
