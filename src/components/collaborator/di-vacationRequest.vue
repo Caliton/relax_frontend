@@ -299,6 +299,7 @@ export default {
       if (this.number > 0) {
         this.number--    
         this.setVacationCombo(this.vacationsCombo[this.number])
+        this.getRequestSolicitation(this.vacationsCombo[this.number].value)
       }
     },
 
@@ -306,6 +307,7 @@ export default {
       if (this.number < this.vacationsCombo.length -1) {
         this.number++
         this.setVacationCombo(this.vacationsCombo[this.number])
+        this.getRequestSolicitation(this.vacationsCombo[this.number].value)
       }
     },
 
