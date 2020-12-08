@@ -316,7 +316,7 @@ export default {
       this.loading = true
 
       const returnedData = await this.$axios.get(`person?page=${page}`, {params: {
-            search: this.filter
+            filter: this.filter
           }})
 
       returnedData.data.forEach((item, i) => {

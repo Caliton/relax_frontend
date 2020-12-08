@@ -51,6 +51,7 @@ import { EventBus } from 'src/functions/event_bus.js'
 import { required } from 'vuelidate/lib/validators'
 import moment from 'moment'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
+import LoginVue from 'src/pages/Login.vue'
 
 export default {
   name: 'di-vacation-request-solicitation',
@@ -60,15 +61,17 @@ export default {
   },
 
   created () {
-    EventBus.$on('on-edit-days-off', (person) => {
+    EventBus.$on('on-edit-days-off', (request) => {
       this.onShow = true
-      this.person = person
-      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD/MM/YYYY')
-      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD/MM/YYYY')
+      console.log('Teste: ', request);
+      this.attributes.from = moment(request.startDate, 'YYYY-MM-DD').format('YYYY/MM/DD')
+      this.attributes.to = moment(request.finalDate, 'YYYY-MM-DD').format('YYYY/MM/DD')
+      this.vacationRequest = Object.assign({}, request)
     })
 
     EventBus.$on('on-new-days-off', (info) => {
       this.info = info
+      this.attributes = { from: '', to: '' }
       this.onShow = true
     })
   },
@@ -111,13 +114,23 @@ export default {
       try {
         this.vacationRequest.startDate = this.attributes.from
         this.vacationRequest.finalDate = this.attributes.to
-        this.vacationRequest.vacationTimeId = this.info.id
-        this.vacationRequest.requestUserId = this.info.personId
+        
+        if (!this.vacationRequest.id) {
+          this.vacationRequest.vacationTimeId = this.info.id
+          this.vacationRequest.requestUserId = this.info.personId
+        }
 
-        console.log('EITA EITA EITA EITA: ');
-        const result = await this.$axios.post('/requests', this.vacationRequest)
+        let axiosFunction = this.$axios.post
+        let url = 'requests'
 
-        EventBus.$emmit('on-refresh-vacation-request')
+        if (this.vacationRequest.id) {
+          url += `/${this.vacationRequest.id}`
+          axiosFunction = this.$axios.put
+        }
+
+        const result = await axiosFunction(url, this.vacationRequest)
+
+        EventBus.$emit('on-refresh-vacation-request')
         this.onHideModal()
         console.log(result)
       } catch (e) {

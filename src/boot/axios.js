@@ -42,29 +42,22 @@ export default async ({ Vue }) => {
 
       if (error.response) {
         const status = error.response.status
+        const message = 'Problema interno no servidor'
 
         if (status === REQUEST.LOGIN_FAILED) {
-          notification.message = 'Você não tem permissão'
-          EventBus.$emit('expiredToken')
-        } else if (status === REQUEST.EXPIRED_TOKEN) {
-          notification.message = 'Seu acesso esta espirado'
-          EventBus.$emit('expiredToken')
+          EventBus.$emit('invalid-token')
         } else if (status === REQUEST.UNAUTHORIZED) {
-          notification.message = 'Você não tem permissão'
-          EventBus.$emit('expiredToken')
-        } else if (status === REQUEST.NOT_FOUND) {
-          notification.message =
-            'Uhm... não consegui encontrar o que buscava :('
-        } else if (status === REQUEST.SERVER_ERROR) {
-          notification.message = 'Erro interno no servidor'
-        }
-      } else {
-        notification.message = 'Problema na conexão com Servidor'
+          EventBus.$emit('invalid-token')
+        } 
+
+        console.log(error.response.data.error[0])
+        notification.message = (Array.isArray(error.response.data.error) ? error.response.data.error[0] : error.response.data.error) ||
+          message
+
+        EventBus.$emit('showNotify', notification)
+
+        return Promise.reject(error)
       }
-
-      EventBus.$emit('showNotify', notification)
-
-      return Promise.reject(error)
     }
   )
 

@@ -10,10 +10,10 @@
       </q-toolbar>
       
       <q-card-section
-        class="bg-green flex flex-center q-pt-sm q-pb-sm"
+        class="bg-green q-pt-sm q-pb-sm"
         :style="[{'background-color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? '#F44336 !important': ''}]"
       >
-        <div class="text-white">
+        <div class="text-white justify-center flex flex-center">
           <div class="row" v-if="this.vacationsCombo.length > 0">
             <q-btn :disable="!(this.number > 0)" @click="setLeftPeriodo" color="white" round flat size="md" class="q-mr-md" icon="eva-chevron-left-outline"/>
             <span class="text-weight-medium flex-center flex" style="font-size:1.3rem;">{{this.vacationsCombo[this.number].label}}</span>
@@ -61,14 +61,56 @@
 
         </div>
       </q-card-section>
-      
+
       <q-card-section class="flex flex-center q-pt-sm q-pb-sm text-subtitle1">
         <span v-if="this.colaborator.status === 'CRITICO'" style="color: red">
         {{getNameStatus(this.colaborator.status)}}.
         </span>
       </q-card-section>
 
-      <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
+      
+      <q-card-section style="margin-top: .3rem; margin-right: .3rem" v-if="(this.vacationsCombo.length > 0)">
+        <div class="row absolute-right">
+          <q-btn label="Cadastrar Período" no-caps color="green" rounded outline size="md" class="q-ml-md">
+            <q-menu anchor="top left" self="top left">
+              <div class="row no-wrap q-pa-md">
+                <div class="column q-gutter-sm">
+                  <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
+
+                  <q-input
+                    filled
+                    v-model="vacationTime.vacationYear"
+                    label="Ano"
+                    dense
+                    lazy-rules
+                  />
+
+                  <q-input
+                    filled
+                    v-model="vacationTime.daysAllowed"
+                    label="Dias de direito"
+                    dense
+                    lazy-rules
+                  />
+
+                  <q-btn
+                    color="primary"
+                    class="q-mt-lg"
+                    label="Salvar"
+                    :loading="loadingVacationTime"
+                    @click="registerVacationTime"
+                    push
+                    size="sm"
+                    v-close-popup
+                  />
+                </div>
+              </div>
+            </q-menu>
+          </q-btn>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-ml-xl q-mt-sm q-mr-xl">
         <div style="width: 100%">
           <div class="row">
             <div class="col-md-4" style="display: block">
@@ -123,11 +165,11 @@
         <div class="row">
           <div v-if="listRequests.length > 0" class="col-md-5">
             <ul class="caixa-ul " style="overflow: auto; max-height: 400px; transform">
-              <li v-for="item in listRequests" :key="item.i" class="rows caixa-li">
+              <li v-for="item in listRequests" :key="item.id" class="rows caixa-li" @click="updateRequest(item)">
                 <div class="teste q-ma-md">
                   <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
                     <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
-                      {{getMonth(new Date(item.startDate).getMonth())}}
+                      {{getMonth(parseInt(item.startDate.split('-')[1]))}}
                     </div>
                     <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
                       {{item.startDate | moment('DD')}}
@@ -142,7 +184,7 @@
                 <div class="q-ma-md teste">
                   <div style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;">
                     <div style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase">
-                      {{getMonth(new Date(item.finalDate).getMonth())}}
+                      {{getMonth(parseInt(item.finalDate.split('-')[1]))}}
                     </div>
                     <div style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500">
                       {{item.finalDate | moment('DD')}}
@@ -222,7 +264,7 @@ export default {
     EventBus.$on('on-show-vacation-request', (data) => {
       this.onShow = true
 
-      console.log('VacationRequest: ', data)
+      this.listRequests = []
       
       if (data) {
         this.colaborator = Object.assign({}, data)
@@ -235,6 +277,7 @@ export default {
     })
 
     EventBus.$on('on-refresh-vacation-request', (data) => {
+      console.log('Vou dar o Refresh', data)
       this.getRequestSolicitation(this.vacationsCombo[0].value)
     })
 
@@ -284,11 +327,8 @@ export default {
 
     async getRequestSolicitation (idVacation) {
       try {
-        console.log('Olha os cara: ', this.vacationsCombo)
         const result = await this.$axios.get(`requests/person/${this.colaborator.id}/vacationtime/${idVacation}/`)
         this.listRequests.splice(0, this.listRequests.length, ...result.data)
-
-        console.log('Resultado: ', result)
 
       } catch (e) {
         console.log(e);
@@ -313,6 +353,10 @@ export default {
 
     removeAt (idx) {
       this.guests.splice(idx, 1)
+    },
+
+    updateRequest (item) {
+      EventBus.$emit('on-edit-days-off', item)
     },
 
     add () {
@@ -420,11 +464,14 @@ export default {
     },
 
     getMonth (item) {
+      item--
+      console.log('Olha essa pessoa: ', item);
       return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
     },
 
     getNameStatus (item) {
       let statusName = ''
+ 
 
       switch (item) {
         case 'NORMAL':
