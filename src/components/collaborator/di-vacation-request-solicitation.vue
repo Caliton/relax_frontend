@@ -178,7 +178,6 @@ export default {
         this.vacationRequest.finalDate = this.attributes.to
         
 
-        console.log('Olha aiiii: ', this.vacationRequest);
         let axiosFunction = this.$axios.post
         let url = 'requests'
 
@@ -193,7 +192,6 @@ export default {
 
         EventBus.$emit('on-refresh-vacation-request')
         this.onHideModal()
-        console.log(result)
       } catch (e) {
         console.log(e)
         this.loading = false

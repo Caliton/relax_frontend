@@ -164,11 +164,9 @@ export default {
         cleanDataResult.days = item.days
         cleanDataResult.vacationStatus = item.vacationStatus.description
 
-        console.log(cleanDataResult)
         listVacations.push(cleanDataResult)
       })
 
-      console.log(listVacations)
 
       this.data.splice(0, this.data.length, ...listVacations)
 

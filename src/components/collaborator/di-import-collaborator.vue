@@ -149,7 +149,6 @@ export default {
 
   watch: {
     csv: function (itens) {
-      console.log('csv', itens)
       this.sendCsv = []
       this.failImportation = false
       const cleanItens = itens.filter((item) => item.categoria !== '')
@@ -228,7 +227,6 @@ export default {
 
       this.sendCsv.forEach(async (item) => {
         // let result = await this.$axios.post("person", item);
-        console.log('OS COLABORADORES: ', item)
       });
     },
 

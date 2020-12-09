@@ -331,7 +331,6 @@ export default {
         } else if (moment(item.vacationNew[0].limit6Months).subtract(1, 'm').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'MEDIO'
         } else {
-          console.log(moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD'))
           returnedData.data[i].status = 'NORMAL'
         }
       })

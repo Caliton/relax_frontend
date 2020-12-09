@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" persistent @before-hide="onHideDialog">
-    <q-card style="max-width: 70vw; min-width: 60vw; min-height: 80vh">
+    <q-card style="max-width: 72vw; min-width: 60vw; min-height: 80vh; max-height: 98vh">
       <q-toolbar class="text-white shadow-1 bg-green">
         <q-toolbar-title class="flex flex-center">
           <q-icon name="far fa-user" class="q-mr-md" color="white" size="sm" style="display: block;"/>
@@ -63,7 +63,12 @@
       </q-card-section>
 
       <q-card-section class="flex flex-center q-pt-sm q-pb-sm text-subtitle1">
-        <span v-if="this.colaborator.status === 'CRITICO'" style="color: red">
+        <span v-if="this.colaborator.status === 'CRITICO' || this.colaborator.status === 'ALTO'" style="color: red">
+        <q-icon size="md" v-if="this.colaborator.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'ALTO'" color="orange" name="eva-checkmark-circle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
         {{getNameStatus(this.colaborator.status)}}.
         </span>
       </q-card-section>
@@ -204,7 +209,7 @@
           </div>
 
           <div v-if="listRequests.length === 0 && this.vacationsCombo.length > 0" class="col-md-6">
-            <q-img src="~src/statics/calendar.png" style="max-width: 300px;" />
+            <q-img src="~src/statics/calendar.png" style="max-width: 285px;" />
             <br>
             <span style="color: #999999" class="text-subtitle1"> Não há nenhuma solicitação de férias em {{this.vacationsCombo[this.number].label}} </span>
           </div>
@@ -280,11 +285,9 @@ export default {
         
       }
       
-      console.log('asdf');
     })
 
     EventBus.$on('on-refresh-vacation-request', (personId) => {
-      console.log('Vou dar o Refresh', personId)
       this.getVacationsTimes(personId)
       this.getRequestSolicitation(this.vacationsCombo[0].value)
     })
@@ -366,7 +369,6 @@ export default {
     updateRequest (item) {
       item.vacationTimeId = this.vacationsCombo[this.number].value
 
-      console.log('DRAGÃO', item.vacationTimeId)
       EventBus.$emit('on-edit-days-off', item)
     },
 
@@ -427,7 +429,6 @@ export default {
         this.vacationRequest.requestUserId = this.personId
 
         const result = await this.$axios.post('/requests', this.vacationRequest)
-        console.log(result)
       } catch (e) {
         console.log(e)
       }
@@ -443,7 +444,6 @@ export default {
 
         this.loadingVacationTime = false
 
-        console.log(result)
       } catch (e) {
         console.log(e)
         this.loadingVacationTime = false
@@ -476,7 +476,6 @@ export default {
 
     getMonth (item) {
       item--
-      console.log('Olha essa pessoa: ', item);
       return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
     },
 
@@ -492,7 +491,7 @@ export default {
           statusName = 'Esta colaborador esta de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
           break
         case 'CRITICO':
-          statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 7 meses até 1 ano e 11 meses (limite da CLT)'
+          statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 7 meses'
           break
         case 'INDEFINIDO':
           statusName = 'Este colaborador não teve seu periodo anual criado, clique em cadastrar período'

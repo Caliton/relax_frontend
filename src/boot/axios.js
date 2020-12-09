@@ -50,7 +50,6 @@ export default async ({ Vue }) => {
           EventBus.$emit('invalid-token')
         } 
 
-        console.log(error.response.data.error[0])
         notification.message = (Array.isArray(error.response.data.error) ? error.response.data.error[0] : error.response.data.error) ||
           message
 
