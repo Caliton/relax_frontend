@@ -178,7 +178,7 @@ export default {
 
     brigdeEmployee (item) {
       const employee = {}
-      employee.nome = item.nome
+      employee.name = item.nome
       employee.hiringDate = this.$moment(item.data_de_admissao, 'DD/MM/YYYY').format('YYYY-MM-DD')
       employee.birthDay = this.$moment(item.data_de_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
       return employee
@@ -223,15 +223,18 @@ export default {
     //   // }
     // },
 
-    registerEmployees () {  
-
-      this.sendCsv.forEach(async (item) => {
-        // let result = await this.$axios.post("person", item);
-      });
+    async registerEmployees () {  
+      try {
+        let result = await this.$axios.post("person/bulk", { data: this.sendCsv})
+        EventBus.$emit('on-refresh-person')
+        this.onHideDialog()
+      } catch (e) {
+        console.log(e)
+      }
     },
 
     refresh () {
-      EventBus.$emit('on-refresh-employee')
+      EventBus.$emit('on-refresh-person')
     },
 
     confirm () {

@@ -177,7 +177,7 @@
           </div>
 
           <div class="row">
-            <q-btn :disable="!(this.vacationsCombo.length > 0)" label="Solicitar Férias" @click="solicitationVacation" rounded no-caps color="green" outline size="md" />
+            <q-btn :disable="!(this.vacationsCombo.length > 0) || vacationSelected.daysBalance === 0" label="Solicitar Férias" @click="solicitationVacation" rounded no-caps color="green" outline size="md" />
           </div>
         </div>
       </q-card-section>
