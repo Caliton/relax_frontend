@@ -109,6 +109,7 @@
           <q-td :props="props" key="status">
             <q-icon size="md" v-if="props.row.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
             <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'ALTO'" color="orange" name="eva-checkmark-circle-outline" />
             <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
             <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
 
@@ -128,16 +129,19 @@
           </q-td>
 
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
+
+           <q-td
+            auto-width
+            :props="props"
+            key="birthDay"
+          >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
+
           <q-td
             auto-width
             :props="props"
             key="hiringDate"
           >{{ props.row.hiringDate | moment('DD-MM-YYYY')}}</q-td>
-          <q-td
-            auto-width
-            :props="props"
-            key="birthDay"
-          >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
+         
 
           <q-td auto-width>
             <q-btn
@@ -265,18 +269,18 @@ export default {
         },
         {
           align: 'left',
+          name: 'birthDay',
+          label: 'Data de Nascimento',
+          field: 'birthDay',
+          sortable: true
+        },
+        {
+          align: 'left',
           name: 'hiringDate',
           label: 'Data de admissão',
           field: 'hiringDate',
           sortable: true
         },
-        {
-          align: 'left',
-          name: 'birthDay',
-          label: 'Aniversário',
-          field: 'birthDay',
-          sortable: true
-        }
       ],
       data: []
     }
@@ -347,13 +351,16 @@ export default {
 
       switch (item) {
         case 'NORMAL':
-          statusName = 'Aparentemente não há pendência ou atrasos em requisitar férias, Colaborador ok :)'
+          statusName = '1 ano  (tem direito a férias)'
           break
         case 'MEDIO':
-          statusName = 'Este Colaborador esta se aproximando de um prazo Crítico'
+          statusName = 'de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
           break
-        case 'CRITICO':
-          statusName = 'Este colaborador passou o mês Crítico'
+        case 'ALTO':
+          statusName = 'de 1 ano e 4 meses até 1 ano e 6 meses (limite da empresa)'
+          break
+        case 'CRITICO':  
+          statusName = 'de 1 ano e 7 meses até 1 ano e 11 meses (limite da CLT)'
           break
         case 'INDEFINIDO':
           statusName = 'Este colaborador não teve seu periodo configurado'

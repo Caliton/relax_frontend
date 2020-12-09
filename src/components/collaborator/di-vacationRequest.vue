@@ -141,14 +141,15 @@
 
               <div class="column justify-center text-center" style="transform: scale(.9);">
                 <span style="display: inline-block;"> {{vacationSelected.daysEnjoyed}}</span>
-                <span class="text-weight-regular text-h6">Dias Tirados</span>
+                <span class="text-weight-regular text-h6">Dias Agendados</span>
               </div>
 
               <q-separator inset />
 
               <div class="q-pa-sm text-subtitle1">
                 <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">
-                Prazo limite {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
+                Prazo limite com 6 meses {{ vacationSelected.limit6Months | moment('DD-MM-YYYY') }} 
+                e prazo final passivel de multa {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
                 </span>
               </div>
 
@@ -202,10 +203,16 @@
 
           </div>
 
-          <div v-else class="col-md-6">
+          <div v-if="listRequests.length === 0 && this.vacationsCombo.length > 0" class="col-md-6">
             <q-img src="~src/statics/calendar.png" style="max-width: 300px;" />
             <br>
-            <span v-if="this.vacationsCombo.length > 0" class="text-subtitle1"> Não foram solicitados nenhuma férias em {{this.vacationsCombo[this.number].label}} </span>
+            <span style="color: #999999" class="text-subtitle1"> Não há nenhuma solicitação de férias em {{this.vacationsCombo[this.number].label}} </span>
+          </div>
+
+          <div v-if="listRequests.length === 0 && this.vacationsCombo.length === 0" class="col-md-6">
+            <q-img src="~src/statics/empty_2.png" style="max-width: 300px;" />
+            <br>
+            <span class="text-subtitle1" style="color: #999999"> Este colaborador não possui nenhum periodo cadastrado </span>
           </div>
         </div>
       </q-card-section>
@@ -232,7 +239,7 @@
 
         <v-date-picker class v-model="attributes" mode="range" is-inline />
       </q-card-section> -->
-      <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
+      <!-- <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
         <q-btn
           color="green"
           dense
@@ -240,7 +247,7 @@
           label="Salvar"
           @click="registerVacationRequest"
           v-close-popup
-        />
+        /> -->
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -276,8 +283,9 @@ export default {
       console.log('asdf');
     })
 
-    EventBus.$on('on-refresh-vacation-request', (data) => {
-      console.log('Vou dar o Refresh', data)
+    EventBus.$on('on-refresh-vacation-request', (personId) => {
+      console.log('Vou dar o Refresh', personId)
+      this.getVacationsTimes(personId)
       this.getRequestSolicitation(this.vacationsCombo[0].value)
     })
 
@@ -478,13 +486,13 @@ export default {
 
       switch (item) {
         case 'NORMAL':
-          statusName = 'Este colaborador se encontra em uma situação normal'
+          statusName = 'Este colaborador se encontra em uma situação normal, 1 ano  (tem direito a férias)'
           break
         case 'MEDIO':
-          statusName = 'Esta colaborador esta se aproximando do prazo limite para usufruir suas férias ( 1 mês )'
+          statusName = 'Esta colaborador esta de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
           break
         case 'CRITICO':
-          statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 6 meses'
+          statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 7 meses até 1 ano e 11 meses (limite da CLT)'
           break
         case 'INDEFINIDO':
           statusName = 'Este colaborador não teve seu periodo anual criado, clique em cadastrar período'

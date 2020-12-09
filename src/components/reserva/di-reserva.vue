@@ -57,7 +57,7 @@
             dense
             v-model="person.birthDay"
             class="col-md-4 q-mr-sm"
-            placeholder="Aniversário"
+            placeholder="Nascimento"
           >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">

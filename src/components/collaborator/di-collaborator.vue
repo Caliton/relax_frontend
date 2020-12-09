@@ -29,9 +29,9 @@
             filled
             dense
             v-model="person.birthDay"
-            mask="##/##/####"
+            mask="##-##-####"
             reverse-fill-mask
-            label="Data de Aniversário"
+            label="Data de Nascimento"
             error-message="Campo precisa ser preenchido"
             :error="$v.person.birthDay.$error"
             @blur="$v.person.birthDay.$touch()"
@@ -43,7 +43,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="person.birthDay" mask="DD/MM/YYYY" :locale="myLocale">
+                  <q-date v-model="person.birthDay" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                     </div>
@@ -59,8 +59,8 @@
             reverse-fill-mask
             dense
             v-model="person.hiringDate"
-            mask="##/##/####"
-            label="Data de admissão"
+            mask="##-##-####"
+            label="Data de Admissão"
             error-message="Campo precisa ser preenchido"
             :error="$v.person.hiringDate.$error"
             @blur="$v.person.hiringDate.$touch()"
@@ -72,7 +72,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="person.hiringDate" mask="DD/MM/YYYY" default-view="Years" :locale="myLocale">
+                  <q-date v-model="person.hiringDate" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                     </div>
@@ -122,7 +122,7 @@
                     dense
                     mask="##/##/####"
                     v-model="person.birthDay"
-                    label="Data de aniversário"
+                    label="Data de Nascimento"
                     error-message="Campo precisa ser preenchido"
                     :error="$v.person.birthDay.$error"
                     @blur="$v.person.birthDay.$touch()"
@@ -173,8 +173,8 @@ export default {
     EventBus.$on('on-edit-person', (person) => {
       this.onShow = true
       this.person = person
-      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD/MM/YYYY')
-      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD/MM/YYYY')
+      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
     })
 
     EventBus.$on('on-new-person', () => {
@@ -253,8 +253,8 @@ export default {
         let url = 'person'
 
         let employeePayload = Object.assign({}, this.person)
-        employeePayload.hiringDate = moment(this.person.hiringDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
-        employeePayload.birthDay = moment(this.person.birthDay, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        employeePayload.hiringDate = moment(this.person.hiringDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
+        employeePayload.birthDay = moment(this.person.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
 
         if (employeePayload.id) {
           url += `/${employeePayload.id}/`

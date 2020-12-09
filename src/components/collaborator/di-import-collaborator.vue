@@ -22,7 +22,7 @@
             :labels="{
               nome: { title: 'Nome' },
               hiringDate: { title: 'data_de_admissao' },
-              birthDay: { title: 'data_de_aniversario' }
+              birthDay: { title: 'data_de_nascimento' }
             }"
           >
             <q-btn
@@ -52,7 +52,7 @@
             v-model="csv"
             inputClass="col-md-12 custom-file-input"
             :headers="true"
-            :map-fields="['nome', 'data_de_admissao', 'data_de_aniversario']"
+            :map-fields="['nome', 'data_de_admissao', 'data_de_nascimento']"
             autoMatchFields
             autoMatchIgnoreCase
             @reset-csv="csv = []"
@@ -181,7 +181,7 @@ export default {
       const employee = {}
       employee.nome = item.nome
       employee.hiringDate = this.$moment(item.data_de_admissao, 'DD/MM/YYYY').format('YYYY-MM-DD')
-      employee.birthDay = this.$moment(item.data_de_aniversario, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      employee.birthDay = this.$moment(item.data_de_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
       return employee
     },
 

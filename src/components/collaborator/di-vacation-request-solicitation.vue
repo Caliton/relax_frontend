@@ -35,14 +35,37 @@
         </div>
       </q-card-section>
 
-      <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
-        <q-btn color="primary" dense no-caps label="Solicitar" @click="confirm" />
+      <q-card-actions class="text-teal container-card absolute-bottom-right">
+        <q-btn v-if="!this.hideDesfazer" color="red" dense no-caps outline rounded label="Desfazer Solicitação" @click="showDeleteRequest" />
+        <q-btn color="primary" dense no-caps outline rounded label="Solicitar" @click="confirm" />
       </q-card-actions>
 
       <q-inner-loading :showing="loading">
         <q-spinner-facebook color="light-blue" />
       </q-inner-loading>
     </q-card>
+
+    <q-dialog v-model="showDelete" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon size="2em" name="thumb_down" color="red" />
+          <span class="q-ml-sm">Deseja mesmo excluir a Avaliação?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
+          <q-btn
+            flat
+            no-caps
+            label="Sim, não quero mais!"
+            color="red"
+            @click="deleteRequest"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-dialog>
 </template>
 
@@ -62,9 +85,8 @@ export default {
 
   created () {
     EventBus.$on('on-edit-days-off', (request) => {
-      console.log('OLHAAAAA O REQUESTTT ', request);
       this.vacationRequest = {}
-      
+      this.hideDesfazer = false
       this.vacationRequest.id = request.id
       this.vacationRequest.requestUserId = request.person.id
       this.vacationRequest.vacationTimeId = request.vacationTimeId 
@@ -95,6 +117,8 @@ export default {
     return {
       onShow: false,
       loading: false,
+      showDelete: false,
+      hideDesfazer: true,
       attributes: { from: '', to: '' },
       moment: moment,
       vacationRequest: {},
@@ -116,7 +140,36 @@ export default {
 
     onHideModal () {
       this.$emit('on-close')
+      this.hideDesfazer = true
       this.onShow = false
+    },
+
+    showDeleteRequest () {
+      this.showDelete = true
+    },
+
+    async deleteRequest () {
+      try {
+        this.loading = true
+
+        await this.$axios.delete(
+          `${'/requests/{id}'.replace('{id}', this.vacationRequest.id)}/`
+        )
+
+        this.$q.notify({
+          color: 'positive',
+          type: 'positive',
+          message: 'Solicitação desmarcada com sucesso!'
+        })
+
+        EventBus.$emit('on-refresh-vacation-request', this.vacationRequest.requestUserId)
+        this.onHideModal()
+        
+        this.loading = false
+      } catch (e) {
+        this.loading = false
+        console.log(e)
+      }
     },
 
     async confirm () {
