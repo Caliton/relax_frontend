@@ -620,6 +620,7 @@ export default {
     },
 
     canceled () {
+      EventBus.$emit('on-refresh-person')
       this.onHideModal()
     }
   }
