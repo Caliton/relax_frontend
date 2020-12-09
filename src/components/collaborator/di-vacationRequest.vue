@@ -152,9 +152,24 @@
               <q-separator inset />
 
               <div class="q-pa-sm text-subtitle1">
-                <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">
-                Prazo limite com 6 meses {{ vacationSelected.limit6Months | moment('DD-MM-YYYY') }} 
-                e prazo final passivel de multa {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
+                <span v-if="vacationSelected.limit6Months" :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">
+               <q-icon name="eva-info-outline">
+                  <q-tooltip
+                    content-class="bg-grey-1 "
+                    content-style="font-size: 16px; color: #575858; border: 2px solid #BDBDBF; width: 300px"
+                    :offset="[10, 10]"
+                    :delay="300"
+                  >
+                    <div>
+                      &nbsp;<q-icon size="22px" :name="getIconStatus(this.colaborator.status)" :color="getColorStatus(this.colaborator.status)" />&nbsp;
+                      <span :style="{color: getColorStatus(this.colaborator.status)}">{{this.colaborator.status !== 'INDEFINIDO'? this.colaborator.status : 'NORMAL' }}</span> <br>
+                      <span class="subtitle" style="font-size: .9rem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getNameStatus(this.colaborator.status)}}</span> <br>
+                      <span  class="subtitle" style="font-size: .7rem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Prazo final passível de multa {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}</span>
+                    </div>
+                  </q-tooltip>
+
+                </q-icon> Prazo limite com 6 meses {{ vacationSelected.limit6Months | moment('DD-MM-YYYY') }} 
+               
                 </span>
               </div>
 
@@ -221,6 +236,10 @@
           </div>
         </div>
       </q-card-section>
+
+      <!-- <q-card-section class="q-pa-xs absolute-bottom text-center" style="color: #999999">
+        {{getNameStatus(this.colaborator.status)}}.
+      </q-card-section> -->
       <!-- <q-card-section>
         Status:<p :style="[{'color': this.getColor(this.colaborator.status)}, 'font-size: 13pt']">{{getNameStatus(this.colaborator.status)}}</p>
       </q-card-section> -->
@@ -253,7 +272,6 @@
           @click="registerVacationRequest"
           v-close-popup
         /> -->
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
@@ -398,6 +416,29 @@ export default {
       this.vacationSelected = this.vacations.find((item) => item.id === vacationSelected.value)
     },
 
+    getColorStatus (item) {
+      let statusIcon = ''
+      switch (item) {
+        case 'MEDIO':
+          statusIcon = 'yellow'
+          break
+        case 'NORMAL':
+          statusIcon = 'green'
+          break
+        case 'CRITICO':
+          statusIcon = 'red'
+          break
+        case 'INDEFINIDO':
+          statusIcon = 'green'
+          break
+
+        default:
+          statusIcon = 'Status não identificado'
+          break
+      }
+      return statusIcon
+    },
+
     async getVacationsTimes (personId) {
       try {
         const result = await this.$axios.get('person/{id}/vacationtime'.replace('{id}', personId || this.personId))
@@ -474,6 +515,29 @@ export default {
       return color
     },
 
+    getIconStatus (item) {
+      let statusIcon = ''
+      switch (item) {
+        case 'MEDIO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+        case 'NORMAL':
+          statusIcon = 'eva-checkmark-circle-outline'
+          break
+        case 'CRITICO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+        case 'INDEFINIDO':
+          statusIcon = 'eva-alert-circle-outline'
+          break
+
+        default:
+          statusIcon = 'Status não identificado'
+          break
+      }
+      return statusIcon
+    },
+
     getMonth (item) {
       item--
       return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
@@ -494,7 +558,7 @@ export default {
           statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 7 meses'
           break
         case 'INDEFINIDO':
-          statusName = 'Este colaborador não teve seu periodo anual criado, clique em cadastrar período'
+          statusName = 'Este colaborador se encontra em uma situação normal, 1 ano  (tem direito a férias)'
           break
 
         default:
