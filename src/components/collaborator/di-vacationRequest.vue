@@ -63,10 +63,10 @@
       </q-card-section>
 
       <q-card-section class="flex flex-center q-pt-sm q-pb-sm text-subtitle1">
-        <span v-if="this.colaborator.status === 'CRITICO' || this.colaborator.status === 'ALTO'" style="color: red">
+        <span v-if="this.colaborator.status === 'CRITICO' || this.colaborator.status === 'ALTO'" :style="[{'color': getColor(this.colaborator.status)}]">
         <q-icon size="md" v-if="this.colaborator.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
-        <q-icon size="md" v-if="this.colaborator.status === 'ALTO'" color="orange" name="eva-checkmark-circle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'ALTO'" color="orange" name="eva-alert-triangle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
         {{getNameStatus(this.colaborator.status)}}.
@@ -428,6 +428,11 @@ export default {
         case 'CRITICO':
           statusIcon = 'red'
           break
+        
+        case 'ALTO':
+          statusIcon = 'orange'
+          break
+        
         case 'INDEFINIDO':
           statusIcon = 'green'
           break
@@ -499,6 +504,9 @@ export default {
           color = '#4CAF50'
           break
         case 'MEDIO':
+          color = 'yellow'
+          break
+        case 'ALTO':
           color = 'orange'
           break
         case 'CRITICO':
@@ -527,6 +535,15 @@ export default {
         case 'CRITICO':
           statusIcon = 'eva-alert-triangle-outline'
           break
+
+        case 'ALTO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+
+        case 'CRITICO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+
         case 'INDEFINIDO':
           statusIcon = 'eva-alert-circle-outline'
           break
@@ -554,6 +571,11 @@ export default {
         case 'MEDIO':
           statusName = 'Esta colaborador esta de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
           break
+
+          case 'ALTO':
+          statusName = 'Esta colaborador esta de 1 ano e 4 meses até 1 ano e 6 meses (limite da empresa)'
+          break
+        
         case 'CRITICO':
           statusName = 'Este colaborador precisa urgênte usufruir de suas férias, pois ultrapassou o tempo limite de 1 ano e 7 meses'
           break

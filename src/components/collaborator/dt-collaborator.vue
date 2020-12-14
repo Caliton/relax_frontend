@@ -109,7 +109,7 @@
           <q-td :props="props" key="status">
             <q-icon size="md" v-if="props.row.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
             <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
-            <q-icon size="md" v-if="props.row.status === 'ALTO'" color="orange" name="eva-checkmark-circle-outline" />
+            <q-icon size="md" v-if="props.row.status === 'ALTO'" color="orange" name="eva-alert-triangle-outline" />
             <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
             <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
 
@@ -324,13 +324,24 @@ export default {
           }})
 
       returnedData.data.forEach((item, i) => {
+
         if (!item.vacationNew || item.vacationNew.length === 0) {
           returnedData.data[i].status = 'INDEFINIDO'
-        } else if (moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        } 
+
+        else if (moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'CRITICO'
-        } else if (moment(item.vacationNew[0].limit6Months).subtract(1, 'm').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        }
+        
+        else if (moment(item.vacationNew[0].limit6Months).subtract(2, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+          returnedData.data[i].status = 'ALTO'
+        }
+
+        else if (moment(item.vacationNew[0].limit6Months).subtract(3, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'MEDIO'
-        } else {
+        }
+        
+        else {
           returnedData.data[i].status = 'NORMAL'
         }
       })
@@ -384,6 +395,11 @@ export default {
         case 'CRITICO':
           statusIcon = 'eva-alert-triangle-outline'
           break
+
+        case 'ALTO':
+          statusIcon = 'eva-alert-triangle-outline'
+          break
+
         case 'INDEFINIDO':
           statusIcon = 'eva-alert-circle-outline'
           break
@@ -401,12 +417,19 @@ export default {
         case 'MEDIO':
           statusIcon = 'yellow'
           break
+
         case 'NORMAL':
           statusIcon = 'green'
           break
+
         case 'CRITICO':
           statusIcon = 'red'
           break
+
+        case 'ALTO':
+          statusIcon = 'orange'
+          break
+
         case 'INDEFINIDO':
           statusIcon = 'grey-5'
           break
