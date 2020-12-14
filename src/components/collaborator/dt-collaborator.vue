@@ -49,7 +49,7 @@
             :class="{'justify-center': $q.screen.lt.sm}"
             style="width: 100%; margin-top: 1rem"
           >
-            <div class="col-md-2 col-sm-4">
+            <div class="col-md-3 col-sm-4">
               <q-btn
                 label="Adicionar Colaborador"
                 dense
@@ -61,7 +61,7 @@
               />
             </div>
 
-            <div class="col-md-2 col-sm-4">
+            <div class="col-md-3 col-sm-4">
               <q-btn
                 label="Importar lista de Colaboradores"
                 dense
@@ -73,7 +73,7 @@
               />
             </div>
 
-            <div class="col-md-8 col-sm-5">
+            <div class="col-md-6 col-sm-5">
               <q-input
                 class="q-ml-lg float-right"
                 dense
