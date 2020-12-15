@@ -1,7 +1,7 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="events-page">
-      <dt-collaborator />
+  <q-page class="justify-center min-height">
+    <div>
+      <dt-collaborator/>
     </div>
     <di-collaborator style="height: auto !important"/>
     <di-vacation-request />
@@ -27,9 +27,5 @@ export default {
 </script>
 
 <style lang="stylus">
-.events-page {
-  width: 90%;
-  min-height: 80vmin;
-  border-radius: 6px;
-}
+
 </style>

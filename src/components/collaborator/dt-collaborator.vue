@@ -4,6 +4,7 @@
       row-key="id"
       :loading="loading"
       class="my-sticky-header-table"
+      flat
       :data="data"
       :columns="columns"
       :visible-columns="visibleColumns"
@@ -104,15 +105,9 @@
       </template>
 
       <template v-slot:body="props">
-        <!-- {{ props.row}} -->
-        <q-tr :props="props">
-          <q-td :props="props" key="status">
-            <q-icon size="md" v-if="props.row.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
-            <q-icon size="md" v-if="props.row.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
-            <q-icon size="md" v-if="props.row.status === 'ALTO'" color="orange" name="eva-alert-triangle-outline" />
-            <q-icon size="md" v-if="props.row.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
-            <q-icon size="md" v-if="props.row.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
-
+        <q-tr :props="props" class="custom-table">
+          <q-td style="width: 5%" :props="props" key="status">
+            <q-icon size="md" :color="getColorStatus(props.row.status)" :name="getIconStatus(props.row.status)" />
             <q-tooltip
               content-class="bg-grey-1 "
               content-style="font-size: 16px; color: #575858; border: 2px solid #BDBDBF; width: 300px"
@@ -128,23 +123,23 @@
 
           </q-td>
 
-          <q-td auto-width :props="props" key="registration">{{props.row.registration}}</q-td>
-          <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
+          <q-td style="width: 10%" :props="props" key="registration">{{props.row.registration}}</q-td>
+          <q-td style="width: 30%" :props="props" key="name">{{props.row.name}}</q-td>
 
            <q-td
-            auto-width
+            style="width: 10%"
             :props="props"
             key="birthDay"
           >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
 
           <q-td
-            auto-width
+            style="width: 10%"
             :props="props"
             key="hiringDate"
           >{{ props.row.hiringDate | moment('DD-MM-YYYY')}}</q-td>
          
 
-          <q-td auto-width>
+          <q-td style="width: 20%">
             <q-btn
               size="sm"
               flat
@@ -258,8 +253,6 @@ export default {
           label: 'Situação',
           field: 'status',
           sortable: true,
-          style: 'width: 10px',
-          headerStyle: 'width: 50px'
         },
         {
           align: 'left',
@@ -267,8 +260,6 @@ export default {
           label: 'Matricula',
           field: 'registration',
           sortable: true,
-          style: 'width: 10px',
-          headerStyle: 'width: 50px'
         },
         {
           align: 'left',
@@ -298,7 +289,7 @@ export default {
 
   created () {
     EventBus.$on('on-refresh-person', () => {
-      this.onRequest({ pagination: this.pagination, filter: this.filter })
+      this.refresh()
     })
   },
 
@@ -504,7 +495,8 @@ export default {
 
 .my-sticky-header-table
   /* height or max-height is important */
-  height: 80vh
+  @media (max-width: 1368px)
+    height: 110vh
 
   .q-table__top,
   .q-table__bottom,
@@ -522,4 +514,8 @@ export default {
   &.q-table--loading thead tr:last-child th
     /* height of all previous header rows */
     top: 48px
+
+.custom-table td{
+  font-size: 1rem;
+}
 </style>

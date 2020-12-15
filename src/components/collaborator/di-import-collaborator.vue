@@ -16,14 +16,14 @@
         <div class="row items-center justify-center">
           <vue-json-to-csv
             v-if="true"
-            :json-data="[{registration:'', name: '', hiringDate: '', birthDay: ''}]"
+            :json-data="[{registration:'', name: '',  birthDay: '', hiringDate: ''}]"
             separator=";"
             csv-title="Modelo de Colaboradores"
             :labels="{
               registration: { title: 'matricula'},
               nome: { title: 'nome' },
-              hiringDate: { title: 'data_de_admissao' },
-              birthDay: { title: 'data_de_nascimento' }
+              birthDay: { title: 'data_de_nascimento' },
+              hiringDate: { title: 'data_de_admissao' }
             }"
           >
             <q-btn

@@ -15,6 +15,20 @@
           <div class="col-md-5">
             <div class="row justify-start">
               <q-input
+                  class="col-md-12 q-ma-sm"
+                  filled
+                  v-model="person.name"
+                  label="Nome"
+                  dense
+                  error-message="Campo Precisa ser preenchido"
+                  :error="$v.person.name.$error"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="eva-person-outline" />
+                  </template>
+              </q-input>
+              
+              <q-input
                 class="col-md-12 q-ma-sm"
                 filled
                 v-model="person.registration"
@@ -25,22 +39,6 @@
               >
                 <template v-slot:prepend>
                   <q-icon name="eva-file-text-outline" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="row">
-              <q-input
-                class="col-md-12 q-ma-sm"
-                filled
-                v-model="person.name"
-                label="Nome"
-                dense
-                error-message="Campo Precisa ser preenchido"
-                :error="$v.person.name.$error"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="eva-person-outline" />
                 </template>
               </q-input>
             </div>
@@ -233,6 +231,8 @@ export default {
 
         this.loading = true
         await axiosFunction(url, employeePayload)
+
+        EventBus.$emit('on-refresh-person')
         this.loading = false
         
         this.cleanFields()
@@ -251,7 +251,6 @@ export default {
     cleanFields () {
       this.person = {}
       this.$nextTick(() => { this.$v.$reset() })
-      EventBus.$emit('on-refresh-person')
       this.onHideModal()
     },
 

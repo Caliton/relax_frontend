@@ -203,11 +203,3 @@ export default {
     &:hover
       color: #000
 </style>
-
-<style lang="stylus">
-  #app
-    // @media screen (max-width 1370px)
-    zoom: .8; 
-    -moz-transform: scale(1); 
-    -moz-transform-origin: 0 0;
-</style>

@@ -27,7 +27,7 @@
               </div>
           </div>
 
-          <q-card class="form-login">
+          <q-card class="form-login ajust-screen">
             <q-img src="~assets/logo_2.png" style="max-width: 750px; position: absolute; transform: translateY(-120px)" />
             <q-card-section>
               <q-form @submit="onLogin" class="login-form">
@@ -35,8 +35,7 @@
                   v-model="user.username"
                   input-style="color: #6F6F6F"
                   color="primary"
-                  rounded
-                  standout="bg-white text-black"
+                  filled
                   label="Login"
                   lazy-rules
                   :rules="[
@@ -52,10 +51,9 @@
 
                 <q-input
                   v-model="user.password"
-                  rounded
                   icon="eva-lock"
                   input-style="color: #6F6F6F"
-                  standout="bg-grey-3"
+                  filled
                   :type="isPwd ? 'password' : 'text'"
                   label="Password"
                   lazy-rules
@@ -386,5 +384,11 @@ body {
     opacity: 1;
   }
 }
+
+.ajust-screen
+  zoom .8
+// @media (min-width: 1920px)
+//   body
+//     zoom: 90%;
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="flex flex-center min-height">
     <div class="events-page">
       <dt-holiday />
     </div>
