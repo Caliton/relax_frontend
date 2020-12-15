@@ -128,6 +128,7 @@
 
           </q-td>
 
+          <q-td auto-width :props="props" key="registration">{{props.row.registration}}</q-td>
           <q-td auto-width :props="props" key="name">{{props.row.name}}</q-td>
 
            <q-td
@@ -248,7 +249,7 @@ export default {
         rowsPerPage: 10,
         rowsNumber: 10
       },
-      visibleColumns: ['status', 'name', 'hiringDate', 'birthDay'],
+      visibleColumns: ['status', 'registration', 'name', 'hiringDate', 'birthDay'],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
@@ -256,6 +257,15 @@ export default {
           name: 'status',
           label: 'Situação',
           field: 'status',
+          sortable: true,
+          style: 'width: 10px',
+          headerStyle: 'width: 50px'
+        },
+        {
+          align: 'left',
+          name: 'registration',
+          label: 'Matricula',
+          field: 'registration',
           sortable: true,
           style: 'width: 10px',
           headerStyle: 'width: 50px'
@@ -277,7 +287,7 @@ export default {
         {
           align: 'left',
           name: 'hiringDate',
-          label: 'Data de admissão',
+          label: 'Data de Admissão',
           field: 'hiringDate',
           sortable: true
         },

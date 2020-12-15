@@ -7,138 +7,106 @@
       </q-toolbar>
 
       <q-card-section style="height: auto !important;">
-        <div class="row justify-center">
-          <q-input
-            class="col-md-8 q-ma-sm"
-            filled
-            v-model="person.name"
-            label="Nome"
-            dense
-            error-message="Campo Precisa ser preenchido"
-            :error="$v.person.name.$error"
-          >
-            <template v-slot:prepend>
-              <q-icon name="eva-person-outline" />
-            </template>
-          </q-input>
+        <div class="row justify-around">
+          <div class="col-md-5 flex flex-center">
+            <q-img src="~src/statics/new_person.png" style="max-width: 500px; opacity: .8" />
+          </div>
+
+          <div class="col-md-5">
+            <div class="row justify-start">
+              <q-input
+                class="col-md-12 q-ma-sm"
+                filled
+                v-model="person.registration"
+                label="Matricula"
+                dense
+                error-message="Campo Precisa ser preenchido"
+                :error="$v.person.registration.$error"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="eva-file-text-outline" />
+                </template>
+              </q-input>
+            </div>
+
+            <div class="row">
+              <q-input
+                class="col-md-12 q-ma-sm"
+                filled
+                v-model="person.name"
+                label="Nome"
+                dense
+                error-message="Campo Precisa ser preenchido"
+                :error="$v.person.name.$error"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="eva-person-outline" />
+                </template>
+              </q-input>
+            </div>
+
+            <div class="row justify-start ajusta-layout-calendar">
+              <q-input
+                class="col-md-12 q-ma-sm"
+                filled
+                dense
+                v-model="person.birthDay"
+                mask="##-##-####"
+                reverse-fill-mask
+                label="Data de Nascimento"
+                error-message="Campo precisa ser preenchido"
+                :error="$v.person.birthDay.$error"
+                @blur="$v.person.birthDay.$touch()"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      ref="qDateProxy"
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date v-model="person.birthDay" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Fechar" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input
+                class="col-md-12 q-ma-sm"
+                filled
+                reverse-fill-mask
+                dense
+                v-model="person.hiringDate"
+                mask="##-##-####"
+                label="Data de Admissão"
+                error-message="Campo precisa ser preenchido"
+                :error="$v.person.hiringDate.$error"
+                @blur="$v.person.hiringDate.$touch()"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      ref="qDateProxy"
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date v-model="person.hiringDate" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Fechar" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </div>
         </div>
 
-        <div class="row justify-center ajusta-layout-calendar">
-          <q-input
-            class="col-md-4 q-ma-sm"
-            filled
-            dense
-            v-model="person.birthDay"
-            mask="##-##-####"
-            reverse-fill-mask
-            label="Data de Nascimento"
-            error-message="Campo precisa ser preenchido"
-            :error="$v.person.birthDay.$error"
-            @blur="$v.person.birthDay.$touch()"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  ref="qDateProxy"
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="person.birthDay" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Fechar" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-
-          <q-input
-            class="col-md-4 q-ma-sm"
-            filled
-            reverse-fill-mask
-            dense
-            v-model="person.hiringDate"
-            mask="##-##-####"
-            label="Data de Admissão"
-            error-message="Campo precisa ser preenchido"
-            :error="$v.person.hiringDate.$error"
-            @blur="$v.person.hiringDate.$touch()"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  ref="qDateProxy"
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="person.hiringDate" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Fechar" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-<!--           
-          <v-date-picker class="col-md-4 q-ma-sm"  :value="person.hiringDate" color="green">
-            <template v-slot="{ inputValue }">
-              <div>
-                <div v-show="false">
-                  {{ person.hiringDate = inputValue? inputValue : person.hiringDate }}
-                </div>
-                <div>
-                  <q-input
-                    class="col-md-4 q-ma-sm"
-                    filled
-                    dense
-                    mask="##/##/####"
-                    v-model="person.hiringDate"
-                    label="Data de admissão"
-                    error-message="Campo precisa ser preenchido"
-                    :error="$v.person.hiringDate.$error"
-                    @blur="$v.person.hiringDate.$touch()"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="event" class="cursor-pointer" />
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-            </template>
-          </v-date-picker>
-
-          <v-date-picker class="col-md-4 q-ma-sm" :value="person.birthDay" color="green">
-            <template v-slot="{ inputValue }">
-              <div>
-                <div v-show="false">
-                  {{ person.birthDay = inputValue? inputValue : person.birthDay }}
-                </div>
-                <div>
-                  <q-input
-                    class="col-md-4 q-ma-sm"
-                    filled
-                    dense
-                    mask="##/##/####"
-                    v-model="person.birthDay"
-                    label="Data de Nascimento"
-                    error-message="Campo precisa ser preenchido"
-                    :error="$v.person.birthDay.$error"
-                    @blur="$v.person.birthDay.$touch()"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="event" class="cursor-pointer" />
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-            </template>
-          </v-date-picker> -->
-        </div>
-
-        <!-- <q-btn label="INSERE TUDO" @click="insertMonster" /> -->
-        <!-- <q-input outlined v-model="text" :dense="dense" /> -->
       </q-card-section>
 
       <q-card-section></q-card-section>
@@ -202,6 +170,7 @@ export default {
       loading: false,
       person: {
         name: '',
+        registration: '',
         hiringDate: '',
         birthDay: ''
       },
@@ -219,6 +188,7 @@ export default {
   validations: {
     person: {
       name: { required },
+      registration: { required },
       hiringDate: { required },
       birthDay: { required }
     }
@@ -264,7 +234,7 @@ export default {
         this.loading = true
         await axiosFunction(url, employeePayload)
         this.loading = false
-
+        
         this.cleanFields()
       } catch (e) {
         this.loading = false

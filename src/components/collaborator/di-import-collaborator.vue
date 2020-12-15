@@ -16,11 +16,12 @@
         <div class="row items-center justify-center">
           <vue-json-to-csv
             v-if="true"
-            :json-data="[{name: '', hiringDate: '', birthDay: ''}]"
+            :json-data="[{registration:'', name: '', hiringDate: '', birthDay: ''}]"
             separator=";"
             csv-title="Modelo de Colaboradores"
             :labels="{
-              nome: { title: 'Nome' },
+              registration: { title: 'matricula'},
+              nome: { title: 'nome' },
               hiringDate: { title: 'data_de_admissao' },
               birthDay: { title: 'data_de_nascimento' }
             }"
@@ -39,6 +40,10 @@
       </q-card-section>
 
       <q-card-section class="flex flex-center">
+        <div class="row justify-center">
+          <q-img src="~src/statics/new_persons.png" style="max-width: 500px; opacity: .8" />
+        </div>
+        
         <div class="q-mb-lg">
           <q-icon size="2em" name="eva-settings-outline" color="primary" />
           <span
@@ -52,7 +57,7 @@
             v-model="csv"
             inputClass="col-md-12 custom-file-input"
             :headers="true"
-            :map-fields="['nome', 'data_de_admissao', 'data_de_nascimento']"
+            :map-fields="['matricula', 'nome', 'data_de_admissao', 'data_de_nascimento']"
             autoMatchFields
             autoMatchIgnoreCase
             @reset-csv="csv = []"
@@ -151,13 +156,11 @@ export default {
     csv: function (itens) {
       this.sendCsv = []
       this.failImportation = false
-      const cleanItens = itens.filter((item) => item.categoria !== '')
 
-      if (cleanItens.length > 0) {
-        cleanItens.forEach(employee => {
-          this.sendCsv.push(this.brigdeEmployee(employee))
-        })
-      }
+      itens.forEach(employee => {
+        this.sendCsv.push(this.brigdeEmployee(employee))
+      })
+      
     }
   },
 
@@ -177,7 +180,9 @@ export default {
   methods: {
 
     brigdeEmployee (item) {
+      console.log('resultado: ', item)
       const employee = {}
+      employee.registration = item.matricula
       employee.name = item.nome
       employee.hiringDate = this.$moment(item.data_de_admissao, 'DD/MM/YYYY').format('YYYY-MM-DD')
       employee.birthDay = this.$moment(item.data_de_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
@@ -208,24 +213,18 @@ export default {
       }
     },
 
-    // async registerEmployees () {
-    //   // try {
-    //   //   if (!this.sendCsv) { return }
-    //   //   this.loading = true
-    //   //   await this.$axios.post(api.employeesMany, this.sendCsv)
-    //   //   this.loading = false
-    //   //   this.onHideDialog()
-    //   //   EventBus.$emit('on-refresh-employee')
-    //   // } catch (e) {
-    //   //   this.listFails = e.response.data.employeesNotCreated
-    //   //   this.failImportation = true
-    //   //   this.loading = false
-    //   // }
-    // },
-
     async registerEmployees () {  
       try {
+        console.log('Pacotes de Colaboradores: ', this.sendCsv);
         let result = await this.$axios.post("person/bulk", { data: this.sendCsv})
+        
+        EventBus.$emit('showNotify', {
+        color: 'green',
+        textColor: 'white',
+        icon: 'eva-info-outline',
+        message: result.data.message
+      })
+        
         EventBus.$emit('on-refresh-person')
         this.onHideDialog()
       } catch (e) {
