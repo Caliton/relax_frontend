@@ -190,7 +190,7 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-icon size="2em" name="thumb_down" color="red" />
-          <span class="q-ml-sm">Deseja mesmo excluir a Avaliação?</span>
+          <span class="q-ml-sm">Deseja mesmo excluir o Colaborador?</span>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -198,7 +198,7 @@
           <q-btn
             flat
             no-caps
-            label="Sim, não quero mais!"
+            label="Desejo sim!"
             color="red"
             @click="deletePerson"
             v-close-popup
