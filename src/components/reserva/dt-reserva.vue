@@ -4,6 +4,8 @@
       title="Reservas"
       :data="data"
       :columns="columns"
+      class="my-sticky-header-table"
+      flat
       row-key="id"
       :pagination.sync="pagination"
       no-data-label="Ainda não temos solicitações de reservas"
@@ -15,13 +17,15 @@
       binary-state-sort
     >
       <template v-slot:top>
-        <span style="font-size: 24px">Reservas</span>
-        <q-space />
-        <!-- <q-input borderless dense debounce="300" color="primary" v-model="filter">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>-->
+        <div style="width: 100%">
+          <div class="row">
+            <div class="col" style="display: block">
+              <q-icon name="eva-sun-outline" color="primary" size="md" style="display: block;"/>
+              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Reservas</span>
+              <p class="subtitle">Lista de todas solicitações de reservas de seus colaboradores.</p>
+            </div>
+          </div>
+        </div>
       </template>
 
       <template v-slot:header="props">
@@ -254,3 +258,35 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.subtitle
+  color: #555d61;
+  font: 16px/24px Avenir Next W01,Helvetica,Arial,sans-serif;
+
+.my-sticky-header-table
+  /* height or max-height is important */
+  @media (max-width: 1368px)
+    height: 110vh
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th
+    /* bg color is important for th; just specify one */
+    background-color: #c1f4cd
+
+  thead tr th
+    position: sticky
+    z-index: 1
+  thead tr:first-child th
+    top: 0
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+
+.custom-table td{
+  font-size: 1rem;
+}
+</style>
