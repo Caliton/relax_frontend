@@ -16,7 +16,60 @@
         <div class="text-white justify-center flex flex-center">
           <div class="row" v-if="this.vacationsCombo.length > 0">
             <q-btn :disable="!(this.number > 0)" @click="setLeftPeriodo" color="white" round flat size="md" class="q-mr-md" icon="eva-chevron-left-outline"/>
-            <span class="text-weight-medium flex-center flex" style="font-size:1.3rem;">{{this.vacationsCombo[this.number].label}}</span>
+            
+            <q-btn flat class="text-weight-medium flex-center flex" style="font-size:1.3rem;">
+              {{this.vacationsCombo[this.number].label}}
+
+              <q-menu
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-list style="min-width: 100px">
+                  <q-item clickable>
+                    <q-item-section>Novo Período</q-item-section>
+                    <q-menu anchor="top left" self="top left">
+                      <div class="row no-wrap q-pa-md">
+                        <div class="column q-gutter-sm">
+                          <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
+
+                          <q-input
+                            filled
+                            v-model="vacationTime.vacationYear"
+                            label="Ano"
+                            dense
+                            lazy-rules
+                          />
+
+                          <q-input
+                            filled
+                            v-model="vacationTime.daysAllowed"
+                            label="Dias de direito"
+                            dense
+                            lazy-rules
+                          />
+
+                          <q-btn
+                            color="primary"
+                            class="q-mt-lg"
+                            label="Salvar"
+                            :loading="loadingVacationTime"
+                            @click="registerVacationTime"
+                            push
+                            size="sm"
+                            v-close-popup
+                          />
+                        </div>
+                      </div>
+                    </q-menu>
+                  </q-item>
+                  <q-item clickable @click="showDialogDeletePeriodo">
+                    <q-item-section>Deletar Período</q-item-section>
+                  </q-item>
+                  <q-separator />
+                </q-list>
+              </q-menu>      
+            </q-btn>
+            
             <q-btn :disable="!(this.number < this.vacationsCombo.length -1)" @click="setRightPeriodo" color="white" round flat size="md" class="q-ml-md" icon="eva-chevron-right-outline"/>
           </div>
 
@@ -74,7 +127,7 @@
       </q-card-section>
 
       
-      <q-card-section style="margin-top: .3rem; margin-right: .3rem" v-if="(this.vacationsCombo.length > 0)">
+      <!-- <q-card-section style="margin-top: .3rem; margin-right: .3rem" v-if="(this.vacationsCombo.length > 0)">
         <div class="row absolute-right">
           <q-btn label="Cadastrar Período" no-caps color="green" rounded outline size="md" class="q-ml-md">
             <q-menu anchor="top left" self="top left">
@@ -113,7 +166,7 @@
             </q-menu>
           </q-btn>
         </div>
-      </q-card-section>
+      </q-card-section> -->
 
       <q-card-section class="q-ml-xl q-mt-sm q-mr-xl">
         <div style="width: 100%">
@@ -236,43 +289,28 @@
           </div>
         </div>
       </q-card-section>
-
-      <!-- <q-card-section class="q-pa-xs absolute-bottom text-center" style="color: #999999">
-        {{getNameStatus(this.colaborator.status)}}.
-      </q-card-section> -->
-      <!-- <q-card-section>
-        Status:<p :style="[{'color': this.getColor(this.colaborator.status)}, 'font-size: 13pt']">{{getNameStatus(this.colaborator.status)}}</p>
-      </q-card-section> -->
-
-      <!-- <q-card-section class="q-ml-xl">
-        <div class="row q-gutter-md">
-          <div v-if="vacationSelected.id">
-            <span :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">Data Limite:
-            {{vacationSelected.limitDate | moment('DD-MM-YYYY') }}
-            </span>
-            <br />
-            <span>Limite com 6 meses:</span>
-            {{vacationSelected.limit6Months | moment('DD-MM-YYYY') }}
-            <br />
-          </div>
-        </div>
-      </q-card-section> -->
-
-      <!-- <q-card-section>
-        <p style="color: #4caf50; font-size: 20pt">Solicitação</p>
-
-        <v-date-picker class v-model="attributes" mode="range" is-inline />
-      </q-card-section> -->
-      <!-- <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
-        <q-btn
-          color="green"
-          dense
-          no-caps
-          label="Salvar"
-          @click="registerVacationRequest"
-          v-close-popup
-        /> -->
     </q-card>
+
+    <q-dialog v-model="showDeletePeriodo" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon size="2em" name="eva-trash-2-outline" color="red" />
+          <span class="q-ml-sm">Deseja mesmo excluir o Período?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
+          <q-btn
+            flat
+            no-caps
+            label="Sim!"
+            color="red"
+            @click="deletePeriodo"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-dialog>
 </template>
 
@@ -330,6 +368,7 @@ export default {
       attributes: [],
       moment: moment,
       number: 0,
+      showDeletePeriodo: false,
       colaborator: {},
       listRequests: [],
       // listRequests: [],
@@ -364,6 +403,10 @@ export default {
       }
     },
 
+    showDialogDeletePeriodo () {
+      this.showDeletePeriodo = true
+    },
+
     setLeftPeriodo () {
       if (this.number > 0) {
         this.number--    
@@ -380,19 +423,10 @@ export default {
       }
     },
 
-    removeAt (idx) {
-      this.guests.splice(idx, 1)
-    },
-
     updateRequest (item) {
       item.vacationTimeId = this.vacationsCombo[this.number].value
 
       EventBus.$emit('on-edit-days-off', item)
-    },
-
-    add () {
-      this.id++
-      this.guests.push({ id: this.id, name: '', relationShip: '' })
     },
 
     onShowModal () {
@@ -414,34 +448,6 @@ export default {
 
     setVacationCombo (vacationSelected) {
       this.vacationSelected = this.vacations.find((item) => item.id === vacationSelected.value)
-    },
-
-    getColorStatus (item) {
-      let statusIcon = ''
-      switch (item) {
-        case 'MEDIO':
-          statusIcon = 'yellow'
-          break
-        case 'NORMAL':
-          statusIcon = 'green'
-          break
-        case 'CRITICO':
-          statusIcon = 'red'
-          break
-        
-        case 'ALTO':
-          statusIcon = 'orange'
-          break
-        
-        case 'INDEFINIDO':
-          statusIcon = 'green'
-          break
-
-        default:
-          statusIcon = 'Status não identificado'
-          break
-      }
-      return statusIcon
     },
 
     async getVacationsTimes (personId) {
@@ -494,6 +500,45 @@ export default {
         console.log(e)
         this.loadingVacationTime = false
       }
+    },
+
+    async deletePeriodo () {
+      try {
+        await this.$axios.delete(`vacationtime/${this.vacationsCombo[this.number].value}`)
+
+        this.getVacationsTimes()
+
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    getColorStatus (item) {
+      let statusIcon = ''
+      switch (item) {
+        case 'MEDIO':
+          statusIcon = 'yellow'
+          break
+        case 'NORMAL':
+          statusIcon = 'green'
+          break
+        case 'CRITICO':
+          statusIcon = 'red'
+          break
+        
+        case 'ALTO':
+          statusIcon = 'orange'
+          break
+        
+        case 'INDEFINIDO':
+          statusIcon = 'green'
+          break
+
+        default:
+          statusIcon = 'Status não identificado'
+          break
+      }
+      return statusIcon
     },
 
     getColor (item) {
@@ -563,7 +608,6 @@ export default {
     getNameStatus (item) {
       let statusName = ''
  
-
       switch (item) {
         case 'NORMAL':
           statusName = 'Este colaborador se encontra em uma situação normal, 1 ano  (tem direito a férias)'
@@ -612,33 +656,6 @@ export default {
       this.showInputVacationTime = false
       this.vacationsCombo = []
       this.selectedOption = { label: '-', value: 0 }
-    },
-
-    async confirm () {
-      try {
-        let axiosFunction = this.$axios.post
-        let url = 'person'
-
-        let result = {}
-
-        if (!this.person.id) {
-          result = await axiosFunction(url, this.person)
-          this.person.id = result.data.id
-        }
-
-        if (this.person.id) {
-          url += `/${this.person.id}/`
-          axiosFunction = this.$axios.put
-
-          await axiosFunction(url, this.person)
-          EventBus.$emit('on-refresh-evaluation')
-        }
-
-        EventBus.$emit('on-refresh-person')
-        this.onHideModal()
-      } catch (e) {
-        console.log(e)
-      }
     },
 
     canceled () {
