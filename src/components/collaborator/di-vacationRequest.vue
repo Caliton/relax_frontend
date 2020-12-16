@@ -120,53 +120,11 @@
         <q-icon size="md" v-if="this.colaborator.status === 'INDEFINIDO'" color="grey-5" name="eva-alert-circle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'NORMAL'" color="green" name="eva-checkmark-circle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'ALTO'" color="orange" name="eva-alert-triangle-outline" />
-        <q-icon size="md" v-if="this.colaborator.status === 'MEDIO'" color="yellow" name="eva-alert-triangle-outline" />
+        <q-icon size="md" v-if="this.colaborator.status === 'MEDIO'" color="yellow-7" name="eva-alert-triangle-outline" />
         <q-icon size="md" v-if="this.colaborator.status === 'CRITICO'" color="red" name="eva-alert-triangle-outline" />
         {{getNameStatus(this.colaborator.status)}}.
         </span>
       </q-card-section>
-
-      
-      <!-- <q-card-section style="margin-top: .3rem; margin-right: .3rem" v-if="(this.vacationsCombo.length > 0)">
-        <div class="row absolute-right">
-          <q-btn label="Cadastrar Período" no-caps color="green" rounded outline size="md" class="q-ml-md">
-            <q-menu anchor="top left" self="top left">
-              <div class="row no-wrap q-pa-md">
-                <div class="column q-gutter-sm">
-                  <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
-
-                  <q-input
-                    filled
-                    v-model="vacationTime.vacationYear"
-                    label="Ano"
-                    dense
-                    lazy-rules
-                  />
-
-                  <q-input
-                    filled
-                    v-model="vacationTime.daysAllowed"
-                    label="Dias de direito"
-                    dense
-                    lazy-rules
-                  />
-
-                  <q-btn
-                    color="primary"
-                    class="q-mt-lg"
-                    label="Salvar"
-                    :loading="loadingVacationTime"
-                    @click="registerVacationTime"
-                    push
-                    size="sm"
-                    v-close-popup
-                  />
-                </div>
-              </div>
-            </q-menu>
-          </q-btn>
-        </div>
-      </q-card-section> -->
 
       <q-card-section class="q-ml-xl q-mt-sm q-mr-xl">
         <div style="width: 100%">
@@ -177,12 +135,18 @@
               <p class="subtitle">Aqui você pode gerir solicitações de férias de seus Colaboradores.</p>
             </div>
 
-
             <div
               class="col-md-7 bg-grey-3 offset-md-1 row justify-around"
               style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
             >
-              
+               <div class="q-pa-sm text-subtitle1">
+                <span v-if="vacationSelected.limit6Months" :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]">
+                  Período {{ vacationSelected.vacationDate | moment('DD-MM-YYYY') }} ao {{ vacationSelected.limitDate | moment('DD-MM-YYYY')}}
+                </span>
+              </div>
+
+              <q-separator inset />
+
               <div class="column justify-center text-center" style="transform: scale(.9);">
                 <span style="display: inline-block;"> {{vacationSelected.daysAllowed}} </span>
                 <span class="text-weight-regular text-h6">Dias Totais</span>
@@ -202,6 +166,12 @@
                 <span class="text-weight-regular text-h6">Dias Agendados</span>
               </div>
 
+              <q-separator vertical inset />
+
+              <div class="column justify-center text-center" style="transform: scale(.9);">
+                <span style="display: inline-block;"> {{vacationSelected.daysEnjoyed}}</span>
+                <span class="text-weight-regular text-h6">Dias Usufruído</span>
+              </div>
               <q-separator inset />
 
               <div class="q-pa-sm text-subtitle1">
@@ -517,7 +487,7 @@ export default {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
-          statusIcon = 'yellow'
+          statusIcon = 'yellow-7'
           break
         case 'NORMAL':
           statusIcon = 'green'
@@ -549,7 +519,7 @@ export default {
           color = '#4CAF50'
           break
         case 'MEDIO':
-          color = 'yellow'
+          color = 'yellow-7'
           break
         case 'ALTO':
           color = 'orange'

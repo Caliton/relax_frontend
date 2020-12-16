@@ -4,6 +4,7 @@
       row-key="id"
       :loading="loading"
       class="my-sticky-header-table"
+      style="background-color: #FAFAFA"
       flat
       :data="data"
       :columns="columns"
@@ -333,17 +334,21 @@ export default {
         else if (moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'CRITICO'
         }
-        
-        else if (moment(item.vacationNew[0].limit6Months).subtract(2, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+
+        else if (moment(item.vacationNew[0].limit6Months).subtract(3, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'ALTO'
         }
 
-        else if (moment(item.vacationNew[0].limit6Months).subtract(3, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        else if (moment(item.vacationNew[0].limit6Months).subtract(5, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
           returnedData.data[i].status = 'MEDIO'
         }
-        
-        else {
-          returnedData.data[i].status = 'NORMAL'
+
+        else if (moment(item.hiringDate).add(12, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+            returnedData.data[i].status = 'NORMAL'
+        }
+
+        if (moment(item.hiringDate).add(12, 'month').format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')){
+          returnedData.data[i].status = 'NOVATO'
         }
       })
 
@@ -376,6 +381,9 @@ export default {
         case 'INDEFINIDO':
           statusName = 'Este colaborador não teve seu periodo configurado'
           break
+        case 'NOVATO':
+          statusName = 'Este colaborador ainda não completou um ano na empresa'
+          break
 
         default:
           statusName = 'Status não identificado'
@@ -405,6 +413,10 @@ export default {
           statusIcon = 'eva-alert-circle-outline'
           break
 
+        case 'NOVATO':
+          statusIcon = 'fas fa-baby'
+          break
+
         default:
           statusIcon = 'Status não identificado'
           break
@@ -416,7 +428,7 @@ export default {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
-          statusIcon = 'yellow'
+          statusIcon = 'yellow-7'
           break
 
         case 'NORMAL':
@@ -432,6 +444,7 @@ export default {
           break
 
         case 'INDEFINIDO':
+        case 'NOVATO':
           statusIcon = 'grey-5'
           break
 

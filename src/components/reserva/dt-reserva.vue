@@ -5,6 +5,7 @@
       :data="data"
       :columns="columns"
       class="my-sticky-header-table"
+      style="background-color: #FAFAFA"
       flat
       row-key="id"
       :pagination.sync="pagination"
