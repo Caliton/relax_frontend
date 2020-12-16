@@ -41,6 +41,7 @@
 
       <template v-slot:body="props">
         <q-tr :props="props">
+          <q-td auto-width :props="props" key="registration">{{props.row.registration}}</q-td>
           <q-td auto-width :props="props" key="person">{{props.row.person}}</q-td>
           <q-td
             auto-width
@@ -119,6 +120,7 @@ export default {
         rowsNumber: 10
       },
       visibleColumns: [
+        'registration',
         'person',
         'startDate',
         'finalDate',
@@ -127,6 +129,15 @@ export default {
       ],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
+        {
+          align: 'left',
+          name: 'registration',
+          label: 'Matricula',
+          field: 'registration',
+          sortable: true,
+          style: 'width: 10px',
+          headerStyle: 'width: 50px'
+        },
         {
           align: 'left',
           name: 'person',
@@ -198,6 +209,7 @@ export default {
       result.data.forEach((item) => {
         cleanDataResult = Object.assign({}, cleanDataResult)
         cleanDataResult.id = item.id
+        cleanDataResult.registration = item.person.registration
         cleanDataResult.person = item.person.name
         cleanDataResult.startDate = item.startDate
         cleanDataResult.finalDate = item.finalDate
