@@ -21,7 +21,7 @@
             csv-title="Modelo de Colaboradores"
             :labels="{
               registration: { title: 'matricula'},
-              nome: { title: 'nome' },
+              name: { title: 'nome' },
               birthDay: { title: 'data_de_nascimento' },
               hiringDate: { title: 'data_de_admissao' }
             }"
