@@ -203,3 +203,23 @@ export default {
     &:hover
       color: #000
 </style>
+
+<style lang="stylus">
+@media (max-width: 1368px) {
+  body {
+    zoom: 80%;
+    -moz-transform: scale(0.8);
+    -moz-transform-origin: 0 0;
+  }
+
+  .min-height {
+    min-height: 768px !important;
+  }
+}
+
+@media (min-width: 1900px) {
+  body {
+    zoom: 100%;
+  }
+}
+</style>

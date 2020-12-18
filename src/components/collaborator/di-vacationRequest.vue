@@ -6,7 +6,7 @@
     persistent
     @before-hide="onHideDialog"
   >
-    <q-card style="max-width: 72vw; min-width: 60vw; min-height: 80vh; max-height: 100vh">
+    <q-card style="max-width: 72vw; min-width: 60vw; min-height: 80vh; max-height: 120vh">
       <q-toolbar class="text-white shadow-1 bg-green">
         <q-toolbar-title class="flex flex-center">
           <q-icon
@@ -211,7 +211,7 @@
                 <span
                   v-if="vacationSelected.limit6Months"
                   :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]"
-                >Período {{ vacationSelected.vacationDate | moment('DD-MM-YYYY') }} ao {{ vacationSelected.limitDate | moment('DD-MM-YYYY')}}</span>
+                >Período {{ vacationSelected.vacationDate | moment('DD-MM-YYYY') }} ao {{ vacationSelected.finalVacationTime | moment('DD-MM-YYYY') }}</span>
               </div>
 
               <q-separator inset />
@@ -534,6 +534,13 @@ export default {
         item => item.id === vacationSelected.value
       )
 
+      this.vacationSelected = {
+        ...this.vacationSelected,
+        finalVacationTime: moment(this.vacationSelected.vacationDate).add(
+          12,
+          'month'
+        )
+      }
       this.checkingStatus()
     },
 

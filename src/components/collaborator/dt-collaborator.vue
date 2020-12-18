@@ -26,14 +26,19 @@
         <div style="width: 100%">
           <div class="row">
             <div class="col" style="display: block">
-              <q-icon name="eva-people-outline" color="primary" size="md" style="display: block;"/>
+              <q-icon name="eva-people-outline" color="primary" size="md" style="display: block;" />
               <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Colaboradores</span>
               <p class="subtitle">Lista de todos os funcionários de sua empresa.</p>
             </div>
 
-            <div class="col-md-3 bg-grey-3 offset-md-3 row justify-around" style="border-radius: 1rem; transform: scale(.7);">
+            <div
+              class="col-md-3 bg-grey-3 offset-md-3 row justify-around"
+              style="border-radius: 1rem; transform: scale(.7);"
+            >
               <div class="column justify-center text-center">
-                <span style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">{{data.length}} </span>
+                <span
+                  style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
+                >{{data.length}}</span>
                 <span class="text-weight-regular text-h6">Colaboradores</span>
               </div>
 
@@ -42,7 +47,7 @@
               <!-- <div class="column justify-center text-center">
                 <span style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">{{data.filter((item) => item.status === 'CRITICO').length}} </span>
                 <span class="text-weight-regular text-h6">Aviso</span>
-              </div> -->
+              </div>-->
             </div>
           </div>
 
@@ -91,7 +96,6 @@
           </div>
         </div>
       </template>
-      
 
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -108,7 +112,11 @@
       <template v-slot:body="props">
         <q-tr :props="props" class="custom-table">
           <q-td style="width: 5%" :props="props" key="status">
-            <q-icon size="md" :color="getColorStatus(props.row.status)" :name="getIconStatus(props.row.status)" />
+            <q-icon
+              size="md"
+              :color="getColorStatus(props.row.status)"
+              :name="getIconStatus(props.row.status)"
+            />
             <q-tooltip
               content-class="bg-grey-1 "
               content-style="font-size: 16px; color: #575858; border: 2px solid #BDBDBF; width: 300px"
@@ -116,18 +124,26 @@
               :delay="300"
             >
               <div>
-                &nbsp;<q-icon size="22px" :name="getIconStatus(props.row.status)" :color="getColorStatus(props.row.status)" />&nbsp;
-                <span :style="{color: getColorStatus(props.row.status)}">{{props.row.status}}</span> <br>
-                <span class="subtitle" style="font-size: .9rem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getNameStatus(props.row.status)}}</span>
+                &nbsp;
+                <q-icon
+                  size="22px"
+                  :name="getIconStatus(props.row.status)"
+                  :color="getColorStatus(props.row.status)"
+                />&nbsp;
+                <span :style="{color: getColorStatus(props.row.status)}">{{props.row.status}}</span>
+                <br />
+                <span
+                  class="subtitle"
+                  style="font-size: .9rem"
+                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getNameStatus(props.row.status)}}</span>
               </div>
             </q-tooltip>
-
           </q-td>
 
           <q-td style="width: 10%" :props="props" key="registration">{{props.row.registration}}</q-td>
           <q-td style="width: 30%" :props="props" key="name">{{props.row.name}}</q-td>
 
-           <q-td
+          <q-td
             style="width: 10%"
             :props="props"
             key="birthDay"
@@ -138,7 +154,6 @@
             :props="props"
             key="hiringDate"
           >{{ props.row.hiringDate | moment('DD-MM-YYYY')}}</q-td>
-         
 
           <q-td style="width: 20%">
             <q-btn
@@ -196,24 +211,12 @@
 
         <q-card-actions align="right">
           <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
-          <q-btn
-            flat
-            no-caps
-            label="Desejo sim!"
-            color="red"
-            @click="deletePerson"
-            v-close-popup
-          />
+          <q-btn flat no-caps label="Desejo sim!" color="red" @click="deletePerson" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <di-import-colaborador
-      ref="di-import-colaborador"
-      :columns="columns"
-      :data="data"
-    />
-
+    <di-import-colaborador ref="di-import-colaborador" :columns="columns" :data="data" />
   </div>
 </template>
 
@@ -223,17 +226,16 @@ import { EventBus } from 'src/functions/event_bus.js'
 import moment from 'moment'
 import DiImportColaborador from './di-import-collaborator'
 
-
 export default {
   name: 'dt-colaborator',
 
   props: ['btn-primary'],
 
   components: {
-    'di-import-colaborador': DiImportColaborador,
+    'di-import-colaborador': DiImportColaborador
   },
 
-  data () {
+  data() {
     return {
       filter: '',
       showDelete: false,
@@ -245,7 +247,13 @@ export default {
         rowsPerPage: 10,
         rowsNumber: 10
       },
-      visibleColumns: ['status', 'registration', 'name', 'hiringDate', 'birthDay'],
+      visibleColumns: [
+        'status',
+        'registration',
+        'name',
+        'hiringDate',
+        'birthDay'
+      ],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
@@ -253,14 +261,14 @@ export default {
           name: 'status',
           label: 'Situação',
           field: 'status',
-          sortable: true,
+          sortable: true
         },
         {
           align: 'left',
           name: 'registration',
           label: 'Matricula',
           field: 'registration',
-          sortable: true,
+          sortable: true
         },
         {
           align: 'left',
@@ -282,72 +290,83 @@ export default {
           label: 'Data de Admissão',
           field: 'hiringDate',
           sortable: true
-        },
+        }
       ],
       data: []
     }
   },
 
-  created () {
+  created() {
     EventBus.$on('on-refresh-person', () => {
       this.refresh()
     })
   },
 
-  beforeDestroy () {
+  beforeDestroy() {
     EventBus.$off('on-refresh-person')
   },
 
-  mounted () {
+  mounted() {
     this.refresh()
   },
   methods: {
-
-    setPagination (value) {
+    setPagination(value) {
       this.pagination.page = value
       this.onRequest({ pagination: this.pagination, filter: this.filter })
     },
 
-    openDialogColaborador () {
+    openDialogColaborador() {
       EventBus.$emit('on-new-person')
     },
 
-    openDialogImportColaborador () {
+    openDialogImportColaborador() {
       this.$refs['di-import-colaborador'].showDialog()
     },
 
-    async onRequest (props) {
+    async onRequest(props) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       this.loading = true
 
-      const returnedData = await this.$axios.get(`person?page=${page}`, {params: {
-            filter: this.filter
-          }})
+      const returnedData = await this.$axios.get(`person?page=${page}`, {
+        params: {
+          filter: this.filter
+        }
+      })
 
       returnedData.data.forEach((item, i) => {
-
         if (!item.vacationNew || item.vacationNew.length === 0) {
           returnedData.data[i].status = 'INDEFINIDO'
-        } 
-
-        else if (moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        } else if (
+          moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') <
+          moment().format('YYYY-MM-DD')
+        ) {
           returnedData.data[i].status = 'CRITICO'
-        }
-
-        else if (moment(item.vacationNew[0].limit6Months).subtract(3, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        } else if (
+          moment(item.vacationNew[0].limit6Months)
+            .subtract(3, 'month')
+            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
+        ) {
           returnedData.data[i].status = 'ALTO'
-        }
-
-        else if (moment(item.vacationNew[0].limit6Months).subtract(5, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+        } else if (
+          moment(item.vacationNew[0].limit6Months)
+            .subtract(5, 'month')
+            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
+        ) {
           returnedData.data[i].status = 'MEDIO'
+        } else if (
+          moment(item.hiringDate)
+            .add(12, 'month')
+            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
+        ) {
+          returnedData.data[i].status = 'NORMAL'
         }
 
-        else if (moment(item.hiringDate).add(12, 'month').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
-            returnedData.data[i].status = 'NORMAL'
-        }
-
-        if (moment(item.hiringDate).add(12, 'month').format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')){
+        if (
+          moment(item.hiringDate)
+            .add(12, 'month')
+            .format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')
+        ) {
           returnedData.data[i].status = 'NOVATO'
         }
       })
@@ -362,7 +381,7 @@ export default {
       this.loading = false
     },
 
-    getNameStatus (item) {
+    getNameStatus(item) {
       let statusName = ''
 
       switch (item) {
@@ -370,12 +389,14 @@ export default {
           statusName = '1 ano  (tem direito a férias)'
           break
         case 'MEDIO':
-          statusName = 'de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
+          statusName =
+            'de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
           break
         case 'ALTO':
-          statusName = 'de 1 ano e 4 meses até 1 ano e 6 meses (limite da empresa)'
+          statusName =
+            'de 1 ano e 4 meses até 1 ano e 6 meses (limite da empresa)'
           break
-        case 'CRITICO':  
+        case 'CRITICO':
           statusName = 'de 1 ano e 7 meses até 1 ano e 11 meses (limite da CLT)'
           break
         case 'INDEFINIDO':
@@ -392,7 +413,7 @@ export default {
       return statusName
     },
 
-    getIconStatus (item) {
+    getIconStatus(item) {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
@@ -424,7 +445,7 @@ export default {
       return statusIcon
     },
 
-    getColorStatus (item) {
+    getColorStatus(item) {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
@@ -455,27 +476,27 @@ export default {
       return statusIcon
     },
 
-    openEdit (person) {
+    openEdit(person) {
       EventBus.$emit('on-edit-person', person)
     },
 
-    openDelete (evaluation) {
+    openDelete(evaluation) {
       this.showDelete = true
       this.evaluationFocus = Object.assign({}, evaluation)
     },
 
-    openVacation (data) {
+    openVacation(data) {
       EventBus.$emit('on-show-vacation-request', data)
     },
 
-    refresh () {
+    refresh() {
       this.onRequest({
         pagination: this.pagination,
         filter: undefined
       })
     },
 
-    async deletePerson () {
+    async deletePerson() {
       try {
         this.loading = true
 
@@ -502,33 +523,43 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.subtitle
+.subtitle {
   color: #555d61;
-  font: 16px/24px Avenir Next W01,Helvetica,Arial,sans-serif;
+  font: 16px / 24px Avenir Next W01, Helvetica, Arial, sans-serif;
+}
 
-.my-sticky-header-table
+.my-sticky-header-table {
   /* height or max-height is important */
-  @media (max-width: 1368px)
-    height: 110vh
+  @media (max-width: 1920px) {
+    height: 90vh;
+  }
 
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th
+  @media (max-width: 1368px) {
+    height: 110vh;
+  }
+
+  .q-table__top, .q-table__bottom, thead tr:first-child th {
     /* bg color is important for th; just specify one */
-    background-color: #c1f4cd
+    background-color: #c1f4cd;
+  }
 
-  thead tr th
-    position: sticky
-    z-index: 1
-  thead tr:first-child th
-    top: 0
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+  }
 
   /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
+  &.q-table--loading thead tr:last-child th {
     /* height of all previous header rows */
-    top: 48px
+    top: 48px;
+  }
+}
 
-.custom-table td{
+.custom-table td {
   font-size: 1rem;
 }
 </style>
