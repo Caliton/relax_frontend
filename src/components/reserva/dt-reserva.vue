@@ -21,10 +21,23 @@
         <div style="width: 100%">
           <div class="row">
             <div class="col" style="display: block">
-              <q-icon name="eva-sun-outline" color="primary" size="md" style="display: block;"/>
-              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Reservas</span>
-              <p class="subtitle">Lista de todas solicitações de reservas de seus colaboradores.</p>
+              <q-icon name="eva-sun-outline" color="primary" size="md" style="display: block;" />
+              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Agendamentos</span>
+              <p class="subtitle">Lista de todas solicitações de agendamentos de seus colaboradores.</p>
             </div>
+          </div>
+          <div class="col-md-6 col-sm-5">
+            <q-input
+              class="q-ml-lg float-right"
+              dense
+              filled
+              debounce="300"
+              v-model="filter"
+              placeholder="Busca"
+              style="max-width: 40%"
+            >
+              <q-icon slot="append" name="search" />
+            </q-input>
           </div>
         </div>
       </template>
@@ -80,7 +93,7 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-icon size="2em" name="thumb_down" color="red" />
-          <span class="q-ml-sm">Deseja mesmo excluir a Avaliação?</span>
+          <span class="q-ml-sm">Deseja mesmo excluir a Reserva?</span>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -107,7 +120,7 @@ export default {
 
   props: ['btn-primary'],
 
-  data () {
+  data() {
     return {
       filter: '',
       showDelete: false,
@@ -180,25 +193,25 @@ export default {
     }
   },
 
-  created () {
-    EventBus.$on('on-refresh-person', (event) => {
+  created() {
+    EventBus.$on('on-refresh-person', event => {
       this.refresh()
     })
   },
 
-  beforeDestroy () {
+  beforeDestroy() {
     EventBus.$off('on-refresh-person')
   },
 
-  mounted () {
+  mounted() {
     this.refresh()
   },
   methods: {
-    openDialog () {
+    openDialog() {
       EventBus.$emit('on-new-person')
     },
 
-    async onRequest (props) {
+    async onRequest(props) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       this.loading = true
@@ -206,7 +219,7 @@ export default {
       const result = await this.$axios.get('requests')
       let cleanDataResult = {}
       const listVacations = []
-      result.data.forEach((item) => {
+      result.data.forEach(item => {
         cleanDataResult = Object.assign({}, cleanDataResult)
         cleanDataResult.id = item.id
         cleanDataResult.registration = item.person.registration
@@ -219,7 +232,6 @@ export default {
         listVacations.push(cleanDataResult)
       })
 
-
       this.data.splice(0, this.data.length, ...listVacations)
 
       this.pagination.page = page
@@ -230,23 +242,23 @@ export default {
       this.loading = false
     },
 
-    openEdit (person) {
+    openEdit(person) {
       EventBus.$emit('on-edit-person', person)
     },
 
-    openDelete (evaluation) {
+    openDelete(evaluation) {
       this.showDelete = true
       this.evaluationFocus = Object.assign({}, evaluation)
     },
 
-    refresh () {
+    refresh() {
       this.onRequest({
         pagination: this.pagination,
         filter: undefined
       })
     },
 
-    async deletePerson () {
+    async deletePerson() {
       try {
         this.loading = true
 
@@ -273,33 +285,39 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.subtitle
+.subtitle {
   color: #555d61;
-  font: 16px/24px Avenir Next W01,Helvetica,Arial,sans-serif;
+  font: 16px / 24px Avenir Next W01, Helvetica, Arial, sans-serif;
+}
 
-.my-sticky-header-table
+.my-sticky-header-table {
   /* height or max-height is important */
-  @media (max-width: 1368px)
-    height: 110vh
+  @media (max-width: 1368px) {
+    height: 110vh;
+  }
 
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th
+  .q-table__top, .q-table__bottom, thead tr:first-child th {
     /* bg color is important for th; just specify one */
-    background-color: #c1f4cd
+    background-color: #c1f4cd;
+  }
 
-  thead tr th
-    position: sticky
-    z-index: 1
-  thead tr:first-child th
-    top: 0
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+  }
 
   /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
+  &.q-table--loading thead tr:last-child th {
     /* height of all previous header rows */
-    top: 48px
+    top: 48px;
+  }
+}
 
-.custom-table td{
+.custom-table td {
   font-size: 1rem;
 }
 </style>

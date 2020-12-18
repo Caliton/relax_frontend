@@ -84,14 +84,14 @@ export default {
     'di-news': DiNews
   },
 
-  created () {
+  created() {
     if (!localStorage.getItem('access_token')) {
       this.$router.push('/')
     }
   },
 
-  beforeCreate () {
-    EventBus.$on('showNotify', (notification) => {
+  beforeCreate() {
+    EventBus.$on('showNotify', notification => {
       this.showNotify(notification)
     })
 
@@ -100,7 +100,7 @@ export default {
     })
   },
 
-  data () {
+  data() {
     return {
       EventBus: EventBus,
       user: {
@@ -110,22 +110,22 @@ export default {
       links1: [
         // { icon: 'home', text: 'Inicio', page: 'dashboard' },
         { icon: 'person', text: 'Colaboradores', page: 'colaborator' },
-        { icon: 'far fa-address-book', text: 'Reservas', page: 'reserva' },
+        { icon: 'far fa-address-book', text: 'Agendamentos', page: 'reserva' }
         // { icon: 'fas fa-sliders-h', text: 'Configurações', page: 'settings' }
       ]
     }
   },
 
-  created () {
+  created() {
     this.fabYoutube = fabYoutube
   },
 
   methods: {
-    currentRoute () {
+    currentRoute() {
       return this.$route.name
     },
 
-    logoutNow () {
+    logoutNow() {
       this.$q.localStorage.remove('access_token')
       this.$q.localStorage.remove('userId')
       this.$q.localStorage.remove('userName')
@@ -134,11 +134,11 @@ export default {
       this.$router.push('/')
     },
 
-    goPage (page) {
+    goPage(page) {
       this.$router.push(page)
     },
 
-    showNotify (notification) {
+    showNotify(notification) {
       this.$q.notify({
         color: notification.color,
         textColor: 'white',

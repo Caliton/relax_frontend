@@ -43,7 +43,7 @@
         <div class="row justify-center">
           <q-img src="~src/statics/new_persons.png" style="max-width: 500px; opacity: .8" />
         </div>
-        
+
         <div class="q-mb-lg">
           <q-icon size="2em" name="eva-settings-outline" color="primary" />
           <span
@@ -69,17 +69,23 @@
         <q-card-section v-if="this.failImportation">
           <div v-if="this.csv.length" class="flex flex-center">
             <div class="row">
-              <p v-if="this.csv.length - this.listFails.length > 0" class="text-weight-light" style="color: green">
-                {{csv.length - listFails.length}} {{(csv.length - listFails.length) > 1? 'colaboradores foram inseridos': 'colaborador foi inserido'}}!
-              </p>
+              <p
+                v-if="this.csv.length - this.listFails.length > 0"
+                class="text-weight-light"
+                style="color: green"
+              >{{csv.length - listFails.length}} {{(csv.length - listFails.length) > 1? 'colaboradores foram inseridos': 'colaborador foi inserido'}}!</p>
 
-              <p v-if="this.csv.length - this.listFails.length === 0" class="text-weight-light" style="color: red">
-                {{listFails.length}} {{listFails.length > 1? 'colaboradores tiveram problemas': 'colaborador teve problema'}}!
-              </p>
+              <p
+                v-if="this.csv.length - this.listFails.length === 0"
+                class="text-weight-light"
+                style="color: red"
+              >{{listFails.length}} {{listFails.length > 1? 'colaboradores tiveram problemas': 'colaborador teve problema'}}!</p>
 
-              <p v-else class="text-weight-light" style="color: red">
-                ...porém {{listFails.length}} {{listFails.length > 1? 'tiveram problemas': 'teve problema'}}!
-              </p>
+              <p
+                v-else
+                class="text-weight-light"
+                style="color: red"
+              >...porém {{listFails.length}} {{listFails.length > 1? 'tiveram problemas': 'teve problema'}}!</p>
             </div>
           </div>
         </q-card-section>
@@ -96,7 +102,7 @@
                     <th class="text-right">Problema Encontrado</th>
                   </tr>
                 </thead>
-                <tbody  v-for="item in listFails" :key="item.name">
+                <tbody v-for="item in listFails" :key="item.name">
                   <tr>
                     <td class="text-left">{{item.errorLine}}</td>
                     <td class="text-right">{{item.error}}</td>
@@ -153,18 +159,17 @@ export default {
   },
 
   watch: {
-    csv: function (itens) {
+    csv: function(itens) {
       this.sendCsv = []
       this.failImportation = false
 
       itens.forEach(employee => {
         this.sendCsv.push(this.brigdeEmployee(employee))
       })
-      
     }
   },
 
-  data () {
+  data() {
     return {
       csv: [],
       failImportation: false,
@@ -178,28 +183,32 @@ export default {
   },
 
   methods: {
-
-    brigdeEmployee (item) {
-      console.log('resultado: ', item)
+    brigdeEmployee(item) {
       const employee = {}
       employee.registration = item.matricula
       employee.name = item.nome
-      employee.hiringDate = this.$moment(item.data_de_admissao, 'DD/MM/YYYY').format('YYYY-MM-DD')
-      employee.birthDay = this.$moment(item.data_de_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      employee.hiringDate = this.$moment(
+        item.data_de_admissao,
+        'DD/MM/YYYY'
+      ).format('YYYY-MM-DD')
+      employee.birthDay = this.$moment(
+        item.data_de_nascimento,
+        'DD/MM/YYYY'
+      ).format('YYYY-MM-DD')
       return employee
     },
 
-    showDialog () {
+    showDialog() {
       this.cleanItens()
       this.getCategoria()
       this.show = true
     },
 
-    onHideDialog () {
+    onHideDialog() {
       this.show = false
     },
 
-    async getCategoria () {
+    async getCategoria() {
       try {
         const result = await this.$axios.get(api.categories, {
           params: {
@@ -213,18 +222,19 @@ export default {
       }
     },
 
-    async registerEmployees () {  
+    async registerEmployees() {
       try {
-        console.log('Pacotes de Colaboradores: ', this.sendCsv);
-        let result = await this.$axios.post("person/bulk", { data: this.sendCsv})
-        
+        let result = await this.$axios.post('person/bulk', {
+          data: this.sendCsv
+        })
+
         EventBus.$emit('showNotify', {
-        color: 'green',
-        textColor: 'white',
-        icon: 'eva-info-outline',
-        message: result.data.message
-      })
-        
+          color: 'green',
+          textColor: 'white',
+          icon: 'eva-info-outline',
+          message: result.data.message
+        })
+
         EventBus.$emit('on-refresh-person')
         this.onHideDialog()
       } catch (e) {
@@ -232,25 +242,24 @@ export default {
       }
     },
 
-    refresh () {
+    refresh() {
       EventBus.$emit('on-refresh-person')
     },
 
-    confirm () {
+    confirm() {
       this.registerEmployees()
     },
 
-    cleanItens () {
+    cleanItens() {
       this.csv = []
       this.failImportation = false
       this.listFails = []
       this.sendCsv = []
     },
 
-    canceled () {
+    canceled() {
       this.onHideDialog()
     }
-
   }
 }
 </script>
