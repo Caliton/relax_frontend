@@ -505,11 +505,12 @@ export default {
 
     updateRequest(item) {
       item.vacationTimeId = this.vacationsCombo[this.number].value
-
-      EventBus.$emit('on-edit-days-off', {
+      var args = {
         ...item,
         ...this.vacationSelected
-      })
+      }
+      args.id = item.id
+      EventBus.$emit('on-edit-days-off', args)
     },
 
     onShowModal() {
@@ -748,7 +749,7 @@ export default {
           statusName = 'Este colaborador não completou um ano na empresa'
           break
 
-        default:
+        default:1
           statusName = ''
           break
       }
