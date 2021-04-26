@@ -80,6 +80,18 @@
               />
             </div>
 
+            <div class="col-md-3 col-sm-4">
+              <q-btn
+                label="Importar Períodos"
+                dense
+                flat
+                no-caps
+                color="primary"
+                icon="eva-cloud-upload-outline"
+                @click="openDialogImportPeriods"
+              />
+            </div>
+
             <div class="col-md-6 col-sm-5">
               <q-input
                 class="q-ml-lg float-right"
@@ -217,6 +229,7 @@
     </q-dialog>
 
     <di-import-colaborador ref="di-import-colaborador" :columns="columns" :data="data" />
+    <di-import-periods ref="di-import-periods" :columns="columns" :data="data" />
   </div>
 </template>
 
@@ -225,6 +238,7 @@ import { EventBus } from 'src/functions/event_bus.js'
 // eslint-disable-next-line no-unused-vars
 import moment from 'moment'
 import DiImportColaborador from './di-import-collaborator'
+import DiImportPeriods from './di-import-periods'
 
 export default {
   name: 'dt-colaborator',
@@ -232,7 +246,8 @@ export default {
   props: ['btn-primary'],
 
   components: {
-    'di-import-colaborador': DiImportColaborador
+    'di-import-colaborador': DiImportColaborador,
+    'di-import-periods': DiImportPeriods
   },
 
   data() {
@@ -321,6 +336,10 @@ export default {
 
     openDialogImportColaborador() {
       this.$refs['di-import-colaborador'].showDialog()
+    },
+
+    openDialogImportPeriods() {
+      this.$refs['di-import-periods'].showDialog()
     },
 
     async onRequest(props) {
