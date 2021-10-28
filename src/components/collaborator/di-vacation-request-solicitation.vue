@@ -103,21 +103,17 @@
 
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
-import { required } from 'vuelidate/lib/validators'
 import moment from 'moment'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
-import LoginVue from 'src/pages/Login.vue'
-import Calendar from 'v-calendar/lib/components/calendar.umd'
 
 export default {
   name: 'di-vacation-request-solicitation',
 
   components: {
-    'v-date-picker': DatePicker,
-    'v-calendar': Calendar
+    'v-date-picker': DatePicker
   },
 
-  created() {
+  created () {
     EventBus.$on('on-edit-days-off', request => {
       this.info = { ...request }
 
@@ -150,14 +146,14 @@ export default {
     })
   },
 
-  beforeDestroy() {
+  beforeDestroy () {
     EventBus.$off('on-edit-days-off')
 
     EventBus.$off('on-new-days-off')
   },
 
   computed: {
-    qutdDias: function() {
+    qutdDias: function () {
       return (
         moment
           .duration(
@@ -168,7 +164,7 @@ export default {
     }
   },
 
-  data() {
+  data () {
     return {
       onShow: false,
       loading: false,
@@ -197,21 +193,21 @@ export default {
   },
 
   methods: {
-    onShowModal() {
+    onShowModal () {
       this.onShow = true
     },
 
-    onHideModal() {
+    onHideModal () {
       this.$emit('on-close')
       this.hideDesfazer = true
       this.onShow = false
     },
 
-    showDeleteRequest() {
+    showDeleteRequest () {
       this.showDelete = true
     },
 
-    async deleteRequest() {
+    async deleteRequest () {
       try {
         this.loading = true
 
@@ -238,7 +234,7 @@ export default {
       }
     },
 
-    async confirm() {
+    async confirm () {
       try {
         this.vacationRequest.startDate = this.rangeDate.start
         this.vacationRequest.finalDate = this.rangeDate.end
@@ -252,7 +248,7 @@ export default {
         }
 
         this.loading = true
-        const result = await axiosFunction(url, this.vacationRequest)
+        await axiosFunction(url, this.vacationRequest)
         this.loading = false
 
         EventBus.$emit('on-refresh-vacation-request')
@@ -263,7 +259,7 @@ export default {
       }
     },
 
-    validationsFields() {
+    validationsFields () {
       if (this.rangeDate.start === '' || this.rangeDate.end === '') {
         return false
       }
@@ -271,7 +267,7 @@ export default {
       return true
     },
 
-    canceled() {
+    canceled () {
       this.onHideModal()
     }
   }

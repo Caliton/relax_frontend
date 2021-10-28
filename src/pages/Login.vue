@@ -103,7 +103,7 @@ import { EventBus } from '../functions/event_bus.js'
 
 export default {
   name: 'Login',
-  data() {
+  data () {
     return {
       user: {
         username: '',
@@ -123,15 +123,15 @@ export default {
     }
   },
 
-  created() {
+  created () {
     if (localStorage.getItem('access_token')) {
       this.$router.push('/dashboard')
     }
   },
 
-  mounted() {
+  mounted () {
     const elems = document.querySelectorAll('.laya-please')
-    const layer2 = document.querySelector('.layer-2')
+    // const layer2 = document.querySelector('.layer-2')
     const layer3 = document.querySelector('.layer-3')
     const layer4 = document.querySelector('.layer-4')
     const layer5 = document.querySelector('.layer-5')
@@ -139,15 +139,15 @@ export default {
     const layer7 = document.querySelector('.layer-7')
     const layer8 = document.querySelector('.layer-8')
 
-    setTimeout(function() {
-      elems.forEach(function(elem, index) {
+    setTimeout(function () {
+      elems.forEach(function (elem, index) {
         elem.style.animation = 'none'
       })
     }, 1500)
 
-    document.body.addEventListener('mousemove', function(e) {
+    document.body.addEventListener('mousemove', function (e) {
       if (!e.currentTarget.dataset.triggered) {
-        elems.forEach(function(elem, index) {
+        elems.forEach(function (elem, index) {
           if (elem.getAttribute('style')) {
             elem.style.transition = 'all .5s'
             elem.style.transform = 'none'
@@ -172,35 +172,35 @@ export default {
       layer8.style.transform = 'translateX(' + mouseMoved7 + 'px)'
     })
 
-    document.body.addEventListener('mouseleave', function(e) {
-      elems.forEach(function(elem, index) {
+    document.body.addEventListener('mouseleave', function (e) {
+      elems.forEach(function (elem, index) {
         elem.style.transition = 'all .5s'
         elem.style.transform = 'none'
       })
     })
 
-    document.body.addEventListener('mouseenter', function(e) {
-      elems.forEach(function(elem, index) {
-        setTimeout(function() {
+    document.body.addEventListener('mouseenter', function (e) {
+      elems.forEach(function (elem, index) {
+        setTimeout(function () {
           elem.style.transition = 'none'
         }, 500)
       })
     })
   },
 
-  beforeCreate() {
+  beforeCreate () {
     EventBus.$on('showNotify', notification => {
       this.showNotify(notification)
     })
   },
 
-  beforeDestroy() {
+  beforeDestroy () {
     EventBus.$off('showNotify')
   },
 
   methods: {
     // submit for the login form
-    async onLogin() {
+    async onLogin () {
       this.loading = true
 
       try {
@@ -225,7 +225,7 @@ export default {
       }
     },
 
-    async onSingup() {
+    async onSingup () {
       this.loading = true
 
       try {
@@ -240,7 +240,7 @@ export default {
       }
     },
 
-    showNotify(notification) {
+    showNotify (notification) {
       this.$q.notify({
         color: notification.color,
         textColor: 'white',

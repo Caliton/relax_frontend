@@ -159,7 +159,7 @@ export default {
   },
 
   watch: {
-    csv: function(itens) {
+    csv: function (itens) {
       this.sendCsv = []
       this.failImportation = false
 
@@ -169,7 +169,7 @@ export default {
     }
   },
 
-  data() {
+  data () {
     return {
       csv: [],
       failImportation: false,
@@ -183,7 +183,7 @@ export default {
   },
 
   methods: {
-    brigdeEmployee(item) {
+    brigdeEmployee (item) {
       const employee = {}
       employee.registration = item.matricula
       employee.name = item.nome
@@ -198,17 +198,17 @@ export default {
       return employee
     },
 
-    showDialog() {
+    showDialog () {
       this.cleanItens()
       this.getCategoria()
       this.show = true
     },
 
-    onHideDialog() {
+    onHideDialog () {
       this.show = false
     },
 
-    async getCategoria() {
+    async getCategoria () {
       try {
         const result = await this.$axios.get(api.categories, {
           params: {
@@ -222,9 +222,9 @@ export default {
       }
     },
 
-    async registerEmployees() {
+    async registerEmployees () {
       try {
-        let result = await this.$axios.post('person/bulk', {
+        const result = await this.$axios.post('person/bulk', {
           data: this.sendCsv
         })
 
@@ -242,22 +242,22 @@ export default {
       }
     },
 
-    refresh() {
+    refresh () {
       EventBus.$emit('on-refresh-person')
     },
 
-    confirm() {
+    confirm () {
       this.registerEmployees()
     },
 
-    cleanItens() {
+    cleanItens () {
       this.csv = []
       this.failImportation = false
       this.listFails = []
       this.sendCsv = []
     },
 
-    canceled() {
+    canceled () {
       this.onHideDialog()
     }
   }

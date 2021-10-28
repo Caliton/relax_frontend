@@ -27,7 +27,7 @@
                     <q-icon name="eva-person-outline" />
                   </template>
               </q-input>
-              
+
               <q-input
                 class="col-md-12 q-ma-sm"
                 filled
@@ -123,15 +123,9 @@
 import { EventBus } from 'src/functions/event_bus.js'
 import { required } from 'vuelidate/lib/validators'
 import moment from 'moment'
-import DatePicker from 'v-calendar/lib/components/date-picker.umd'
-import { cloneDeep } from 'lodash'
 
 export default {
   name: 'di-collaborator',
-
-  components: {
-    'v-date-picker': DatePicker
-  },
 
   events: ['on-close'],
 
@@ -220,7 +214,7 @@ export default {
         let axiosFunction = this.$axios.post
         let url = 'person'
 
-        let employeePayload = Object.assign({}, this.person)
+        const employeePayload = Object.assign({}, this.person)
         employeePayload.hiringDate = moment(this.person.hiringDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
         employeePayload.birthDay = moment(this.person.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
 
@@ -234,7 +228,7 @@ export default {
 
         EventBus.$emit('on-refresh-person')
         this.loading = false
-        
+
         this.cleanFields()
       } catch (e) {
         this.loading = false

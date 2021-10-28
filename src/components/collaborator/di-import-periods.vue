@@ -155,7 +155,7 @@ export default {
   },
 
   watch: {
-    csv: function(itens) {
+    csv: function (itens) {
       this.sendCsv = []
       this.failImportation = false
 
@@ -165,7 +165,7 @@ export default {
     }
   },
 
-  data() {
+  data () {
     return {
       csv: [],
       failImportation: false,
@@ -179,24 +179,24 @@ export default {
   },
 
   methods: {
-    brigdePeriods(item) {
+    brigdePeriods (item) {
       const period = {}
       period.personId = item.matricula
       period.year = item.ano
       return period
     },
 
-    showDialog() {
+    showDialog () {
       this.cleanItens()
       this.getCategoria()
       this.show = true
     },
 
-    onHideDialog() {
+    onHideDialog () {
       this.show = false
     },
 
-    async getCategoria() {
+    async getCategoria () {
       try {
         const result = await this.$axios.get(api.categories, {
           params: {
@@ -210,16 +210,16 @@ export default {
       }
     },
 
-    async registerPeriods() {
+    async registerPeriods () {
       const requestBody = {
         data: this.sendCsv
       }
       console.log(requestBody)
 
       try {
-        let result = await this.$axios.post('vacationtime/bulk', requestBody)
+        const result = await this.$axios.post('vacationtime/bulk', requestBody)
         let color = 'green'
-        let textColor = 'white'
+        const textColor = 'white'
         let icon = 'eva-info-outline'
         let message = result.data.message
 
@@ -245,22 +245,22 @@ export default {
       }
     },
 
-    refresh() {
+    refresh () {
       EventBus.$emit('on-refresh-person')
     },
 
-    confirm() {
+    confirm () {
       this.registerPeriods()
     },
 
-    cleanItens() {
+    cleanItens () {
       this.csv = []
       this.failImportation = false
       this.listFails = []
       this.sendCsv = []
     },
 
-    canceled() {
+    canceled () {
       this.onHideDialog()
     }
   }

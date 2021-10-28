@@ -234,7 +234,7 @@
                 <span style="display: inline-block;">{{vacationSelected.daysEnjoyed}}</span>
                 <span class="text-weight-regular text-h6">Dias Agendados</span>
               </div>
-              <!-- 
+              <!--
               <q-separator vertical inset />
 
               <div class="column justify-center text-center" style="transform: scale(.9);">
@@ -398,18 +398,13 @@
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
 import moment from 'moment'
-import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
   name: 'di-vacation-request',
 
-  components: {
-    'v-date-picker': DatePicker
-  },
-
   events: ['on-close'],
 
-  beforeCreate() {
+  beforeCreate () {
     EventBus.$on('on-show-vacation-request', data => {
       this.onShow = true
 
@@ -429,17 +424,17 @@ export default {
     })
   },
 
-  beforeDestroy() {
+  beforeDestroy () {
     EventBus.$off('on-show-vacation-request')
   },
 
   computed: {
-    draggingInfo() {
+    draggingInfo () {
       return this.dragging ? 'under drag' : ''
     }
   },
 
-  data() {
+  data () {
     return {
       onShow: false,
       slide: 'style',
@@ -472,7 +467,7 @@ export default {
   },
 
   methods: {
-    async getRequestSolicitation(idVacation) {
+    async getRequestSolicitation (idVacation) {
       try {
         const result = await this.$axios.get(
           `requests/person/${this.colaborator.id}/vacationtime/${idVacation}/`
@@ -483,11 +478,11 @@ export default {
       }
     },
 
-    showDialogDeletePeriodo() {
+    showDialogDeletePeriodo () {
       this.showDeletePeriodo = true
     },
 
-    setLeftPeriodo() {
+    setLeftPeriodo () {
       if (this.number > 0) {
         this.number--
         this.setVacationCombo(this.vacationsCombo[this.number])
@@ -495,7 +490,7 @@ export default {
       }
     },
 
-    setRightPeriodo() {
+    setRightPeriodo () {
       if (this.number < this.vacationsCombo.length - 1) {
         this.number++
         this.setVacationCombo(this.vacationsCombo[this.number])
@@ -503,7 +498,7 @@ export default {
       }
     },
 
-    updateRequest(item) {
+    updateRequest (item) {
       item.vacationTimeId = this.vacationsCombo[this.number].value
       var args = {
         ...item,
@@ -513,24 +508,24 @@ export default {
       EventBus.$emit('on-edit-days-off', args)
     },
 
-    onShowModal() {
+    onShowModal () {
       this.onShow = true
     },
 
-    solicitationVacation() {
+    solicitationVacation () {
       this.vacationSelected.personId = this.personId
       EventBus.$emit('on-new-days-off', this.vacationSelected)
     },
 
-    onHideModal() {
+    onHideModal () {
       this.$emit('on-close')
       this.onShow = false
     },
-    openNewVacationTime() {
+    openNewVacationTime () {
       this.showInputVacationTime = true
     },
 
-    setVacationCombo(vacationSelected) {
+    setVacationCombo (vacationSelected) {
       this.vacationSelected = this.vacations.find(
         item => item.id === vacationSelected.value
       )
@@ -545,7 +540,7 @@ export default {
       this.checkingStatus()
     },
 
-    async getVacationsTimes(personId) {
+    async getVacationsTimes (personId) {
       try {
         const result = await this.$axios.get(
           'person/{id}/vacationtime'.replace('{id}', personId || this.personId)
@@ -570,24 +565,24 @@ export default {
       }
     },
 
-    async registerVacationRequest() {
+    async registerVacationRequest () {
       try {
         this.vacationRequest.startDate = this.attributes.start
         this.vacationRequest.finalDate = this.attributes.end
         this.vacationRequest.vacationTimeId = this.vacationSelected.id
         this.vacationRequest.requestUserId = this.personId
 
-        const result = await this.$axios.post('/requests', this.vacationRequest)
+        await this.$axios.post('/requests', this.vacationRequest)
       } catch (e) {
         console.log(e)
       }
     },
 
-    async registerVacationTime() {
+    async registerVacationTime () {
       try {
         this.loadingVacationTime = true
 
-        const result = await this.$axios.post(
+        await this.$axios.post(
           `person/${this.personId}/vacationtime`,
           {
             daysAllowed: this.vacationTime.daysAllowed,
@@ -607,7 +602,7 @@ export default {
       }
     },
 
-    async deletePeriodo() {
+    async deletePeriodo () {
       try {
         await this.$axios.delete(
           `vacationtime/${this.vacationsCombo[this.number].value}`
@@ -620,7 +615,7 @@ export default {
       }
     },
 
-    getColorStatus(item) {
+    getColorStatus (item) {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
@@ -652,7 +647,7 @@ export default {
       return statusIcon
     },
 
-    getColor(item) {
+    getColor (item) {
       let color = ''
 
       switch (item) {
@@ -679,7 +674,7 @@ export default {
       return color
     },
 
-    getIconStatus(item) {
+    getIconStatus (item) {
       let statusIcon = ''
       switch (item) {
         case 'MEDIO':
@@ -696,9 +691,9 @@ export default {
           statusIcon = 'eva-alert-triangle-outline'
           break
 
-        case 'CRITICO':
-          statusIcon = 'eva-alert-triangle-outline'
-          break
+          // case 'CRITICO':
+          //   statusIcon = 'eva-alert-triangle-outline'
+          //   break
 
         case 'INDEFINIDO':
           statusIcon = 'eva-alert-circle-outline'
@@ -715,12 +710,12 @@ export default {
       return statusIcon
     },
 
-    getMonth(item) {
+    getMonth (item) {
       item--
       return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
     },
 
-    getNameStatus(item) {
+    getNameStatus (item) {
       let statusName = ''
 
       switch (item) {
@@ -749,14 +744,14 @@ export default {
           statusName = 'Este colaborador não completou um ano na empresa'
           break
 
-        default:1
+        default:
           statusName = ''
           break
       }
       return statusName
     },
 
-    checkingStatus() {
+    checkingStatus () {
       if (
         !this.colaborator.vacationNew ||
         this.colaborator.vacationNew.length === 0
@@ -796,7 +791,7 @@ export default {
       }
     },
 
-    onHideDialog() {
+    onHideDialog () {
       this.vacations = []
       this.attributes = []
       this.colaborator = {}
@@ -820,7 +815,7 @@ export default {
       this.selectedOption = { label: '-', value: 0 }
     },
 
-    canceled() {
+    canceled () {
       EventBus.$emit('on-refresh-person')
       this.onHideModal()
     }
