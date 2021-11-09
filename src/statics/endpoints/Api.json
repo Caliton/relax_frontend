@@ -1,5 +1,5 @@
 {
-  "signin": "auth/signin",
+  "signin": "login",
   "categories": "categories",
   "employees": "employees",
   "employeesMany": "employees/many",

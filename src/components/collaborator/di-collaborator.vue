@@ -1,5 +1,5 @@
 <template >
-  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" persistent style="height: auto !important">
+  <q-dialog v-model="show" transition-show="scale" transition-hide="scale" persistent style="height: auto !important">
     <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto !important">
       <q-toolbar class="bg-primary text-white shadow-1">
         <q-toolbar-title class="flex flex-center">Colaborador</q-toolbar-title>
@@ -31,11 +31,11 @@
               <q-input
                 class="col-md-12 q-ma-sm"
                 filled
-                v-model="person.registration"
+                v-model="person.register"
                 label="Matricula"
                 dense
                 error-message="Campo Precisa ser preenchido"
-                :error="$v.person.registration.$error"
+                :error="$v.person.register.$error"
               >
                 <template v-slot:prepend>
                   <q-icon name="eva-file-text-outline" />
@@ -48,13 +48,13 @@
                 class="col-md-12 q-ma-sm"
                 filled
                 dense
-                v-model="person.birthDay"
+                v-model="person.birthday"
                 mask="##-##-####"
                 reverse-fill-mask
                 label="Data de Nascimento"
                 error-message="Campo precisa ser preenchido"
-                :error="$v.person.birthDay.$error"
-                @blur="$v.person.birthDay.$touch()"
+                :error="$v.person.birthday.$error"
+                @blur="$v.person.birthday.$touch()"
               >
                 <template v-slot:prepend>
                   <q-icon name="event" class="cursor-pointer">
@@ -63,7 +63,7 @@
                       transition-show="scale"
                       transition-hide="scale"
                     >
-                      <q-date v-model="person.birthDay" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
+                      <q-date v-model="person.birthday" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Fechar" color="primary" flat />
                         </div>
@@ -78,12 +78,12 @@
                 filled
                 reverse-fill-mask
                 dense
-                v-model="person.hiringDate"
+                v-model="person.hiringdate"
                 mask="##-##-####"
                 label="Data de Admissão"
                 error-message="Campo precisa ser preenchido"
-                :error="$v.person.hiringDate.$error"
-                @blur="$v.person.hiringDate.$touch()"
+                :error="$v.person.hiringdate.$error"
+                @blur="$v.person.hiringdate.$touch()"
               >
                 <template v-slot:prepend>
                   <q-icon name="event" class="cursor-pointer">
@@ -92,7 +92,7 @@
                       transition-show="scale"
                       transition-hide="scale"
                     >
-                      <q-date v-model="person.hiringDate" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
+                      <q-date v-model="person.hiringdate" mask="DD-MM-YYYY" default-view="Years" :locale="myLocale">
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Fechar" color="primary" flat />
                         </div>
@@ -122,6 +122,7 @@
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
 import { required } from 'vuelidate/lib/validators'
+import { api } from 'src/enumerator/api'
 import moment from 'moment'
 
 export default {
@@ -131,16 +132,16 @@ export default {
 
   created () {
     EventBus.$on('on-edit-person', (person) => {
-      this.onShow = true
+      this.show = true
       this.person = person
-      this.person.birthDay = moment(this.person.birthDay, 'YYYY-MM-DD').format('DD-MM-YYYY')
-      this.person.hiringDate = moment(this.person.hiringDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      this.person.birthday = moment(this.person.birthday, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      this.person.hiringdate = moment(this.person.hiringdate, 'YYYY-MM-DD').format('DD-MM-YYYY')
     })
 
     EventBus.$on('on-new-person', () => {
       this.person = {}
       this.$nextTick(() => { this.$v.$reset() })
-      this.onShow = true
+      this.show = true
     })
   },
 
@@ -158,13 +159,13 @@ export default {
 
   data () {
     return {
-      onShow: false,
+      show: false,
       loading: false,
       person: {
         name: '',
-        registration: '',
-        hiringDate: '',
-        birthDay: ''
+        register: '',
+        hiringdate: '',
+        birthday: ''
       },
 
       myLocale: {
@@ -180,29 +181,29 @@ export default {
   validations: {
     person: {
       name: { required },
-      registration: { required },
-      hiringDate: { required },
-      birthDay: { required }
+      register: { required },
+      hiringdate: { required },
+      birthday: { required }
     }
   },
 
   methods: {
-    removeAt (idx) {
-      this.guests.splice(idx, 1)
+    onShow (person) {
+      this.cleanFields()
+
+      this.show = true
+
+      if (!person) return
+
+      const { birthday, hiringdate } = person
+      this.person = person
+      this.person.birthday = moment(birthday).format('DD-MM-YYYY')
+      this.person.hiringdate = moment(hiringdate).format('DD-MM-YYYY')
     },
 
-    add () {
-      this.id++
-      this.guests.push({ id: this.id, name: '', relationShip: '' })
-    },
-
-    onShowModal () {
-      this.onShow = true
-    },
-
-    onHideModal () {
+    onHide () {
       this.$emit('on-close')
-      this.onShow = false
+      this.show = false
     },
 
     async confirm () {
@@ -212,11 +213,11 @@ export default {
         }
 
         let axiosFunction = this.$axios.post
-        let url = 'person'
+        let url = api.collaborators
 
         const employeePayload = Object.assign({}, this.person)
-        employeePayload.hiringDate = moment(this.person.hiringDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
-        employeePayload.birthDay = moment(this.person.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
+        employeePayload.hiringdate = moment(this.person.hiringdate, 'DD-MM-YYYY').format('YYYY-MM-DD')
+        employeePayload.birthday = moment(this.person.birthday, 'DD-MM-YYYY').format('YYYY-MM-DD')
 
         if (employeePayload.id) {
           url += `/${employeePayload.id}/`
@@ -226,13 +227,12 @@ export default {
         this.loading = true
         await axiosFunction(url, employeePayload)
 
-        EventBus.$emit('on-refresh-person')
-        this.loading = false
-
-        this.cleanFields()
+        this.onHide()
+        this.show = false
       } catch (e) {
-        this.loading = false
         console.log(e)
+      } finally {
+        this.loading = false
       }
     },
 
@@ -244,12 +244,11 @@ export default {
 
     cleanFields () {
       this.person = {}
-      this.$nextTick(() => { this.$v.$reset() })
-      this.onHideModal()
+      this.$v.person.$reset()
     },
 
     canceled () {
-      this.onHideModal()
+      this.onHide()
     }
   }
 }

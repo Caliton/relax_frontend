@@ -100,6 +100,7 @@
 
 <script>
 import { EventBus } from '../functions/event_bus.js'
+import { api } from 'src/enumerator/api'
 
 export default {
   name: 'Login',
@@ -204,7 +205,7 @@ export default {
       this.loading = true
 
       try {
-        var response = await this.$axios.post('auth/login', this.user)
+        var response = await this.$axios.post(api.signin, this.user)
 
         localStorage.setItem('access_token', response.data.token)
         localStorage.setItem('userName', response.data.name)

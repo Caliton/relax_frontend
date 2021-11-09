@@ -52,11 +52,11 @@
           </div>
 
           <div
-            class="row justify-end"
+            class="row justify-between"
             :class="{'justify-center': $q.screen.lt.sm}"
             style="width: 100%; margin-top: 1rem"
           >
-            <div class="col-md-3 col-sm-4">
+            <div class="col-md-2 col-sm-4">
               <q-btn
                 label="Adicionar Colaborador"
                 dense
@@ -68,7 +68,7 @@
               />
             </div>
 
-            <div class="col-md-3 col-sm-4">
+            <div class="col-md-2 col-sm-4">
               <q-btn
                 label="Importar lista de Colaboradores"
                 dense
@@ -80,7 +80,7 @@
               />
             </div>
 
-            <div class="col-md-3 col-sm-4">
+            <div class="col-md-2 col-sm-4">
               <q-btn
                 label="Importar Períodos"
                 dense
@@ -92,7 +92,7 @@
               />
             </div>
 
-            <div class="col-md-6 col-sm-5">
+            <div class="col-md-4 col-sm-5">
               <q-input
                 class="q-ml-lg float-right"
                 dense
@@ -126,8 +126,8 @@
           <q-td style="width: 5%" :props="props" key="status">
             <q-icon
               size="md"
-              :color="getColorStatus(props.row.status)"
-              :name="getIconStatus(props.row.status)"
+              :color="props.row.situation.color"
+              :name="props.row.situation.icon"
             />
             <q-tooltip
               content-class="bg-grey-1 "
@@ -139,33 +139,33 @@
                 &nbsp;
                 <q-icon
                   size="22px"
-                  :name="getIconStatus(props.row.status)"
-                  :color="getColorStatus(props.row.status)"
+                  :name="props.row.situation.icon"
+                  :color="props.row.situation.color"
                 />&nbsp;
-                <span :style="{color: getColorStatus(props.row.status)}">{{props.row.status}}</span>
+                <span :style="{color: props.row.situation.color}">{{ props.row.situation.description  }}</span>
                 <br />
                 <span
                   class="subtitle"
                   style="font-size: .9rem"
-                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getNameStatus(props.row.status)}}</span>
+                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ props.row.situation.tooltip }}</span>
               </div>
             </q-tooltip>
           </q-td>
 
-          <q-td style="width: 10%" :props="props" key="registration">{{props.row.registration}}</q-td>
+          <q-td style="width: 10%" :props="props" key="registration">{{props.row.register}}</q-td>
           <q-td style="width: 30%" :props="props" key="name">{{props.row.name}}</q-td>
 
           <q-td
             style="width: 10%"
             :props="props"
-            key="birthDay"
-          >{{props.row.birthDay | moment('DD-MM-YYYY')}}</q-td>
+            key="birthday"
+          >{{props.row.birthday | moment('DD-MM-YYYY')}}</q-td>
 
           <q-td
             style="width: 10%"
             :props="props"
-            key="hiringDate"
-          >{{ props.row.hiringDate | moment('DD-MM-YYYY')}}</q-td>
+            key="hiringdate"
+          >{{ props.row.hiringdate | moment('DD-MM-YYYY')}}</q-td>
 
           <q-td style="width: 20%">
             <q-btn
@@ -223,13 +223,15 @@
 
         <q-card-actions align="right">
           <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
-          <q-btn flat no-caps label="Desejo sim!" color="red" @click="deletePerson" v-close-popup />
+          <q-btn flat no-caps label="Desejo sim!" color="red" @click="deleteCollaborator" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
     <di-import-colaborador ref="di-import-colaborador" :columns="columns" :data="data" />
     <di-import-periods ref="di-import-periods" :columns="columns" :data="data" />
+
+    <di-collaborator ref="di-collaborator" @on-close="refresh" style="height: auto !important"/>
   </div>
 </template>
 
@@ -239,6 +241,9 @@ import { EventBus } from 'src/functions/event_bus.js'
 import moment from 'moment'
 import DiImportColaborador from './di-import-collaborator'
 import DiImportPeriods from './di-import-periods'
+import diCollaborator from './di-collaborator.vue'
+
+import { api } from 'src/enumerator/api'
 
 export default {
   name: 'dt-colaborator',
@@ -247,10 +252,11 @@ export default {
 
   components: {
     'di-import-colaborador': DiImportColaborador,
-    'di-import-periods': DiImportPeriods
+    'di-import-periods': DiImportPeriods,
+    diCollaborator
   },
 
-  data() {
+  data () {
     return {
       filter: '',
       showDelete: false,
@@ -266,8 +272,8 @@ export default {
         'status',
         'registration',
         'name',
-        'hiringDate',
-        'birthDay'
+        'hiringdate',
+        'birthday'
       ],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
@@ -290,20 +296,21 @@ export default {
           name: 'name',
           label: 'Nome',
           field: 'name',
+          sortOrder: 'ad',
           sortable: true
         },
         {
           align: 'left',
-          name: 'birthDay',
+          name: 'birthday',
           label: 'Data de Nascimento',
-          field: 'birthDay',
+          field: 'birthday',
           sortable: true
         },
         {
           align: 'left',
-          name: 'hiringDate',
+          name: 'hiringdate',
           label: 'Data de Admissão',
-          field: 'hiringDate',
+          field: 'hiringdate',
           sortable: true
         }
       ],
@@ -311,86 +318,30 @@ export default {
     }
   },
 
-  created() {
+  created () {
     EventBus.$on('on-refresh-person', () => {
       this.refresh()
     })
   },
 
-  beforeDestroy() {
+  beforeDestroy () {
     EventBus.$off('on-refresh-person')
   },
 
-  mounted() {
+  mounted () {
     this.refresh()
   },
   methods: {
-    setPagination(value) {
-      this.pagination.page = value
-      this.onRequest({ pagination: this.pagination, filter: this.filter })
-    },
-
-    openDialogColaborador() {
-      EventBus.$emit('on-new-person')
-    },
-
-    openDialogImportColaborador() {
-      this.$refs['di-import-colaborador'].showDialog()
-    },
-
-    openDialogImportPeriods() {
-      this.$refs['di-import-periods'].showDialog()
-    },
-
-    async onRequest(props) {
+    async onRequest (props) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       this.loading = true
 
-      const returnedData = await this.$axios.get(`person?page=${page}`, {
-        params: {
-          filter: this.filter
-        }
-      })
+      const { data } = await this.$axios.get(api.collaborators)
 
-      returnedData.data.forEach((item, i) => {
-        if (!item.vacationNew || item.vacationNew.length === 0) {
-          returnedData.data[i].status = 'INDEFINIDO'
-        } else if (
-          moment(item.vacationNew[0].limit6Months).format('YYYY-MM-DD') <
-          moment().format('YYYY-MM-DD')
-        ) {
-          returnedData.data[i].status = 'CRITICO'
-        } else if (
-          moment(item.vacationNew[0].limit6Months)
-            .subtract(3, 'month')
-            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
-        ) {
-          returnedData.data[i].status = 'ALTO'
-        } else if (
-          moment(item.vacationNew[0].limit6Months)
-            .subtract(5, 'month')
-            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
-        ) {
-          returnedData.data[i].status = 'MEDIO'
-        } else if (
-          moment(item.hiringDate)
-            .add(12, 'month')
-            .format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
-        ) {
-          returnedData.data[i].status = 'NORMAL'
-        }
+      console.log(data)
 
-        if (
-          moment(item.hiringDate)
-            .add(12, 'month')
-            .format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')
-        ) {
-          returnedData.data[i].status = 'NOVATO'
-        }
-      })
-
-      this.data.splice(0, this.data.length, ...returnedData.data)
+      this.data.splice(0, this.data.length, ...data)
 
       this.pagination.page = page
       this.pagination.rowsPerPage = rowsPerPage
@@ -400,127 +351,49 @@ export default {
       this.loading = false
     },
 
-    getNameStatus(item) {
-      let statusName = ''
-
-      switch (item) {
-        case 'NORMAL':
-          statusName = '1 ano  (tem direito a férias)'
-          break
-        case 'MEDIO':
-          statusName =
-            'de 1 ano e 1 mês até 1 ano e 3 meses (próximo ao limite da empresa)'
-          break
-        case 'ALTO':
-          statusName =
-            'de 1 ano e 4 meses até 1 ano e 6 meses (limite da empresa)'
-          break
-        case 'CRITICO':
-          statusName = 'de 1 ano e 7 meses até 1 ano e 11 meses (limite da CLT)'
-          break
-        case 'INDEFINIDO':
-          statusName = 'Este colaborador não teve seu periodo configurado'
-          break
-        case 'NOVATO':
-          statusName = 'Este colaborador ainda não completou um ano na empresa'
-          break
-
-        default:
-          statusName = 'Status não identificado'
-          break
-      }
-      return statusName
+    setPagination (value) {
+      this.pagination.page = value
+      this.onRequest({ pagination: this.pagination, filter: this.filter })
     },
 
-    getIconStatus(item) {
-      let statusIcon = ''
-      switch (item) {
-        case 'MEDIO':
-          statusIcon = 'eva-alert-triangle-outline'
-          break
-        case 'NORMAL':
-          statusIcon = 'eva-checkmark-circle-outline'
-          break
-        case 'CRITICO':
-          statusIcon = 'eva-alert-triangle-outline'
-          break
-
-        case 'ALTO':
-          statusIcon = 'eva-alert-triangle-outline'
-          break
-
-        case 'INDEFINIDO':
-          statusIcon = 'eva-alert-circle-outline'
-          break
-
-        case 'NOVATO':
-          statusIcon = 'fas fa-baby'
-          break
-
-        default:
-          statusIcon = 'Status não identificado'
-          break
-      }
-      return statusIcon
+    openDialogColaborador () {
+      this.$refs['di-collaborator'].onShow()
     },
 
-    getColorStatus(item) {
-      let statusIcon = ''
-      switch (item) {
-        case 'MEDIO':
-          statusIcon = 'yellow-7'
-          break
-
-        case 'NORMAL':
-          statusIcon = 'green'
-          break
-
-        case 'CRITICO':
-          statusIcon = 'red'
-          break
-
-        case 'ALTO':
-          statusIcon = 'orange'
-          break
-
-        case 'INDEFINIDO':
-        case 'NOVATO':
-          statusIcon = 'grey-5'
-          break
-
-        default:
-          statusIcon = 'Status não identificado'
-          break
-      }
-      return statusIcon
+    openDialogImportColaborador () {
+      this.$refs['di-import-colaborador'].showDialog()
     },
 
-    openEdit(person) {
-      EventBus.$emit('on-edit-person', person)
+    openDialogImportPeriods () {
+      this.$refs['di-import-periods'].showDialog()
     },
 
-    openDelete(evaluation) {
+    openEdit (person) {
+      this.$refs['di-collaborator'].onShow(person)
+    },
+
+    openDelete (evaluation) {
       this.showDelete = true
-      this.evaluationFocus = Object.assign({}, evaluation)
+      this.collaboratorFocus = Object.assign({}, evaluation)
     },
 
-    openVacation(data) {
+    openVacation (data) {
       EventBus.$emit('on-show-vacation-request', data)
     },
 
-    refresh() {
+    refresh () {
       this.onRequest({
         pagination: this.pagination,
         filter: undefined
       })
     },
 
-    async deletePerson() {
+    async deleteCollaborator () {
       try {
         this.loading = true
 
         await this.$axios.delete(
-          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
+          `${api.collaboratorGetBy.replace('{id}', this.collaboratorFocus.id)}/`
         )
 
         this.$q.notify({
@@ -529,7 +402,7 @@ export default {
           message: 'Colaborador Excluido com Sucesso!'
         })
 
-        this.evaluationFocus = undefined
+        this.collaboratorFocus = undefined
         this.refresh()
         this.loading = false
       } catch (e) {

@@ -16,14 +16,14 @@
         <div class="row items-center justify-center">
           <vue-json-to-csv
             v-if="true"
-            :json-data="[{registration:'', name: '',  birthDay: '', hiringDate: ''}]"
+            :json-data="[{register:'', name: '',  birthday: '', hiringdate: ''}]"
             separator=";"
             csv-title="Modelo de Colaboradores"
             :labels="{
-              registration: { title: 'matricula'},
+              register: { title: 'matricula'},
               name: { title: 'nome' },
-              birthDay: { title: 'data_de_nascimento' },
-              hiringDate: { title: 'data_de_admissao' }
+              birthday: { title: 'data_de_nascimento' },
+              hiringdate: { title: 'data_de_admissao' }
             }"
           >
             <q-btn
@@ -137,7 +137,7 @@
 <script>
 import VueJsonToCsv from 'vue-json-to-csv'
 import VueCsvImport from 'src/components/common/VueCsvImport'
-import api from 'src/statics/endpoints/Api.json'
+import { api } from 'src/enumerator/api'
 import { EventBus } from 'src/functions/event_bus'
 
 export default {
@@ -185,13 +185,13 @@ export default {
   methods: {
     brigdeEmployee (item) {
       const employee = {}
-      employee.registration = item.matricula
+      employee.register = item.matricula
       employee.name = item.nome
-      employee.hiringDate = this.$moment(
+      employee.hiringdate = this.$moment(
         item.data_de_admissao,
         'DD/MM/YYYY'
       ).format('YYYY-MM-DD')
-      employee.birthDay = this.$moment(
+      employee.birthday = this.$moment(
         item.data_de_nascimento,
         'DD/MM/YYYY'
       ).format('YYYY-MM-DD')
@@ -200,7 +200,6 @@ export default {
 
     showDialog () {
       this.cleanItens()
-      this.getCategoria()
       this.show = true
     },
 
@@ -208,23 +207,9 @@ export default {
       this.show = false
     },
 
-    async getCategoria () {
-      try {
-        const result = await this.$axios.get(api.categories, {
-          params: {
-            page: 1,
-            limit: 100
-          }
-        })
-        this.listCategories = result.data.categories
-      } catch (e) {
-        console.log(e)
-      }
-    },
-
     async registerEmployees () {
       try {
-        const result = await this.$axios.post('person/bulk', {
+        const result = await this.$axios.post(api.importCollaborators, {
           data: this.sendCsv
         })
 

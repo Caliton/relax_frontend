@@ -36,70 +36,6 @@ module.exports = function (ctx) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
-      // components: [
-      //   'QAvatar',
-      //   'QBtn',
-      //   'QDrawer',
-      //   'QHeader',
-      //   'QIcon',
-      //   'QInfiniteScroll',
-      //   'QSpinnerHourglass',
-      //   'QItem',
-      //   'QItemLabel',
-      //   'QItemSection',
-      //   'QImg',
-      //   'QLayout',
-      //   'QList',
-      //   'QPagination',
-      //   'QField',
-      //   'QPage',
-      //   'QPageContainer',
-      //   'QRouteTab',
-      //   'QTabs',
-      //   'QToolbar',
-      //   'QToolbarTitle',
-      //   'QDialog',
-      //   'QCard',
-      //   'QCardSection',
-      //   'QCardActions',
-      //   'QChip',
-      //   'QSeparator',
-      //   'QRadio',
-      //   'QRange',
-      //   'QForm',
-      //   'QPopupEdit',
-      //   'QInput',
-      //   'QTable',
-      //   'QTooltip',
-      //   'QBreadcrumbs',
-      //   'QBreadcrumbsEl',
-      //   'QMenu',
-      //   'QSpinnerBars',
-      //   'QScrollArea',
-      //   'QPageSticky',
-      //   'QCheckbox',
-      //   'QFab',
-      //   'QToggle',
-      //   'QFabAction',
-      //   'QSpinnerAudio',
-      //   'QSlideTransition',
-      //   'QSpinnerFacebook',
-      //   'QSpinnerPie',
-      //   'QTab',
-      //   'QTabPanels',
-      //   'QTabPanel',
-      //   'QInnerLoading',
-      //   'QTime',
-      //   'QDate',
-      //   'QPopupProxy',
-      //   'QSpinnerGears',
-      //   'QSpinnerRadio',
-      //   'QSpinnerAudio',
-      //   'QSpinnerPie',
-      //   'QSelect',
-      //   'QColor'
-      // ],
-
       directives: ['Ripple', 'ClosePopup'],
 
       plugins: ['Notify', 'Cookies', 'LocalStorage', 'SessionStorage']
@@ -112,10 +48,10 @@ module.exports = function (ctx) {
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: ctx.dev
-        ? { API: JSON.stringify('http://localhost:3000/api/v1/') }
+        ? { API: JSON.stringify('http://localhost:3000/api/') }
         // ? { API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/') }
         : {
-          API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/')
+          API: JSON.stringify('https://relax-heroku.herokuapp.com/api/')
         },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
