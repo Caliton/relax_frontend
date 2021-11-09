@@ -15,7 +15,7 @@ export default async ({ Vue }) => {
   // INTERCEPTORS
   axiosInstance.interceptors.request.use(
     config => {
-      const token = localStorage.getItem('access_token')
+      const token = localStorage.getItem('token')
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
@@ -41,16 +41,15 @@ export default async ({ Vue }) => {
       }
 
       if (error.response) {
-        const status = error.response.status
+        const { status, data } = error.response
         const message = 'Problema interno no servidor'
-
         if (status === REQUEST.LOGIN_FAILED) {
           EventBus.$emit('invalid-token')
         } else if (status === REQUEST.UNAUTHORIZED) {
           EventBus.$emit('invalid-token')
-        } 
+        }
 
-        notification.message = (Array.isArray(error.response.data.error) ? error.response.data.error[0] : error.response.data.error) ||
+        notification.message = (Array.isArray(data.message) ? data.message[0] : data.message) ||
           message
 
         EventBus.$emit('showNotify', notification)

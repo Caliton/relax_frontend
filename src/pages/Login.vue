@@ -27,7 +27,7 @@
             <q-card-section>
               <q-form @submit="onLogin" class="login-form">
                 <q-input
-                  v-model="user.username"
+                  v-model="user.login"
                   input-style="color: #6F6F6F"
                   color="primary"
                   filled
@@ -107,7 +107,7 @@ export default {
   data () {
     return {
       user: {
-        username: '',
+        login: '',
         password: ''
       },
       newUser: {
@@ -200,43 +200,26 @@ export default {
   },
 
   methods: {
-    // submit for the login form
     async onLogin () {
-      this.loading = true
-
       try {
-        var response = await this.$axios.post(api.signin, this.user)
+        this.loading = true
+        const { data } = await this.$axios.post(api.signin, this.user)
 
-        localStorage.setItem('access_token', response.data.token)
-        localStorage.setItem('userName', response.data.name)
-        localStorage.setItem('userId', response.data.id)
-        localStorage.setItem('userProfile', response.data.profileId)
-        localStorage.setItem('userDepartament', response.data.departamentId)
+        const { token, user } = data
+        localStorage.setItem('token', token)
+        localStorage.setItem('user_name', user.collaborator.name)
+        localStorage.setItem('user_role', user.role.description)
 
         this.$router.push('/dashboard')
 
-        this.loading = false
         this.$q.notify({
           color: 'positive',
           type: 'positive',
           message: 'Seja Bem Vindo!'
         })
-      } catch (error) {
-        this.loading = false
-      }
-    },
-
-    async onSingup () {
-      this.loading = true
-
-      try {
-        await this.$axios.post('auth/signup', this.newUser)
-
-        this.user = this.newUser
-        this.onLogin()
-
-        this.loading = false
-      } catch (error) {
+      } catch (e) {
+        console.log(e)
+      } finally {
         this.loading = false
       }
     },

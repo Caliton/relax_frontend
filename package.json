@@ -14,12 +14,12 @@
     "build:test": "cross-env MY_API=https://relax-heroku.herokuapp.com/ quasar build"
   },
   "dependencies": {
-    "@quasar/extras": "^1.9.10",
+    "@quasar/extras": "^1.11.5",
     "axios": "^0.18.1",
     "cross-env": "^5.2.0",
     "mime-types": "^2.1.24",
     "papaparse": "^5.0.0",
-    "quasar": "^1.14.7",
+    "quasar": "^1.16.0",
     "v-calendar": "^1.0.8",
     "vue-i18n": "^8.0.0",
     "vue-json-to-csv": "^1.1.8",
