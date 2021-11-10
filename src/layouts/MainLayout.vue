@@ -28,7 +28,7 @@
       <q-scroll-area class="fit">
         <q-list padding>
           <q-item
-            v-for="link in links1"
+            v-for="link in modulesComputed"
             :key="link.text"
             v-ripple
             clickable
@@ -38,6 +38,7 @@
             <q-item-section avatar>
               <q-icon :color="link.page === currentRoute()? '#4CAF50': 'grey'" :name="link.icon" />
             </q-item-section>
+
             <q-item-section>
               <q-item-label>{{ link.text }}</q-item-label>
             </q-item-section>
@@ -74,7 +75,6 @@
 
 <script>
 import { EventBus } from '../functions/event_bus.js'
-import { fabYoutube } from '@quasar/extras/fontawesome-v5'
 import DiNews from '../components/layout/DiNews.vue'
 
 export default {
@@ -84,13 +84,11 @@ export default {
     'di-news': DiNews
   },
 
-  created() {
-    if (!localStorage.getItem('access_token')) {
-      this.$router.push('/')
+  beforeCreate () {
+    if (!localStorage.getItem('token')) {
+      this.$router.push({ name: 'login' })
     }
-  },
 
-  beforeCreate() {
     EventBus.$on('showNotify', notification => {
       this.showNotify(notification)
     })
@@ -100,45 +98,75 @@ export default {
     })
   },
 
-  data() {
+  data () {
     return {
       EventBus: EventBus,
       user: {
         name: localStorage.getItem('userName')
       },
       leftDrawerOpen: false,
-      links1: [
+      modules: [
         // { icon: 'home', text: 'Inicio', page: 'dashboard' },
-        { icon: 'person', text: 'Colaboradores', page: 'colaborator' },
-        { icon: 'far fa-address-book', text: 'Agendamentos', page: 'reserva' }
+        { icon: 'person', text: 'Colaboradores', page: 'colaborator', canView: this.getPermissions('colaborator') },
+        { icon: 'far fa-address-book', text: 'Agendamentos', page: 'reserva', canView: this.getPermissions('reserva') },
+        { icon: 'eva-loader-outline', text: 'Solicitar Férias', page: 'vacationrequest', canView: this.getPermissions('vacationrequest') }
         // { icon: 'fas fa-sliders-h', text: 'Configurações', page: 'settings' }
       ]
     }
   },
 
-  created() {
-    this.fabYoutube = fabYoutube
+  computed: {
+    modulesComputed: function () {
+      return this.modules.filter((a) => a.canView)
+    }
   },
 
   methods: {
-    currentRoute() {
+    getPermissions (module) {
+      const modulesAdmin = ['colaborator', 'reserva']
+      const modulesSupervisor = ['colaborator', 'reserva']
+      const modulesCollaborator = ['vacationrequest']
+
+      const role = localStorage.getItem('user_role')
+      let permissions = false
+      switch (role) {
+        case 'admin':
+          permissions = modulesAdmin.includes(module)
+          break
+
+        case 'supervisor':
+          permissions = modulesSupervisor.includes(module)
+          break
+        case 'collaborator':
+          permissions = modulesCollaborator.includes(module)
+          break
+        default:
+          permissions = false
+          break
+      }
+
+      console.log(role)
+      console.log(modulesSupervisor.includes(module))
+      return permissions
+    },
+
+    currentRoute () {
       return this.$route.name
     },
 
-    logoutNow() {
-      this.$q.localStorage.remove('access_token')
-      this.$q.localStorage.remove('userId')
-      this.$q.localStorage.remove('userName')
-      this.$q.localStorage.remove('userProfile')
-      this.$q.localStorage.remove('userDepartament')
-      this.$router.push('/')
+    logoutNow () {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user_id')
+      localStorage.removeItem('user_name')
+      localStorage.removeItem('user_role')
+      this.$router.push({ name: 'login' })
     },
 
-    goPage(page) {
+    goPage (page) {
       this.$router.push(page)
     },
 
-    showNotify(notification) {
+    showNotify (notification) {
       this.$q.notify({
         color: notification.color,
         textColor: 'white',

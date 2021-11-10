@@ -27,6 +27,12 @@ const routes = [
       },
 
       {
+        path: '/vacationrequest',
+        name: 'vacationrequest',
+        component: () => import('pages/VacationRequest.vue')
+      },
+
+      {
         path: '/settings',
         name: 'settings',
         component: () => import('pages/Setting.vue')

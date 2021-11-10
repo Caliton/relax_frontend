@@ -124,12 +124,6 @@ export default {
     }
   },
 
-  created () {
-    if (localStorage.getItem('access_token')) {
-      this.$router.push('/dashboard')
-    }
-  },
-
   mounted () {
     const elems = document.querySelectorAll('.laya-please')
     // const layer2 = document.querySelector('.layer-2')
@@ -190,6 +184,10 @@ export default {
   },
 
   beforeCreate () {
+    if (localStorage.getItem('token')) {
+      this.$router.push({ name: 'colaborator' })
+    }
+
     EventBus.$on('showNotify', notification => {
       this.showNotify(notification)
     })
@@ -207,8 +205,9 @@ export default {
 
         const { token, user } = data
         localStorage.setItem('token', token)
+        localStorage.setItem('user_id', user.collaborator.id)
         localStorage.setItem('user_name', user.collaborator.name)
-        localStorage.setItem('user_role', user.role.description)
+        localStorage.setItem('user_role', user.role)
 
         this.$router.push('/dashboard')
 
