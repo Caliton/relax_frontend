@@ -10,11 +10,13 @@
       :columns="columns"
       :visible-columns="visibleColumns"
       :filter="filter"
-      :pagination.sync="pagination"
-      @request="onRequest"
+      hide-pagination
+      :pagination="pagination"
+      :sort-method="customSort"
       rows-per-page-label="Registros por páginas"
+      no-results-label="Collaborador não encontrado"
       no-data-label="Ainda não temos colaboradores cadastrados"
-      binary-state-sort
+      @request="onRequest"
     >
       <template v-slot:loading>
         <q-inner-loading showing color="primary">
@@ -28,7 +30,7 @@
             <div class="col" style="display: block">
               <q-icon name="eva-people-outline" color="primary" size="md" style="display: block;" />
               <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Colaboradores</span>
-              <p class="subtitle">Lista de todos os funcionários de sua empresa.</p>
+              <p class="subtitle">Sinta-se a vontade para acompanhar o estado atual de seus colaboradores.</p>
             </div>
 
             <div
@@ -47,7 +49,7 @@
               <!-- <div class="column justify-center text-center">
                 <span style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">{{data.filter((item) => item.status === 'CRITICO').length}} </span>
                 <span class="text-weight-regular text-h6">Aviso</span>
-              </div>-->
+              </div> -->
             </div>
           </div>
 
@@ -97,7 +99,7 @@
                 class="q-ml-lg float-right"
                 dense
                 filled
-                debounce="300"
+                debounce="750"
                 v-model="filter"
                 placeholder="Busca"
                 style="max-width: 40%"
@@ -117,13 +119,13 @@
             :props="props"
           >{{ col.label }}</q-th>
 
-          <q-th auto-width />
+          <q-th> Ações </q-th>
         </q-tr>
       </template>
 
       <template v-slot:body="props">
         <q-tr :props="props" class="custom-table">
-          <q-td style="width: 5%" :props="props" key="status">
+          <q-td style="width: 5%" :props="props" key="situation">
             <q-icon
               size="md"
               :color="props.row.situation.color"
@@ -152,7 +154,7 @@
             </q-tooltip>
           </q-td>
 
-          <q-td style="width: 10%" :props="props" key="registration">{{props.row.register}}</q-td>
+          <q-td style="width: 10%" :props="props" key="register">{{props.row.register}}</q-td>
           <q-td style="width: 30%" :props="props" key="name">{{props.row.name}}</q-td>
 
           <q-td
@@ -202,16 +204,6 @@
         </q-tr>
       </template>
 
-      <div slot="bottom" slot-scope="props" style="margin: 0 auto">
-        <div>
-          <q-pagination
-            v-model="props.pagination.page"
-            :max="1"
-            :direction-links="true"
-            @input="setPagination"
-          ></q-pagination>
-        </div>
-      </div>
     </q-table>
 
     <q-dialog v-model="showDelete" persistent>
@@ -265,12 +257,11 @@ export default {
         sortBy: 'desc',
         descending: false,
         page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 10
+        rowsPerPage: 100
       },
       visibleColumns: [
-        'status',
-        'registration',
+        'situation',
+        'register',
         'name',
         'hiringdate',
         'birthday'
@@ -279,16 +270,16 @@ export default {
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
           align: 'left',
-          name: 'status',
+          name: 'situation',
           label: 'Situação',
-          field: 'status',
+          field: 'situation',
           sortable: true
         },
         {
           align: 'left',
-          name: 'registration',
+          name: 'register',
           label: 'Matricula',
-          field: 'registration',
+          field: 'register',
           sortable: true
         },
         {
@@ -296,7 +287,6 @@ export default {
           name: 'name',
           label: 'Nome',
           field: 'name',
-          sortOrder: 'ad',
           sortable: true
         },
         {
@@ -331,29 +321,37 @@ export default {
   mounted () {
     this.refresh()
   },
+
   methods: {
     async onRequest (props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination
-
       this.loading = true
 
-      const { data } = await this.$axios.get(api.collaborators)
-
-      console.log(data)
+      const { data } = await this.$axios.get(api.collaborators, { params: { filter: props.filter || undefined } })
 
       this.data.splice(0, this.data.length, ...data)
-
-      this.pagination.page = page
-      this.pagination.rowsPerPage = rowsPerPage
-      this.pagination.sortBy = sortBy
-      this.pagination.descending = descending
 
       this.loading = false
     },
 
-    setPagination (value) {
-      this.pagination.page = value
-      this.onRequest({ pagination: this.pagination, filter: this.filter })
+    customSort (rows, sortBy, descending) {
+      const data = [...rows]
+
+      if (sortBy) {
+        data.sort((a, b) => {
+          const x = descending ? b : a
+          const y = descending ? a : b
+
+          if (sortBy === 'name') {
+            // string sort
+            return x[sortBy] > y[sortBy] ? 1 : x[sortBy] < y[sortBy] ? -1 : 0
+          } else {
+            // numeric sort
+            return parseFloat(x[sortBy]) - parseFloat(y[sortBy])
+          }
+        })
+      }
+
+      return data
     },
 
     openDialogColaborador () {
@@ -383,7 +381,6 @@ export default {
 
     refresh () {
       this.onRequest({
-        pagination: this.pagination,
         filter: undefined
       })
     },
@@ -449,9 +446,32 @@ export default {
     /* height of all previous header rows */
     top: 48px;
   }
+
+    /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    width: 5px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a9a9a9;
+  }
 }
 
 .custom-table td {
   font-size: 1rem;
 }
+
 </style>
