@@ -12,7 +12,6 @@
       :filter="filter"
       hide-pagination
       :pagination="pagination"
-      :sort-method="customSort"
       rows-per-page-label="Registros por páginas"
       no-results-label="Collaborador não encontrado"
       no-data-label="Ainda não temos colaboradores cadastrados"
@@ -272,6 +271,7 @@ export default {
           align: 'left',
           name: 'situation',
           label: 'Situação',
+          sort: (a, b, rowA, rowB) => a.limitMonths - b.limitMonths,
           field: 'situation',
           sortable: true
         },
