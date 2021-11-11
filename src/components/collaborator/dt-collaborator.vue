@@ -27,9 +27,20 @@
         <div style="width: 100%">
           <div class="row">
             <div class="col" style="display: block">
-              <q-icon name="eva-people-outline" color="primary" size="md" style="display: block;" />
-              <span style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif">Colaboradores</span>
-              <p class="subtitle">Sinta-se a vontade para acompanhar o estado atual de seus colaboradores.</p>
+              <q-icon
+                name="eva-people-outline"
+                color="primary"
+                size="md"
+                style="display: block;"
+              />
+              <span
+                style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
+                >Colaboradores</span
+              >
+              <p class="subtitle">
+                Sinta-se a vontade para acompanhar o estado atual de seus
+                colaboradores.
+              </p>
             </div>
 
             <div
@@ -39,7 +50,8 @@
               <div class="column justify-center text-center">
                 <span
                   style="display: inline-block; font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
-                >{{data.length}}</span>
+                  >{{ data.length }}</span
+                >
                 <span class="text-weight-regular text-h6">Colaboradores</span>
               </div>
 
@@ -54,7 +66,7 @@
 
           <div
             class="row justify-between"
-            :class="{'justify-center': $q.screen.lt.sm}"
+            :class="{ 'justify-center': $q.screen.lt.sm }"
             style="width: 100%; margin-top: 1rem"
           >
             <div class="col-md-2 col-sm-4">
@@ -113,10 +125,11 @@
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th
-            v-for="col in props.cols.filter((item) => item.name !== 'id')"
+            v-for="col in props.cols.filter(item => item.name !== 'id')"
             :key="col.name"
             :props="props"
-          >{{ col.label }}</q-th>
+            >{{ col.label }}</q-th
+          >
 
           <q-th> Ações </q-th>
         </q-tr>
@@ -143,30 +156,33 @@
                   :name="props.row.situation.icon"
                   :color="props.row.situation.color"
                 />&nbsp;
-                <span :style="{color: props.row.situation.color}">{{ props.row.situation.description  }}</span>
+                <span :style="{ color: props.row.situation.color }">{{
+                  props.row.situation.description
+                }}</span>
                 <br />
-                <span
-                  class="subtitle"
-                  style="font-size: .9rem"
-                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ props.row.situation.tooltip }}</span>
+                <span class="subtitle" style="font-size: .9rem"
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{
+                    props.row.situation.tooltip
+                  }}</span
+                >
               </div>
             </q-tooltip>
           </q-td>
 
-          <q-td style="width: 10%" :props="props" key="register">{{props.row.register}}</q-td>
-          <q-td style="width: 30%" :props="props" key="name">{{props.row.name}}</q-td>
+          <q-td style="width: 10%" :props="props" key="register">{{
+            props.row.register
+          }}</q-td>
+          <q-td style="width: 30%" :props="props" key="name">{{
+            props.row.name
+          }}</q-td>
 
-          <q-td
-            style="width: 10%"
-            :props="props"
-            key="birthday"
-          >{{props.row.birthday | moment('DD-MM-YYYY')}}</q-td>
+          <q-td style="width: 10%" :props="props" key="birthday">{{
+            props.row.birthday | moment('DD-MM-YYYY')
+          }}</q-td>
 
-          <q-td
-            style="width: 10%"
-            :props="props"
-            key="hiringdate"
-          >{{ props.row.hiringdate | moment('DD-MM-YYYY')}}</q-td>
+          <q-td style="width: 10%" :props="props" key="hiringdate">{{
+            props.row.hiringdate | moment('DD-MM-YYYY')
+          }}</q-td>
 
           <q-td style="width: 20%">
             <q-btn
@@ -202,7 +218,6 @@
           </q-td>
         </q-tr>
       </template>
-
     </q-table>
 
     <q-dialog v-model="showDelete" persistent>
@@ -213,16 +228,41 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
-          <q-btn flat no-caps label="Desejo sim!" color="red" @click="deleteCollaborator" v-close-popup />
+          <q-btn
+            flat
+            no-caps
+            label="Vou pensar melhor..."
+            color="grey"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            no-caps
+            label="Desejo sim!"
+            color="red"
+            @click="deleteCollaborator"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <di-import-colaborador ref="di-import-colaborador" :columns="columns" :data="data" />
-    <di-import-periods ref="di-import-periods" :columns="columns" :data="data" />
+    <di-import-colaborador
+      ref="di-import-colaborador"
+      :columns="columns"
+      :data="data"
+    />
+    <di-import-periods
+      ref="di-import-periods"
+      :columns="columns"
+      :data="data"
+    />
 
-    <di-collaborator ref="di-collaborator" @on-close="refresh" style="height: auto !important"/>
+    <di-collaborator
+      ref="di-collaborator"
+      @on-close="refresh"
+      style="height: auto !important"
+    />
   </div>
 </template>
 
@@ -326,7 +366,9 @@ export default {
     async onRequest (props) {
       this.loading = true
 
-      const { data } = await this.$axios.get(api.collaborators, { params: { filter: props.filter || undefined } })
+      const { data } = await this.$axios.get(api.collaborators, {
+        params: { filter: props.filter || undefined }
+      })
 
       this.data.splice(0, this.data.length, ...data)
 
@@ -473,5 +515,4 @@ export default {
 .custom-table td {
   font-size: 1rem;
 }
-
 </style>
