@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "numso.prettier-standard-vscode",
+    "chenxsan.vscode-standardjs",
+    "sysoev.language-stylus",
+    "dariofuzinato.vue-peek",
+    "coenraads.bracket-pair-colorizer-2",
+    "formulahendry.auto-rename-tag",
+    "wayou.vscode-todo-highlight",
+    "octref.vetur",
+    "blodwynn.featurehighlight",
+    "piotr-porzuczek.jest-cucumber-code-generator-extension"
+  ],
+  "unwantedRecommendations": [
+    "hookyqr.beautify",
+    "dbaeumer.jshint",
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ]
+}
