@@ -109,8 +109,8 @@ export default {
         // { icon: 'home', text: 'Inicio', page: 'dashboard' },
         { icon: 'person', text: 'Colaboradores', page: 'colaborator', canView: this.getPermissions('colaborator') },
         { icon: 'far fa-address-book', text: 'Agendamentos', page: 'reserva', canView: this.getPermissions('reserva') },
-        { icon: 'eva-loader-outline', text: 'Solicitar Férias', page: 'vacationrequest', canView: this.getPermissions('vacationrequest') }
-        // { icon: 'fas fa-sliders-h', text: 'Configurações', page: 'settings' }
+        { icon: 'eva-loader-outline', text: 'Solicitar Férias', page: 'vacationrequest', canView: this.getPermissions('vacationrequest') },
+        { icon: 'eva-pantone-outline', text: 'Configurações', page: 'settings', canView: this.getPermissions('settings') }
       ]
     }
   },
@@ -123,9 +123,9 @@ export default {
 
   methods: {
     getPermissions (module) {
-      const modulesAdmin = ['colaborator', 'reserva']
-      const modulesSupervisor = ['colaborator', 'reserva']
       const modulesCollaborator = ['vacationrequest']
+      const modulesSupervisor = ['colaborator', 'reserva', 'settings', ...modulesCollaborator]
+      const modulesAdmin = [...modulesSupervisor]
 
       const role = localStorage.getItem('user_role')
       let permissions = false

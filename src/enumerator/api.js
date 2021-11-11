@@ -23,7 +23,10 @@ export const api = {
   reports: 'reports/{id}',
 
   signin: 'login',
+  situation: 'periodstatus',
   sendRecoverEmail: '/auth/send-recover-email',
+
+  vacationrequest: 'vacationrequest',
 
   users: 'users'
 }
