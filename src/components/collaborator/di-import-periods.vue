@@ -1,27 +1,45 @@
 <template>
   <q-dialog v-model="show" persistent>
-    <q-card style="width: 700px; max-width: 80vw; max-height: 90vh; height: auto">
+    <q-card
+      style="width: 700px; max-width: 80vw; max-height: 90vh; height: auto"
+    >
       <q-toolbar class="bg-primary text-white shadow-1">
-        <q-toolbar-title class="flex flex-center">Importar Períodos</q-toolbar-title>
-        <q-btn class="float-right" flat round dense icon="close" @click="canceled" />
+        <q-toolbar-title class="flex flex-center"
+          >Importar Períodos</q-toolbar-title
+        >
+        <q-btn
+          class="float-right"
+          flat
+          round
+          dense
+          icon="close"
+          @click="canceled"
+        />
       </q-toolbar>
 
       <q-card-section>
         <div class="row items-center justify-center">
-          <q-icon size="2em" name="eva-cloud-download-outline" color="primary" />
-          <span class="q-ml-sm">Passo 1) Baixe o Modelo a baixo e preencha-o conforme seu Layout!</span>
+          <q-icon
+            size="2em"
+            name="eva-cloud-download-outline"
+            color="primary"
+          />
+          <span class="q-ml-sm"
+            >Passo 1) Baixe o Modelo a baixo e preencha-o conforme seu
+            Layout!</span
+          >
           <!-- <span class="q-ml-sm">Importe a lista dos colaboradores de sua Empresa por aqui!</span> -->
         </div>
 
         <div class="row items-center justify-center">
           <vue-json-to-csv
             v-if="true"
-            :json-data="[{personId:'', year: ''}]"
+            :json-data="[{ personId: '', year: '' }]"
             separator=";"
             csv-title="Modelo de períodos"
             :labels="{
-              personId: { title: 'matricula'},
-              year: { title: 'ano' },
+              personId: { title: 'matricula' },
+              year: { title: 'ano' }
             }"
           >
             <q-btn
@@ -38,14 +56,18 @@
 
       <q-card-section class="flex flex-center">
         <div class="row justify-center">
-          <q-img src="~src/statics/new_persons.png" style="max-width: 500px; opacity: .8" />
+          <q-img
+            src="~src/statics/new_persons.png"
+            style="max-width: 500px; opacity: .8"
+          />
         </div>
 
         <div class="q-mb-lg">
           <q-icon size="2em" name="eva-settings-outline" color="primary" />
-          <span
-            class="q-ml-sm"
-          >Passo 2) Salve seu Modelo preenchido e arraste-o para esta area abaixo!</span>
+          <span class="q-ml-sm"
+            >Passo 2) Salve seu Modelo preenchido e arraste-o para esta area
+            abaixo!</span
+          >
         </div>
 
         <div class="row justify-center">
@@ -69,19 +91,34 @@
                 v-if="this.csv.length - this.listFails.length > 0"
                 class="text-weight-light"
                 style="color: green"
-              >{{csv.length - listFails.length}} {{(csv.length - listFails.length) > 1? 'colaboradores foram inseridos': 'colaborador foi inserido'}}!</p>
+              >
+                {{ csv.length - listFails.length }}
+                {{
+                  csv.length - listFails.length > 1
+                    ? 'colaboradores foram inseridos'
+                    : 'colaborador foi inserido'
+                }}!
+              </p>
 
               <p
                 v-if="this.csv.length - this.listFails.length === 0"
                 class="text-weight-light"
                 style="color: red"
-              >{{listFails.length}} {{listFails.length > 1? 'colaboradores tiveram problemas': 'colaborador teve problema'}}!</p>
+              >
+                {{ listFails.length }}
+                {{
+                  listFails.length > 1
+                    ? 'colaboradores tiveram problemas'
+                    : 'colaborador teve problema'
+                }}!
+              </p>
 
-              <p
-                v-else
-                class="text-weight-light"
-                style="color: red"
-              >...porém {{listFails.length}} {{listFails.length > 1? 'tiveram problemas': 'teve problema'}}!</p>
+              <p v-else class="text-weight-light" style="color: red">
+                ...porém {{ listFails.length }}
+                {{
+                  listFails.length > 1 ? 'tiveram problemas' : 'teve problema'
+                }}!
+              </p>
             </div>
           </div>
         </q-card-section>
@@ -91,7 +128,11 @@
         <q-card-section v-if="this.failImportation">
           <div v-if="this.csv.length" class="flex flex-center">
             <div class="row">
-              <q-markup-table separator="vertical" style="max-height: 30vh" class="col-12">
+              <q-markup-table
+                separator="vertical"
+                style="max-height: 30vh"
+                class="col-12"
+              >
                 <thead>
                   <tr>
                     <th class="text-left">Linha na Tabela</th>
@@ -100,8 +141,8 @@
                 </thead>
                 <tbody v-for="item in listFails" :key="item.name">
                   <tr>
-                    <td class="text-left">{{item.errorLine}}</td>
-                    <td class="text-right">{{item.error}}</td>
+                    <td class="text-left">{{ item.errorLine }}</td>
+                    <td class="text-right">{{ item.error }}</td>
                   </tr>
                 </tbody>
               </q-markup-table>
@@ -111,7 +152,14 @@
       </q-slide-transition>
 
       <q-card-actions align="right">
-        <q-btn flat no-caps label="Fechar" color="grey" v-close-popup @click="refresh" />
+        <q-btn
+          flat
+          no-caps
+          label="Fechar"
+          color="grey"
+          v-close-popup
+          @click="refresh"
+        />
         <q-btn
           color="green"
           :disable="this.csv.length === 0 || this.failImportation"
@@ -214,7 +262,6 @@ export default {
       const requestBody = {
         data: this.sendCsv
       }
-      console.log(requestBody)
 
       try {
         const result = await this.$axios.post('vacationtime/bulk', requestBody)

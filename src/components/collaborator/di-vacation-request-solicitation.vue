@@ -1,14 +1,25 @@
-<template >
+<template>
   <q-dialog
     v-model="onShow"
     transition-show="scale"
     transition-hide="scale"
     style="height: auto !important"
   >
-    <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto !important">
+    <q-card
+      style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto !important"
+    >
       <q-toolbar class="bg-primary text-white shadow-1">
-        <q-toolbar-title class="flex flex-center">Solicitar Férias</q-toolbar-title>
-        <q-btn class="float-right" flat round dense icon="close" @click="canceled" />
+        <q-toolbar-title class="flex flex-center"
+          >Solicitar Férias</q-toolbar-title
+        >
+        <q-btn
+          class="float-right"
+          flat
+          round
+          dense
+          icon="close"
+          @click="canceled"
+        />
       </q-toolbar>
 
       <q-card-section>
@@ -20,10 +31,14 @@
               :disabled-dates="[
                 {
                   start: null,
-                  end: new Date(moment(this.info.vacationDate).format('YYYY-MM-DD'))
+                  end: new Date(
+                    moment(this.info.vacationDate).format('YYYY-MM-DD')
+                  )
                 },
                 {
-                  start: new Date(moment(this.info.limitDate).format('YYYY-MM-DD')),
+                  start: new Date(
+                    moment(this.info.limitDate).format('YYYY-MM-DD')
+                  ),
                   end: null
                 }
               ]"
@@ -37,23 +52,39 @@
             class="col-md-7 offset-md-1 row justify-around"
             style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
           >
-            <div class="column justify-center text-center" style="transform: scale(.9);">
+            <div
+              class="column justify-center text-center"
+              style="transform: scale(.9);"
+            >
               <span
                 v-if="rangeDate.start !== '' && rangeDate.end !== ''"
                 style="display: inline-block;"
-              >Marcar férias a partir do dia {{rangeDate.start | moment('DD/MM/YYYY')}} ao dia {{rangeDate.end | moment('DD/MM/YYYY')}}?</span>
+                >Marcar férias a partir do dia
+                {{ rangeDate.start | moment('DD/MM/YYYY') }} ao dia
+                {{ rangeDate.end | moment('DD/MM/YYYY') }}?</span
+              >
             </div>
 
             <q-separator inset />
 
             <div class="q-pa-sm text-subtitle1">
-              <span>Voce pode escolher {{info.daysBalance}} dias</span>
+              <span>Voce pode escolher {{ info.daysBalance }} dias</span>
               <br />
               <span
-                :style="[{'color': info.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]"
-              >Prazo limite {{info.limitDate | moment('DD-MM-YYYY') }}</span>
+                :style="[
+                  {
+                    color:
+                      info.limitDate < moment().format('YYYY-MM-DD')
+                        ? 'red'
+                        : ''
+                  }
+                ]"
+                >Prazo limite {{ info.limitDate | moment('DD-MM-YYYY') }}</span
+              >
               <br />
-              <span class="text-subtitle1">Dias Selecionados: {{qutdDias}}</span>
+              <span class="text-subtitle1"
+                >Dias Selecionados: {{ qutdDias }}</span
+              >
             </div>
           </div>
         </div>
@@ -70,7 +101,15 @@
           label="Desfazer Solicitação"
           @click="showDeleteRequest"
         />
-        <q-btn color="primary" dense no-caps outline rounded label="Solicitar" @click="confirm" />
+        <q-btn
+          color="primary"
+          dense
+          no-caps
+          outline
+          rounded
+          label="Solicitar"
+          @click="confirm"
+        />
       </q-card-actions>
 
       <q-inner-loading :showing="loading">
@@ -86,7 +125,13 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
+          <q-btn
+            flat
+            no-caps
+            label="Vou pensar melhor..."
+            color="grey"
+            v-close-popup
+          />
           <q-btn
             flat
             no-caps
@@ -221,10 +266,6 @@ export default {
           message: 'Solicitação desmarcada com sucesso!'
         })
 
-        EventBus.$emit(
-          'on-refresh-vacation-request',
-          this.vacationRequest.requestUserId
-        )
         this.onHideModal()
 
         this.loading = false
@@ -251,7 +292,6 @@ export default {
         await axiosFunction(url, this.vacationRequest)
         this.loading = false
 
-        EventBus.$emit('on-refresh-vacation-request')
         this.onHideModal()
       } catch (e) {
         console.log(e)

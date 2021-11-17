@@ -1,12 +1,14 @@
 <template>
   <q-dialog
-    v-model="onShow"
+    v-model="show"
     transition-show="scale"
     transition-hide="scale"
     persistent
     @before-hide="onHideDialog"
   >
-    <q-card style="max-width: 72vw; min-width: 60vw; min-height: 80vh; max-height: 120vh">
+    <q-card
+      style="max-width: 72vw; min-width: 60vw; min-height: 80vh; max-height: 120vh"
+    >
       <q-toolbar class="text-white shadow-1 bg-green">
         <q-toolbar-title class="flex flex-center">
           <q-icon
@@ -18,12 +20,26 @@
           />
           {{ this.colaborator.name }}
         </q-toolbar-title>
-        <q-btn class="float-right" flat round dense icon="close" @click="canceled" />
+        <q-btn
+          class="float-right"
+          flat
+          round
+          dense
+          icon="close"
+          @click="canceled"
+        />
       </q-toolbar>
 
       <q-card-section
         class="bg-green q-pt-sm q-pb-sm"
-        :style="[{'background-color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? '#F44336 !important': ''}]"
+        :style="[
+          {
+            'background-color':
+              vacationSelected.limitDate < moment().format('YYYY-MM-DD')
+                ? '#F44336 !important'
+                : ''
+          }
+        ]"
       >
         <div class="text-white justify-center flex flex-center">
           <div class="row" v-if="this.vacationsCombo.length > 0">
@@ -38,8 +54,12 @@
               icon="eva-chevron-left-outline"
             />
 
-            <q-btn flat class="text-weight-medium flex-center flex" style="font-size:1.3rem;">
-              {{this.vacationsCombo[this.number].label}}
+            <q-btn
+              flat
+              class="text-weight-medium flex-center flex"
+              style="font-size:1.3rem;"
+            >
+              {{ this.vacationsCombo[this.number].label }}
               <q-menu transition-show="scale" transition-hide="scale">
                 <q-list style="min-width: 100px">
                   <q-item clickable>
@@ -47,7 +67,9 @@
                     <q-menu anchor="top left" self="top left">
                       <div class="row no-wrap q-pa-md">
                         <div class="column q-gutter-sm">
-                          <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
+                          <div class="text-h6 q-mb-md text-center">
+                            Inserir novo periodo
+                          </div>
 
                           <q-input
                             filled
@@ -88,7 +110,7 @@
             </q-btn>
 
             <q-btn
-              :disable="!(this.number < this.vacationsCombo.length -1)"
+              :disable="!(this.number < this.vacationsCombo.length - 1)"
               @click="setRightPeriodo"
               color="white"
               round
@@ -112,7 +134,9 @@
               <q-menu anchor="top left" self="top left">
                 <div class="row no-wrap q-pa-md">
                   <div class="column q-gutter-sm">
-                    <div class="text-h6 q-mb-md text-center">Inserir novo periodo</div>
+                    <div class="text-h6 q-mb-md text-center">
+                      Inserir novo periodo
+                    </div>
 
                     <q-input
                       filled
@@ -151,7 +175,7 @@
       <q-card-section class="flex flex-center q-pt-sm q-pb-sm text-subtitle1">
         <span
           v-if="this.statusCurrent !== 'INDEFINIDO'"
-          :style="[{'color': getColor(this.statusCurrent)}]"
+          :style="[{ color: getColor(this.statusCurrent) }]"
         >
           <q-icon
             size="md"
@@ -183,7 +207,7 @@
             color="red"
             name="eva-alert-triangle-outline"
           />
-          {{getNameStatus(this.statusCurrent)}}.
+          {{ getNameStatus(this.statusCurrent) }}.
         </span>
       </q-card-section>
 
@@ -199,8 +223,12 @@
               />
               <span
                 style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
-              >Controle de Férias</span>
-              <p class="subtitle">Aqui você pode gerir solicitações de férias de seus Colaboradores.</p>
+                >Controle de Férias</span
+              >
+              <p class="subtitle">
+                Aqui você pode gerir solicitações de férias de seus
+                Colaboradores.
+              </p>
             </div>
 
             <div
@@ -210,28 +238,58 @@
               <div class="q-pa-sm text-subtitle1">
                 <span
                   v-if="vacationSelected.limit6Months"
-                  :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]"
-                >Período {{ vacationSelected.vacationDate | moment('DD-MM-YYYY') }} ao {{ vacationSelected.finalVacationTime | moment('DD-MM-YYYY') }}</span>
+                  :style="[
+                    {
+                      color:
+                        vacationSelected.limitDate <
+                        moment().format('YYYY-MM-DD')
+                          ? 'red'
+                          : ''
+                    }
+                  ]"
+                  >Período
+                  {{ vacationSelected.vacationDate | moment('DD-MM-YYYY') }} ao
+                  {{
+                    vacationSelected.finalVacationTime | moment('DD-MM-YYYY')
+                  }}</span
+                >
               </div>
 
               <q-separator inset />
 
-              <div class="column justify-center text-center" style="transform: scale(.9);">
-                <span style="display: inline-block;">{{vacationSelected.daysAllowed}}</span>
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">{{
+                  vacationSelected.daysAllowed
+                }}</span>
                 <span class="text-weight-regular text-h6">Dias Totais</span>
               </div>
 
               <q-separator vertical inset />
 
-              <div class="column justify-center text-center" style="transform: scale(.9);">
-                <span style="display: inline-block;">{{vacationSelected.daysBalance}}</span>
-                <span class="text-weight-regular text-h6">Dias Disponíveis</span>
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">{{
+                  vacationSelected.daysBalance
+                }}</span>
+                <span class="text-weight-regular text-h6"
+                  >Dias Disponíveis</span
+                >
               </div>
 
               <q-separator vertical inset />
 
-              <div class="column justify-center text-center" style="transform: scale(.9);">
-                <span style="display: inline-block;">{{vacationSelected.daysEnjoyed}}</span>
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">{{
+                  vacationSelected.daysEnjoyed
+                }}</span>
                 <span class="text-weight-regular text-h6">Dias Agendados</span>
               </div>
               <!--
@@ -246,7 +304,15 @@
               <div class="q-pa-sm text-subtitle1">
                 <span
                   v-if="vacationSelected.limit6Months"
-                  :style="[{'color': vacationSelected.limitDate < moment().format('YYYY-MM-DD')? 'red': ''}]"
+                  :style="[
+                    {
+                      color:
+                        vacationSelected.limitDate <
+                        moment().format('YYYY-MM-DD')
+                          ? 'red'
+                          : ''
+                    }
+                  ]"
                 >
                   <!-- <q-icon name="eva-info-outline">
                     <q-tooltip
@@ -278,9 +344,11 @@
                       </div>
                     </q-tooltip>
                   </q-icon>-->
-                  Prazo limite com 6 meses {{ vacationSelected.limit6Months | moment('DD-MM-YYYY') }}
+                  Prazo limite com 6 meses
+                  {{ vacationSelected.limit6Months | moment('DD-MM-YYYY') }}
                   <br />
-                  Prazo limite final {{ vacationSelected.limitDate | moment('DD-MM-YYYY')}}
+                  Prazo limite final
+                  {{ vacationSelected.limitDate | moment('DD-MM-YYYY') }}
                 </span>
               </div>
             </div>
@@ -288,7 +356,10 @@
 
           <div class="row">
             <q-btn
-              :disable="!(this.vacationsCombo.length > 0) || vacationSelected.daysBalance === 0"
+              :disable="
+                !(this.vacationsCombo.length > 0) ||
+                  vacationSelected.daysBalance === 0
+              "
               label="Solicitar Férias"
               @click="solicitationVacation"
               rounded
@@ -304,7 +375,10 @@
       <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
         <div class="row">
           <div v-if="listRequests.length > 0" class="col-md-5">
-            <ul class="caixa-ul" style="overflow: auto; max-height: 400px; transform">
+            <ul
+              class="caixa-ul"
+              style="overflow: auto; max-height: 400px; transform"
+            >
               <li
                 v-for="item in listRequests"
                 :key="item.id"
@@ -317,10 +391,14 @@
                   >
                     <div
                       style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
-                    >{{getMonth(parseInt(item.startDate.split('-')[1]))}}</div>
+                    >
+                      {{ getMonth(parseInt(item.startDate.split('-')[1])) }}
+                    </div>
                     <div
                       style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
-                    >{{item.startDate | moment('DD')}}</div>
+                    >
+                      {{ item.startDate | moment('DD') }}
+                    </div>
                   </div>
                 </div>
 
@@ -339,29 +417,36 @@
                   >
                     <div
                       style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
-                    >{{getMonth(parseInt(item.finalDate.split('-')[1]))}}</div>
+                    >
+                      {{ getMonth(parseInt(item.finalDate.split('-')[1])) }}
+                    </div>
                     <div
                       style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
-                    >{{item.finalDate | moment('DD')}}</div>
+                    >
+                      {{ item.finalDate | moment('DD') }}
+                    </div>
                   </div>
                 </div>
 
                 <div class="q-ma-md teste">
                   <span class="texto">Férias</span>
                   <br />
-                  <span>{{item.days}} dias</span>
+                  <span>{{ item.days }} dias</span>
                 </div>
               </li>
             </ul>
           </div>
 
-          <div v-if="listRequests.length === 0 && this.vacationsCombo.length > 0" class="col-md-6">
+          <div
+            v-if="listRequests.length === 0 && this.vacationsCombo.length > 0"
+            class="col-md-6"
+          >
             <q-img src="~src/statics/calendar.png" style="max-width: 285px;" />
             <br />
-            <span
-              style="color: #999999"
-              class="text-subtitle1"
-            >Não há nenhuma solicitação de férias em {{this.vacationsCombo[this.number].label}}</span>
+            <span style="color: #999999" class="text-subtitle1"
+              >Não há nenhuma solicitação de férias em
+              {{ this.vacationsCombo[this.number].label }}</span
+            >
           </div>
 
           <div
@@ -370,10 +455,9 @@
           >
             <q-img src="~src/statics/empty_2.png" style="max-width: 300px;" />
             <br />
-            <span
-              class="text-subtitle1"
-              style="color: #999999"
-            >Este colaborador não possui nenhum periodo cadastrado</span>
+            <span class="text-subtitle1" style="color: #999999"
+              >Este colaborador não possui nenhum periodo cadastrado</span
+            >
           </div>
         </div>
       </q-card-section>
@@ -387,8 +471,21 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup />
-          <q-btn flat no-caps label="Sim!" color="red" @click="deletePeriodo" v-close-popup />
+          <q-btn
+            flat
+            no-caps
+            label="Vou pensar melhor..."
+            color="grey"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            no-caps
+            label="Sim!"
+            color="red"
+            @click="deletePeriodo"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -404,30 +501,6 @@ export default {
 
   events: ['on-close'],
 
-  beforeCreate () {
-    EventBus.$on('on-show-vacation-request', data => {
-      this.onShow = true
-
-      this.listRequests = []
-
-      if (data) {
-        this.colaborator = Object.assign({}, data)
-        this.personId = data.id
-        this.getVacationsTimes(data.id)
-        this.checkingStatus()
-      }
-    })
-
-    EventBus.$on('on-refresh-vacation-request', personId => {
-      this.getVacationsTimes(personId)
-      this.getRequestSolicitation(this.vacationsCombo[0].value)
-    })
-  },
-
-  beforeDestroy () {
-    EventBus.$off('on-show-vacation-request')
-  },
-
   computed: {
     draggingInfo () {
       return this.dragging ? 'under drag' : ''
@@ -436,7 +509,7 @@ export default {
 
   data () {
     return {
-      onShow: false,
+      show: false,
       slide: 'style',
       vacations: [],
       attributes: [],
@@ -508,8 +581,17 @@ export default {
       EventBus.$emit('on-edit-days-off', args)
     },
 
-    onShowModal () {
-      this.onShow = true
+    onShow (data) {
+      this.show = true
+
+      this.listRequests = []
+
+      if (data) {
+        this.colaborator = Object.assign({}, data)
+        this.personId = data.id
+        this.getVacationsTimes(data.id)
+        this.checkingStatus()
+      }
     },
 
     solicitationVacation () {
@@ -519,8 +601,9 @@ export default {
 
     onHideModal () {
       this.$emit('on-close')
-      this.onShow = false
+      this.show = false
     },
+
     openNewVacationTime () {
       this.showInputVacationTime = true
     },
@@ -582,13 +665,10 @@ export default {
       try {
         this.loadingVacationTime = true
 
-        await this.$axios.post(
-          `person/${this.personId}/vacationtime`,
-          {
-            daysAllowed: this.vacationTime.daysAllowed,
-            vacationYear: this.vacationTime.vacationYear
-          }
-        )
+        await this.$axios.post(`person/${this.personId}/vacationtime`, {
+          daysAllowed: this.vacationTime.daysAllowed,
+          vacationYear: this.vacationTime.vacationYear
+        })
 
         this.vacationTime.daysAllowed = ''
         this.vacationTime.vacationYear = ''
@@ -691,9 +771,9 @@ export default {
           statusIcon = 'eva-alert-triangle-outline'
           break
 
-          // case 'CRITICO':
-          //   statusIcon = 'eva-alert-triangle-outline'
-          //   break
+        // case 'CRITICO':
+        //   statusIcon = 'eva-alert-triangle-outline'
+        //   break
 
         case 'INDEFINIDO':
           statusIcon = 'eva-alert-circle-outline'

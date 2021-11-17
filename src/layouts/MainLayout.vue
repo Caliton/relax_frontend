@@ -36,7 +36,10 @@
             @click="goPage(link.page)"
           >
             <q-item-section avatar>
-              <q-icon :color="link.page === currentRoute()? '#4CAF50': 'grey'" :name="link.icon" />
+              <q-icon
+                :color="link.page === currentRoute() ? '#4CAF50' : 'grey'"
+                :name="link.icon"
+              />
             </q-item-section>
 
             <q-item-section>
@@ -46,7 +49,15 @@
 
           <q-separator class="q-mt-md q-mb-lg" />
 
-          <q-item v-ripple clickable @click="() => {EventBus.$emit('on-show-news')}">
+          <q-item
+            v-ripple
+            clickable
+            @click="
+              () => {
+                EventBus.$emit('on-show-news')
+              }
+            "
+          >
             <q-item-section avatar>
               <q-icon color="grey" name="eva-info-outline" />
             </q-item-section>
@@ -107,24 +118,49 @@ export default {
       leftDrawerOpen: false,
       modules: [
         // { icon: 'home', text: 'Inicio', page: 'dashboard' },
-        { icon: 'person', text: 'Colaboradores', page: 'colaborator', canView: this.getPermissions('colaborator') },
-        { icon: 'far fa-address-book', text: 'Agendamentos', page: 'reserva', canView: this.getPermissions('reserva') },
-        { icon: 'eva-loader-outline', text: 'Solicitar Férias', page: 'vacationrequest', canView: this.getPermissions('vacationrequest') },
-        { icon: 'eva-pantone-outline', text: 'Configurações', page: 'settings', canView: this.getPermissions('settings') }
+        {
+          icon: 'person',
+          text: 'Colaboradores',
+          page: 'colaborator',
+          canView: this.getPermissions('colaborator')
+        },
+        {
+          icon: 'far fa-address-book',
+          text: 'Agendamentos',
+          page: 'reserva',
+          canView: this.getPermissions('reserva')
+        },
+        {
+          icon: 'eva-loader-outline',
+          text: 'Solicitar Férias',
+          page: 'vacationrequest',
+          canView: this.getPermissions('vacationrequest')
+        },
+        {
+          icon: 'eva-pantone-outline',
+          text: 'Configurações',
+          page: 'settings',
+          canView: this.getPermissions('settings')
+        }
       ]
     }
   },
 
   computed: {
     modulesComputed: function () {
-      return this.modules.filter((a) => a.canView)
+      return this.modules.filter(a => a.canView)
     }
   },
 
   methods: {
     getPermissions (module) {
       const modulesCollaborator = ['vacationrequest']
-      const modulesSupervisor = ['colaborator', 'reserva', 'settings', ...modulesCollaborator]
+      const modulesSupervisor = [
+        'colaborator',
+        'reserva',
+        'settings',
+        ...modulesCollaborator
+      ]
       const modulesAdmin = [...modulesSupervisor]
 
       const role = localStorage.getItem('user_role')
@@ -145,8 +181,6 @@ export default {
           break
       }
 
-      console.log(role)
-      console.log(modulesSupervisor.includes(module))
       return permissions
     },
 
