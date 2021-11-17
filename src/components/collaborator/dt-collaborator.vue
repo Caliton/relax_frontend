@@ -35,8 +35,9 @@
               />
               <span
                 style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
-                >Colaboradores</span
               >
+                Colaboradores
+              </span>
               <p class="subtitle">
                 Sinta-se a vontade para acompanhar o estado atual de seus
                 colaboradores.
@@ -81,7 +82,7 @@
               />
             </div>
 
-            <div class="col-md-2 col-sm-4">
+            <div class="col-md-4 col-sm-4">
               <q-btn
                 label="Importar lista de Colaboradores"
                 dense
@@ -93,27 +94,14 @@
               />
             </div>
 
-            <div class="col-md-2 col-sm-4">
-              <q-btn
-                label="Importar Períodos"
-                dense
-                flat
-                no-caps
-                color="primary"
-                icon="eva-cloud-upload-outline"
-                @click="openDialogImportPeriods"
-              />
-            </div>
-
             <div class="col-md-4 col-sm-5">
               <q-input
-                class="q-ml-lg float-right"
+                class="float-right"
                 dense
                 filled
                 debounce="750"
                 v-model="filter"
                 placeholder="Busca"
-                style="max-width: 40%"
               >
                 <q-icon slot="append" name="search" />
               </q-input>
@@ -252,29 +240,23 @@
       :columns="columns"
       :data="data"
     />
-    <di-import-periods
-      ref="di-import-periods"
-      :columns="columns"
-      :data="data"
-    />
 
     <di-collaborator
       ref="di-collaborator"
       @on-close="refresh"
       style="height: auto !important"
     />
+
+    <di-vacation-request ref="di-vacation-request" />
   </div>
 </template>
 
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
-// eslint-disable-next-line no-unused-vars
 import moment from 'moment'
 import DiImportColaborador from './di-import-collaborator'
-import DiImportPeriods from './di-import-periods'
 import diCollaborator from './di-collaborator.vue'
-
-import { api } from 'src/enumerator/api'
+import diVacationRequest from './di-vacation-request.vue'
 
 export default {
   name: 'dt-colaborator',
@@ -283,13 +265,14 @@ export default {
 
   components: {
     'di-import-colaborador': DiImportColaborador,
-    'di-import-periods': DiImportPeriods,
-    diCollaborator
+    diCollaborator,
+    diVacationRequest
   },
 
   data () {
     return {
       filter: '',
+      moment,
       showDelete: false,
       loading: false,
       pagination: {
@@ -366,7 +349,7 @@ export default {
     async onRequest (props) {
       this.loading = true
 
-      const { data } = await this.$axios.get(api.collaborators, {
+      const { data } = await this.$axios.get(this.$api.collaborators, {
         params: { filter: props.filter || undefined }
       })
 
@@ -404,10 +387,6 @@ export default {
       this.$refs['di-import-colaborador'].showDialog()
     },
 
-    openDialogImportPeriods () {
-      this.$refs['di-import-periods'].showDialog()
-    },
-
     openEdit (person) {
       this.$refs['di-collaborator'].onShow(person)
     },
@@ -418,7 +397,7 @@ export default {
     },
 
     openVacation (data) {
-      EventBus.$emit('on-show-vacation-request', data)
+      this.$refs['di-vacation-request'].onShow(data)
     },
 
     refresh () {
