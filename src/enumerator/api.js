@@ -15,8 +15,15 @@ export const api = {
   employees: 'employees',
   employeesMany: 'employees/many',
 
+  getPeriodbyYear: 'collaborator/{id}/period',
+
   importCollaborators: 'collaborator/bulk',
+
   kpis: 'kpis',
+
+  nextPeriod: 'collaborator/{id}/nextperiod',
+
+  period: 'collaborator/{id}/vacationrequests',
 
   resetPassword: 'auth/reset-password/{token}',
   reportOptions: 'reports-options',
@@ -27,6 +34,5 @@ export const api = {
   sendRecoverEmail: '/auth/send-recover-email',
 
   vacationrequest: 'vacationrequest',
-
   users: 'users'
 }

@@ -28,29 +28,31 @@
         />
       </q-toolbar>
 
-      <q-card-section :class="`bg-${situation.color} q-pt-sm q-pb-sm`">
+      <q-card-section :class="`bg-${period.situation.color} q-pt-sm q-pb-sm`">
         <div class="text-white justify-center flex">
           <q-btn
             round
             flat
             dense
             class="q-mr-md"
+            @click="setPeriod('previous')"
             icon="eva-chevron-left-outline"
           />
 
           <span
-            class="text-weight-medium flex-center flex"
+            class="text-weight-medium flex-center flex q-pa-sm"
             style="font-size: 1.3rem"
           >
-            {{ situation.start | moment('DD-MM-YYYY') }}
+            {{ period.start | moment('DD-MM-YYYY') }}
             à
-            {{ situation.end | moment('DD-MM-YYYY') }}
+            {{ period.end | moment('DD-MM-YYYY') }}
           </span>
 
           <q-btn
             round
             flat
             dense
+            @click="setPeriod('next')"
             class="q-ml-md"
             icon="eva-chevron-right-outline"
           />
@@ -58,9 +60,25 @@
       </q-card-section>
 
       <q-card-section class="flex flex-center text-subtitle1 q-pt-sm q-pb-sm">
-        <span :style="{ color: situation.color }">
-          <q-icon size="md" :color="situation.color" :name="situation.icon" />
-          {{ situation.tooltip }}
+        <span :style="{ color: period.situation.color }">
+          <q-icon
+            size="md"
+            :color="period.situation.color"
+            :name="period.situation.icon"
+          />
+          {{ period.situation.tooltip }}
+          <q-tooltip
+            content-class="bg-grey-1 "
+            :offset="[10, 10]"
+            :delay="300"
+            :content-style="{
+              fontSize: '16px',
+              border: '2px solid #BDBDBF',
+              color: period.situation.color
+            }"
+          >
+            {{ period.situation.description }}
+          </q-tooltip>
         </span>
       </q-card-section>
 
@@ -86,70 +104,94 @@
             </div>
 
             <div
-              class="col-md-7 bg-grey-3 offset-md-1 row justify-around"
+              class="col-md-7 bg-grey-3 offset-md-1 justify-around"
               style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
             >
-              <div class="q-pa-sm text-subtitle1">
+              <div class="q-pa-sm text-center text-subtitle1">
                 <span
-                  v-if="situation.limitEnterprise"
-                  :style="{ color: situation.color }"
+                  v-if="period.limitEnterprise"
+                  :style="{ color: period.situation.color }"
                 >
                   Período
-                  {{ situation.start | moment('DD-MM-YYYY') }} ao
-                  {{ situation.end | moment('DD-MM-YYYY') }}
+                  {{ period.start | moment('DD-MM-YYYY') }} ao
+                  {{ period.end | moment('DD-MM-YYYY') }}
                 </span>
               </div>
 
               <q-separator inset />
 
               <div
-                class="column justify-center text-center"
-                style="transform: scale(.9);"
+                class="text-center text-weight-regular"
+                style="font-size: 1.2rem"
               >
-                <span style="display: inline-block;">{{
-                  situation.daysAllowed
-                }}</span>
-                <span class="text-weight-regular text-h6">Dias Totais</span>
+                Dias de direito
               </div>
+              <div class="row justify-evenly">
+                <div
+                  class="column justify-center text-center"
+                  style="transform: scale(.9);"
+                >
+                  <span style="display: inline-block;">{{
+                    period.daysAllowed
+                  }}</span>
+                  <span class="text-weight-regular text-h6">Totais</span>
+                </div>
 
-              <q-separator vertical inset />
+                <q-separator vertical inset />
 
-              <div
-                class="column justify-center text-center"
-                style="transform: scale(.9);"
-              >
-                <span style="display: inline-block;">
-                  {{ situation.daysBalance }}
-                </span>
-                <span class="text-weight-regular text-h6">
-                  Dias Disponíveis
-                </span>
-              </div>
+                <div
+                  class="column justify-center text-center"
+                  style="transform: scale(.9);"
+                >
+                  <span style="display: inline-block;">
+                    {{ period.daysBalance }}
+                  </span>
+                  <span class="text-weight-regular text-h6">
+                    Disponíveis
+                  </span>
+                </div>
 
-              <q-separator vertical inset />
+                <q-separator vertical inset />
 
-              <div
-                class="column justify-center text-center"
-                style="transform: scale(.9);"
-              >
-                <span style="display: inline-block;">
-                  {{ situation.daysEnjoyed }}
-                </span>
-                <span class="text-weight-regular text-h6">Dias Usufruidos</span>
+                <div
+                  class="column justify-center text-center"
+                  style="transform: scale(.9);"
+                >
+                  <span style="display: inline-block;">
+                    {{ period.daysEnjoyed }}
+                  </span>
+                  <span class="text-weight-regular text-h6">
+                    Agendados
+                  </span>
+                </div>
+
+                <q-separator vertical inset />
+
+                <div
+                  class="column justify-center text-center"
+                  style="transform: scale(.9);"
+                >
+                  <span style="display: inline-block;">
+                    {{ period.daysEnjoyed }}
+                  </span>
+                  <span class="text-weight-regular text-h6">
+                    Usufruidos
+                  </span>
+                </div>
               </div>
 
               <q-separator inset />
 
-              <div class="q-pa-sm text-subtitle1">
+              <div class="q-pa-sm text-center text-subtitle1">
                 <span
-                  v-if="situation.limitEnterprise"
-                  :style="{ color: situation.color }"
+                  v-if="period.limitEnterprise"
+                  :style="{ color: period.situation.color }"
                 >
                   Prazo limite com 6 meses
-                  {{ situation.limitEnterprise | moment('DD-MM-YYYY') }}
+                  {{ period.limitEnterprise | moment('DD-MM-YYYY') }}
                   <br />
                   Prazo limite final
-                  {{ situation.ultimate | moment('DD-MM-YYYY') }}
+                  {{ period.ultimate | moment('DD-MM-YYYY') }}
                 </span>
               </div>
             </div>
@@ -157,7 +199,7 @@
 
           <div class="row">
             <q-btn
-              label="Solicitar Férias"
+              label="Agendar Férias"
               rounded
               no-caps
               color="green"
@@ -170,7 +212,77 @@
 
       <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
         <div class="row">
-          <div v-if="requests.length === 0" class="col-md-6">
+          <div v-if="period.requests.length" class="col-md-5">
+            <ul
+              class="caixa-ul"
+              style="overflow: auto; max-height: 400px; transform"
+            >
+              <li
+                v-for="item in period.requests"
+                :key="item.id"
+                class="rows box-li q-ma-sm"
+              >
+                <div class="inline-block q-ma-md">
+                  <div
+                    style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;"
+                  >
+                    <div
+                      style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
+                    >
+                      {{ getMonth(parseInt(item.startDate.split('-')[1])) }}
+                    </div>
+                    <div
+                      style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
+                    >
+                      {{ item.startDate | moment('DD') }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="inline-block flex">
+                  <q-icon
+                    class="flex flex-center"
+                    color="grey"
+                    size="md"
+                    name="eva-arrow-forward-outline"
+                  />
+                </div>
+
+                <div class="q-ma-md inline-block">
+                  <div
+                    style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;"
+                  >
+                    <div
+                      style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
+                    >
+                      {{ getMonth(parseInt(item.finalDate.split('-')[1])) }}
+                    </div>
+                    <div
+                      style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
+                    >
+                      {{ item.finalDate | moment('DD') }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="q-ma-md inline-block">
+                  <span class="texto">Férias</span>
+                  <br />
+                  <span
+                    >{{
+                      moment(item.finalDate).diff(
+                        moment(item.startDate),
+                        'days'
+                      )
+                    }}
+                    dias</span
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div v-else class="col-md-6">
             <q-img src="~src/statics/calendar.png" style="max-width: 285px;" />
             <br />
             <span style="color: #999999" class="text-subtitle1">
@@ -223,30 +335,49 @@ export default {
       moment,
       collaborator: {},
       situation: {},
-      requests: []
+      requests: [
+        {
+          id: '48e8a09f-bb2d-4637-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        },
+        {
+          id: '48e8a09f-b32d-4637-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        },
+        {
+          id: '48e8a09f-bb2d-4a37-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        },
+        {
+          id: '48e8a09f-bb2d-4637-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        },
+        {
+          id: '48e8a09f-b32d-4637-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        },
+        {
+          id: '48e8a09f-bb2d-4a37-9240-a5729c3b1c3a',
+          startDate: '2021-03-01',
+          finalDate: '2021-03-31',
+          status: 'requested'
+        }
+      ],
+      period: { situation: {}, requests: [] }
     }
   },
 
-  mounted () {
-    const collab = {
-      id: '696b530a-8f3e-4ab4-a01f-c0d392f967b7',
-      name: 'Aloisio Augusto Lopes Macedo',
-      email: '',
-      register: '4690',
-      birthday: '2000-01-01',
-      hiringdate: '2021-05-10',
-      requests: [],
-      situation: {
-        id: 'f10f0aa0-b6ad-467b-8f09-d17ea2e5f394',
-        description: 'NORMAL',
-        limitMonths: 12,
-        color: 'green',
-        icon: 'eva-checkmark-circle-outline',
-        tooltip: '1 ano  (tem direito a férias)'
-      }
-    }
-    this.onShow(collab)
-  },
+  mounted () {},
 
   methods: {
     onShow (collab) {
@@ -260,11 +391,56 @@ export default {
         end: '2022-01-01'
       }
 
+      this.getPeriod()
+
       this.show = true
+    },
+
+    async getPeriod () {
+      try {
+        const { data } = await this.$axios.get(
+          this.$api.period.replace('{id}', this.collaborator.id)
+        )
+        console.log(data)
+        this.period = { ...data }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    async setPeriod (op) {
+      let year = moment(this.period.start)
+        .clone()
+        .year()
+
+      switch (op) {
+        case 'next':
+          year++
+          break
+
+        case 'previous':
+          year--
+          break
+
+        default:
+          return 'erro'
+      }
+
+      const { data } = await this.$axios(
+        this.$api.getPeriodbyYear.replace('{id}', this.collaborator.id),
+        { params: { year } }
+      )
+
+      this.period = { ...data }
     },
 
     onHide () {
       this.show = false
+    },
+
+    getMonth (item) {
+      item--
+      return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
     }
   }
 }
@@ -273,7 +449,7 @@ export default {
 <style lang="stylus">
 .card-vacation
   max-width: 72vw
-  min-width: 60vw
+  min-width: 72vw
   min-height: 80vh
   max-height: 120vh
 
@@ -295,26 +471,28 @@ export default {
   font-family: Avenir Next W01, Helvetica, Arial, sans-serif;
   background-color: #fff;
   display: flex;
+  border-radius: 15px;
   align-items: center;
   padding: 25px 30px;
   width: 100%;
   height: 100%;
 }
 
-.caixa-li {
+.box-li {
   box-sizing: border-box;
   cursor: pointer;
+  border-radius: 30px;
   background-color: white;
   list-style-type: none;
   align-items: center;
-  border-bottom: 1px solid #dfe3e6;
+  border: 1px solid #dfe3e6;
 }
 
-.caixa-li:hover {
+.box-li:hover {
   background-color: #f2f4f5;
 }
 
-.teste {
+.inline-block {
   display: inline-block;
 }
 
@@ -330,8 +508,30 @@ export default {
 
 .caixa-ul {
   padding: 0;
-  border: 1px solid #dfe3e6;
-  border-radius: 5px;
+  // border: 1px solid #dfe3e6;
+  border-radius: 15px;
   overflow: hidden;
 }
+
+    /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    width: 5px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a9a9a9;
+  }
 </style>
