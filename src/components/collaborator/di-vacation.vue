@@ -101,6 +101,16 @@
                 Aqui você pode gerir solicitações de férias de seus
                 Colaboradores.
               </p>
+
+              <q-btn
+                label="Agendar Férias"
+                rounded
+                no-caps
+                color="green"
+                outline
+                @click="solicitationVacation"
+                size="md"
+              />
             </div>
 
             <div
@@ -126,6 +136,7 @@
               >
                 Dias de direito
               </div>
+
               <div class="row justify-evenly">
                 <div
                   class="column justify-center text-center"
@@ -158,7 +169,7 @@
                   style="transform: scale(.9);"
                 >
                   <span style="display: inline-block;">
-                    {{ period.daysEnjoyed }}
+                    {{ period.daysScheduled }}
                   </span>
                   <span class="text-weight-regular text-h6">
                     Agendados
@@ -196,87 +207,153 @@
               </div>
             </div>
           </div>
-
-          <div class="row">
-            <q-btn
-              label="Agendar Férias"
-              rounded
-              no-caps
-              color="green"
-              outline
-              size="md"
-            />
-          </div>
         </div>
       </q-card-section>
 
       <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
         <div class="row">
           <div v-if="period.requests.length" class="col-md-5">
-            <ul
-              class="caixa-ul"
-              style="overflow: auto; max-height: 400px; transform"
-            >
+            <ul class="caixa-ul" style="overflow: auto; max-height: 30vh;">
               <li
                 v-for="item in period.requests"
                 :key="item.id"
-                class="rows box-li q-ma-sm"
+                class="row justify-between box-li q-ma-sm"
               >
-                <div class="inline-block q-ma-md">
-                  <div
-                    style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;"
-                  >
-                    <div
-                      style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
-                    >
-                      {{ getMonth(parseInt(item.startDate.split('-')[1])) }}
-                    </div>
-                    <div
-                      style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
-                    >
-                      {{ item.startDate | moment('DD') }}
-                    </div>
+                <div class="row justify-between flex-center">
+                  <div class="q-ma-md">
+                    <circle-calendar :date="item.startDate" />
+                  </div>
+
+                  <div class="column">
+                    <q-icon
+                      color="grey"
+                      size="md"
+                      name="eva-arrow-forward-outline"
+                    />
+                    <span class="text-grey">
+                      {{ item.startDate | moment('YYYY') }}
+                    </span>
+                  </div>
+
+                  <div class="q-ma-md">
+                    <circle-calendar :date="item.finalDate" />
+                  </div>
+
+                  <div class="q-ma-md ">
+                    <span class="texto">Férias</span>
+                    <br />
+                    <span>
+                      {{
+                        moment(item.finalDate).diff(
+                          moment(item.startDate),
+                          'days'
+                        )
+                      }}
+                      dias
+                    </span>
                   </div>
                 </div>
 
-                <div class="inline-block flex">
-                  <q-icon
-                    class="flex flex-center"
-                    color="grey"
-                    size="md"
-                    name="eva-arrow-forward-outline"
-                  />
-                </div>
-
-                <div class="q-ma-md inline-block">
-                  <div
-                    style="width: 50px; height: 50px; border-radius: 20px; background-color: #f2f4f5; text-align: center; overflow: hidden; transition: background .2s ease-in-out;"
+                <div
+                  v-if="item.status !== status.REQUESTED"
+                  class="float-right"
+                >
+                  <q-chip
+                    clickable
+                    :color="
+                      item.status === status.APPROVED ? 'green-13' : 'red'
+                    "
+                    text-color="white"
                   >
-                    <div
-                      style="font-size: 8px; height: 15px; line-height: 15px; background-color: #d83556; font-weight: 600; color: white; text-transform: uppercase"
-                    >
-                      {{ getMonth(parseInt(item.finalDate.split('-')[1])) }}
-                    </div>
-                    <div
-                      style="font-size: 16px; height: 35px; line-height: 30px; color #1c242b; font-weight: 500"
-                    >
-                      {{ item.finalDate | moment('DD') }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="q-ma-md inline-block">
-                  <span class="texto">Férias</span>
-                  <br />
-                  <span
-                    >{{
-                      moment(item.finalDate).diff(
-                        moment(item.startDate),
-                        'days'
-                      )
+                    {{
+                      item.status === status.APPROVED ? 'Aprovado' : 'Recusado'
                     }}
-                    dias</span
+                  </q-chip>
+                </div>
+
+                <div class="q-ma-md" v-if="item.status === status.REQUESTED">
+                  <q-btn
+                    color="red"
+                    round
+                    flat
+                    push
+                    @click="alterStatusVacation(item, status.REFUSED)"
+                    icon="eva-close-circle-outline"
                   >
+                    <q-tooltip>Rejeitar</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    class="q-ml-sm"
+                    color="green-13"
+                    round
+                    push
+                    @click="alterStatusVacation(item, status.APPROVED)"
+                    icon="eva-checkmark-circle-outline"
+                  >
+                    <q-tooltip>Aprovar</q-tooltip>
+                  </q-btn>
+                </div>
+
+                <div v-if="item.status !== status.REQUESTED">
+                  <q-btn
+                    class="q-ml-sm"
+                    color="grey"
+                    round
+                    flat
+                    icon="eva-more-vertical-outline"
+                  >
+                    <q-tooltip>Aprovar</q-tooltip>
+
+                    <q-menu
+                      transition-show="jump-down"
+                      transition-hide="jump-up"
+                    >
+                      <q-list style="min-width: 100px">
+                        <q-item clickable>
+                          <q-item-section>Alterar Status</q-item-section>
+                          <q-item-section side>
+                            <q-icon name="keyboard_arrow_right" />
+                          </q-item-section>
+
+                          <q-menu anchor="top end" self="top start">
+                            <q-list>
+                              <q-item
+                                dense
+                                clickable
+                                @click="
+                                  alterStatusVacation(
+                                    item,
+                                    item.status === status.REFUSED
+                                      ? status.APPROVED
+                                      : status.REFUSED
+                                  )
+                                "
+                              >
+                                <q-item-section
+                                  v-if="item.status === status.REFUSED"
+                                >
+                                  Aprovar
+                                </q-item-section>
+                                <q-item-section v-else>Recusar</q-item-section>
+                              </q-item>
+                              <q-item
+                                dense
+                                clickable
+                                @click="
+                                  alterStatusVacation(item, status.REQUESTED)
+                                "
+                              >
+                                <q-item-section>Aguardar</q-item-section>
+                              </q-item>
+                            </q-list>
+                          </q-menu>
+                        </q-item>
+                        <q-item clickable @click="excluirVacationRequest(item)">
+                          <q-item-section>Excluir</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
                 </div>
               </li>
             </ul>
@@ -292,87 +369,37 @@
         </div>
       </q-card-section>
     </q-card>
-    <!-- <q-dialog v-model="showDeletePeriodo" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-icon size="2em" name="eva-trash-2-outline" color="red" />
-          <span class="q-ml-sm">Deseja mesmo excluir o Período?</span>
-        </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            no-caps
-            label="Vou pensar melhor..."
-            color="grey"
-            v-close-popup
-          />
-          <q-btn
-            flat
-            no-caps
-            label="Sim!"
-            color="red"
-            @click="deletePeriodo"
-            v-close-popup
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
+    <di-vacation-solicitation
+      ref="solicitationVacation"
+      @on-close="setPeriod('current')"
+    />
   </q-dialog>
 </template>
 
 <script>
 import moment from 'moment'
+import { status } from 'src/enumerator/status.js'
+import circleCalendar from 'src/components/common/circleCalendar.vue'
+import diVacationSolicitation from './di-vacation-solicitation.vue'
 
 export default {
   name: 'di-vacation-request',
 
   events: ['on-close'],
 
+  components: {
+    circleCalendar,
+    diVacationSolicitation
+  },
+
   data () {
     return {
       show: false,
       moment,
+      status,
       collaborator: {},
       situation: {},
-      requests: [
-        {
-          id: '48e8a09f-bb2d-4637-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        },
-        {
-          id: '48e8a09f-b32d-4637-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        },
-        {
-          id: '48e8a09f-bb2d-4a37-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        },
-        {
-          id: '48e8a09f-bb2d-4637-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        },
-        {
-          id: '48e8a09f-b32d-4637-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        },
-        {
-          id: '48e8a09f-bb2d-4a37-9240-a5729c3b1c3a',
-          startDate: '2021-03-01',
-          finalDate: '2021-03-31',
-          status: 'requested'
-        }
-      ],
       period: { situation: {}, requests: [] }
     }
   },
@@ -381,14 +408,11 @@ export default {
 
   methods: {
     onShow (collab) {
-      console.log(collab)
       if (!collab) return
 
       this.collaborator = { ...collab }
       this.situation = {
-        ...collab.situation,
-        start: '2021-01-01',
-        end: '2022-01-01'
+        ...collab.situation
       }
 
       this.getPeriod()
@@ -396,12 +420,31 @@ export default {
       this.show = true
     },
 
+    countDayUsufruidos () {
+      const a = this.period.requests.filter(
+        request =>
+          request.status === status.APPROVED &&
+          parseInt(moment(request.finalDate).format('YYYYMMDD')) <
+            parseInt(moment().format('YYYYMMDD'))
+      )
+
+      if (!a.length) return 0
+
+      return a
+        .map(item => moment(item.finalDate).diff(item.startDate, 'day'))
+        .reduce((a, b) => a + b)
+    },
+
+    onHide () {
+      this.$emit('on-close')
+      this.show = false
+    },
+
     async getPeriod () {
       try {
         const { data } = await this.$axios.get(
           this.$api.period.replace('{id}', this.collaborator.id)
         )
-        console.log(data)
         this.period = { ...data }
       } catch (e) {
         console.log(e)
@@ -422,11 +465,14 @@ export default {
           year--
           break
 
+        case 'current':
+          break
+
         default:
-          return 'erro'
+          return false
       }
 
-      const { data } = await this.$axios(
+      const { data } = await this.$axios.get(
         this.$api.getPeriodbyYear.replace('{id}', this.collaborator.id),
         { params: { year } }
       )
@@ -434,13 +480,44 @@ export default {
       this.period = { ...data }
     },
 
-    onHide () {
-      this.show = false
+    solicitationVacation () {
+      this.$refs.solicitationVacation.onShow({
+        period: this.period,
+        collaborator: this.collaborator
+      })
     },
 
-    getMonth (item) {
-      item--
-      return 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_')[item]
+    async excluirVacationRequest (request) {
+      try {
+        this.loading = true
+        await this.$axios.delete(
+          this.$api.vacationrequest.replace('{id}', request.id)
+        )
+        this.setPeriod('current')
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async alterStatusVacation (request, status) {
+      try {
+        this.loading = true
+        const sendStatus = {
+          id: request.id,
+          status
+        }
+
+        await this.$axios.post(this.$api.vacationstatus, sendStatus)
+
+        this.setPeriod('current')
+        request.status = status
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -448,8 +525,8 @@ export default {
 
 <style lang="stylus">
 .card-vacation
-  max-width: 72vw
-  min-width: 72vw
+  max-width: 90vw
+  min-width: 90vw
   min-height: 80vh
   max-height: 120vh
 
@@ -480,7 +557,7 @@ export default {
 
 .box-li {
   box-sizing: border-box;
-  cursor: pointer;
+  // cursor: pointer;
   border-radius: 30px;
   background-color: white;
   list-style-type: none;
@@ -488,9 +565,9 @@ export default {
   border: 1px solid #dfe3e6;
 }
 
-.box-li:hover {
-  background-color: #f2f4f5;
-}
+// .box-li:hover {
+//   background-color: #f2f4f5;
+// }
 
 .inline-block {
   display: inline-block;
@@ -508,7 +585,7 @@ export default {
 
 .caixa-ul {
   padding: 0;
-  // border: 1px solid #dfe3e6;
+  // border: 1px sol100#dfe3e6;
   border-radius: 15px;
   overflow: hidden;
 }

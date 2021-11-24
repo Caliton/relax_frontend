@@ -247,7 +247,7 @@
       style="height: auto !important"
     />
 
-    <di-vacation-request ref="di-vacation-request" />
+    <di-vacation @on-close="refresh" ref="di-vacation-request" />
   </div>
 </template>
 
@@ -256,7 +256,7 @@ import { EventBus } from 'src/functions/event_bus.js'
 import moment from 'moment'
 import DiImportColaborador from './di-import-collaborator'
 import diCollaborator from './di-collaborator.vue'
-import diVacationRequest from './di-vacation-request.vue'
+import diVacation from './di-vacation.vue'
 
 export default {
   name: 'dt-colaborator',
@@ -266,7 +266,7 @@ export default {
   components: {
     'di-import-colaborador': DiImportColaborador,
     diCollaborator,
-    diVacationRequest
+    diVacation
   },
 
   data () {
@@ -347,15 +347,19 @@ export default {
 
   methods: {
     async onRequest (props) {
-      this.loading = true
+      try {
+        this.loading = true
 
-      const { data } = await this.$axios.get(this.$api.collaborators, {
-        params: { filter: props.filter || undefined }
-      })
+        const { data } = await this.$axios.get(this.$api.collaborators, {
+          params: { filter: props.filter || undefined }
+        })
 
-      this.data.splice(0, this.data.length, ...data)
-
-      this.loading = false
+        this.data.splice(0, this.data.length, ...data)
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
     },
 
     customSort (rows, sortBy, descending) {

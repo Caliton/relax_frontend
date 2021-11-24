@@ -1,4 +1,5 @@
 export const api = {
+
   admin: 'users/admin',
   absence: 'days-off',
   absenceReasons: 'days-off-reasons',
@@ -17,13 +18,13 @@ export const api = {
 
   getPeriodbyYear: 'collaborator/{id}/period',
 
-  importCollaborators: 'collaborator/bulk',
+  importCollaborators: 'collaborator/import',
 
   kpis: 'kpis',
 
-  nextPeriod: 'collaborator/{id}/nextperiod',
+  period: 'collaborator/{id}/period',
 
-  period: 'collaborator/{id}/vacationrequests',
+  vacationstatus: 'vacationrequest/status',
 
   resetPassword: 'auth/reset-password/{token}',
   reportOptions: 'reports-options',
@@ -33,6 +34,7 @@ export const api = {
   situation: 'periodstatus',
   sendRecoverEmail: '/auth/send-recover-email',
 
-  vacationrequest: 'vacationrequest',
+  vacation: 'vacationrequest',
+  vacationrequest: 'vacationrequest/{id}',
   users: 'users'
 }
