@@ -30,17 +30,19 @@
 
       <q-card-section>
         <div class="row adsf" :key="item.id" v-for="item in listStatus">
-          <q-icon class="q-pa-sm" :color="item.color" :name="item.icon" />
-          <div class="q-pa-sm ">
-            {{ item.description }}
-          </div>
+          <div class="row" @click="editSituation(item)">
+            <q-icon class="q-pa-sm" :color="item.color" :name="item.icon" />
+            <div class="q-pa-sm">
+              {{ item.description }}
+            </div>
 
-          <div class="q-pa-sm ">
-            {{ item.limitMonths }}
-          </div>
+            <div class="q-pa-sm ">
+              {{ item.limitMonths }}
+            </div>
 
-          <div class="q-pa-sm ">
-            {{ item.tooltip }}
+            <div class="q-pa-sm ">
+              {{ item.tooltip }}
+            </div>
           </div>
         </div>
       </q-card-section>
@@ -99,15 +101,20 @@
         </div>
       </q-card-section>
     </q-card>
+
+    <di-situation ref="situation" />
   </q-page>
 </template>
 
 <script>
 import { api } from 'src/enumerator/api'
+import diSituation from 'src/components/settings/di-situation.vue'
 
 export default {
   name: 'PageConfiguracoes',
-  components: {},
+  components: {
+    diSituation
+  },
 
   data () {
     return {
@@ -138,6 +145,10 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+
+    editSituation (data) {
+      this.$refs.situation.onShow(data)
     }
   }
 }

@@ -30,36 +30,40 @@
 
       <q-card-section :class="`bg-${period.situation.color} q-pt-sm q-pb-sm`">
         <div class="text-white justify-center flex">
-          <q-btn
-            round
-            flat
-            dense
-            class="q-mr-md"
-            :disable="
-              moment(period.start).year() - 1 <
-                moment(collaborator.hiringdate).year()
-            "
-            @click="setPeriod('previous')"
-            icon="eva-chevron-left-outline"
-          />
+          <div class="q-pa-sm">
+            <q-btn
+              round
+              flat
+              dense
+              :disable="
+                moment(period.start).year() - 1 <
+                  moment(collaborator.hiringdate).year()
+              "
+              @click="setPeriod('previous')"
+              icon="eva-chevron-left-outline"
+            />
+          </div>
 
-          <span
-            class="text-weight-medium flex-center flex q-pa-sm"
-            style="font-size: 1.3rem"
-          >
-            {{ period.start | moment('DD-MM-YYYY') }}
-            à
-            {{ period.end | moment('DD-MM-YYYY') }}
-          </span>
+          <div>
+            <span
+              class="text-weight-medium flex-center flex q-pa-sm"
+              style="font-size: 1.3rem"
+            >
+              {{ period.start | moment('DD-MM-YYYY') }}
+              à
+              {{ period.end | moment('DD-MM-YYYY') }}
+            </span>
+          </div>
 
-          <q-btn
-            round
-            flat
-            dense
-            @click="setPeriod('next')"
-            class="q-ml-md"
-            icon="eva-chevron-right-outline"
-          />
+          <div class="q-pa-sm">
+            <q-btn
+              round
+              flat
+              dense
+              @click="setPeriod('next')"
+              icon="eva-chevron-right-outline"
+            />
+          </div>
         </div>
       </q-card-section>
 
@@ -524,7 +528,7 @@ export default {
 <style lang="stylus">
 .card-vacation
   max-width: 90vw
-  min-width: 90vw
+  min-width: 80vw
   min-height: 80vh
   max-height: 120vh
 
