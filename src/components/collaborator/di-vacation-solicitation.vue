@@ -29,9 +29,12 @@
               :min-date="period.start"
               :max-date="period.ultimate"
               v-model="rangeDate"
+              :columns="1"
+              :rows="1"
               is-range
               is-inline
               mode="range"
+              :attributes="attrs"
               :color="rangeIsOk ? 'green' : 'red'"
               :disabled-dates="disableDates"
             />
@@ -177,7 +180,8 @@ export default {
       rangeIsOk: false,
       moment,
       messageRange: '',
-      rangeDate: { start: null, end: null }
+      rangeDate: { start: null, end: null },
+      attrs: []
     }
   },
 
@@ -212,7 +216,6 @@ export default {
 
   methods: {
     onShow (data) {
-      console.log(data)
       this.period = {}
       this.rangeDate = { start: null, end: null }
       this.collaborator = {}
@@ -221,6 +224,8 @@ export default {
 
       this.period = { ...data.period }
       this.collaborator = { ...data.collaborator }
+
+      this.attrs = []
 
       this.checkDateAcessibles()
     },
@@ -247,7 +252,6 @@ export default {
           approvalUser: localStorage.getItem('user_id')
         }
 
-        console.log(sendVacation)
         await this.$axios.post(this.$api.vacation, sendVacation)
         this.onHide()
       } catch (e) {
@@ -333,6 +337,70 @@ export default {
         start: new Date(item.startDate),
         end: new Date(item.finalDate)
       }))
+
+      function setColor (sta) {
+        let color = ''
+        switch (sta) {
+          case status.APPROVED:
+            color = 'green'
+            break
+
+          case status.REQUESTED:
+            color = 'orange'
+            break
+
+          case status.REFUSED:
+            color = 'red'
+            break
+
+          default:
+            color = 'grey'
+            break
+        }
+        return color
+      }
+
+      function setLabel (sta) {
+        let color = ''
+        switch (sta) {
+          case status.APPROVED:
+            color = 'intervalo Aprovada'
+            break
+
+          case status.REQUESTED:
+            color = 'intervalo Solicitada'
+            break
+
+          case status.REFUSED:
+            color = 'intervalo Recusado'
+            break
+
+          default:
+            color = 'data solicitado'
+            break
+        }
+        return color
+      }
+
+      const disableDates = this.period.requests.map(item => ({
+        popover: {
+          label: setLabel(item.status),
+          visibility: 'hover',
+          hideIndicator: true
+        },
+        highlight: {
+          color: setColor(item.status),
+          fillMode: 'light'
+        },
+        dates: {
+          start: new Date(item.startDate),
+          end: new Date(item.finalDate)
+        }
+      }))
+
+      disableDates.forEach(item => {
+        this.attrs.push(item)
+      })
     }
   }
 }

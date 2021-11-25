@@ -513,7 +513,6 @@ export default {
     checkSolicitation () {
       let noCan = true
 
-      console.log(this.period)
       noCan = this.period.daysBalance === 0
 
       return noCan
