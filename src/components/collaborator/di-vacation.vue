@@ -16,7 +16,7 @@
             size="sm"
             style="display: block;"
           />
-          {{ this.collaborator.name }}
+          {{ collaborator.name }}
         </q-toolbar-title>
         <q-btn
           class="float-right"
@@ -35,6 +35,10 @@
             flat
             dense
             class="q-mr-md"
+            :disable="
+              moment(period.start).year() - 1 <
+                moment(collaborator.hiringdate).year()
+            "
             @click="setPeriod('previous')"
             icon="eva-chevron-left-outline"
           />
@@ -108,6 +112,7 @@
                 no-caps
                 color="green"
                 outline
+                :disable="checkSolicitation()"
                 @click="solicitationVacation"
                 size="md"
               />
@@ -420,21 +425,6 @@ export default {
       this.show = true
     },
 
-    countDayUsufruidos () {
-      const a = this.period.requests.filter(
-        request =>
-          request.status === status.APPROVED &&
-          parseInt(moment(request.finalDate).format('YYYYMMDD')) <
-            parseInt(moment().format('YYYYMMDD'))
-      )
-
-      if (!a.length) return 0
-
-      return a
-        .map(item => moment(item.finalDate).diff(item.startDate, 'day'))
-        .reduce((a, b) => a + b)
-    },
-
     onHide () {
       this.$emit('on-close')
       this.show = false
@@ -480,13 +470,6 @@ export default {
       this.period = { ...data }
     },
 
-    solicitationVacation () {
-      this.$refs.solicitationVacation.onShow({
-        period: this.period,
-        collaborator: this.collaborator
-      })
-    },
-
     async excluirVacationRequest (request) {
       try {
         this.loading = true
@@ -518,6 +501,22 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+
+    solicitationVacation () {
+      this.$refs.solicitationVacation.onShow({
+        period: this.period,
+        collaborator: this.collaborator
+      })
+    },
+
+    checkSolicitation () {
+      let noCan = true
+
+      console.log(this.period)
+      noCan = this.period.daysBalance === 0
+
+      return noCan
     }
   }
 }

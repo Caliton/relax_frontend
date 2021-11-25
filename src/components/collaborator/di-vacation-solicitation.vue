@@ -32,7 +32,8 @@
               is-range
               is-inline
               mode="range"
-              color="green"
+              :color="rangeIsOk ? 'green' : 'red'"
+              :disabled-dates="preparaFidaputa"
             />
           </div>
           <div
@@ -55,7 +56,8 @@
 
               <div class="q-pa-md text-subtitle1">
                 <span>
-                  Voce pode escolher <b>{{ period.daysBalance }}</b> dias.
+                  Você pode escolher
+                  <b>{{ 30 - countDaysSolicited() }}</b> dias.
                 </span>
                 <br />
                 <span>
@@ -71,6 +73,12 @@
                   Periodo Referente:
                   <b>{{ period.start | moment('DD-MM-YYYY') }}</b> à
                   <b>{{ period.end | moment('DD-MM-YYYY') }}</b>
+                </span>
+              </div>
+
+              <div class="text-center">
+                <span class="text-red" v-show="!rangeIsOk">
+                  {{ messageRange }}
                 </span>
               </div>
             </div>
@@ -97,11 +105,12 @@
           @click="onShowDelete"
         />
         <q-btn
-          color="primary"
+          :color="rangeIsOk ? 'primary' : 'red'"
           dense
           no-caps
           outline
           rounded
+          :disable="!rangeIsOk"
           label="Agendar"
           @click="onRegister"
         />
@@ -143,6 +152,8 @@
 
 <script>
 import moment from 'moment'
+import { status } from 'src/enumerator/status.js'
+
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
@@ -162,7 +173,10 @@ export default {
       period: {},
       vacation: {},
       collaborator: {},
+      preparaFidaputa: [],
+      rangeIsOk: false,
       moment,
+      messageRange: '',
       rangeDate: { start: null, end: null }
     }
   },
@@ -188,6 +202,14 @@ export default {
     }
   },
 
+  watch: {
+    rangeDate: function (item) {
+      this.checkRangeDate()
+    }
+  },
+
+  mounted () {},
+
   methods: {
     onShow (data) {
       console.log(data)
@@ -199,6 +221,8 @@ export default {
 
       this.period = { ...data.period }
       this.collaborator = { ...data.collaborator }
+
+      this.viado()
     },
 
     onHide () {
@@ -240,6 +264,78 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+
+    countDaysSolicited () {
+      if (!this.period.requests.length) return 0
+      return this.period.requests
+        .filter(item => item.status !== status.REFUSED)
+        .map(item => moment(item.finalDate).diff(item.startDate, 'day'))
+        .reduce((a, b) => a + b)
+    },
+
+    checkRangeDate () {
+      if (!this.rangeDate || !this.rangeDate.start || !this.rangeDate.end) {
+        return false
+      }
+
+      const { start, end } = this.rangeDate
+      const diffDate = moment(end).diff(moment(start), 'd')
+      const listValidy = [10, 15, 20, 30]
+
+      let qtdDaysEnjoed = 0
+      let pieceMessageRange = '10, 15, 20, 30'
+
+      qtdDaysEnjoed = this.countDaysSolicited()
+
+      switch (qtdDaysEnjoed) {
+        case 10:
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '10 ou 20'
+          break
+
+        case 15:
+          listValidy.splice(listValidy.indexOf(10), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '15'
+          break
+
+        case 20:
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '10'
+          break
+
+        case 30:
+          listValidy.splice(listValidy.indexOf(10), 1)
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          break
+
+        default:
+          break
+      }
+
+      this.messageRange =
+        qtdDaysEnjoed === 30
+          ? 'Este periodo atingiu a quantidade máxima de dias de direito solicitado'
+          : `Intervalo de dias permitidos: ${pieceMessageRange}`
+
+      this.rangeIsOk = listValidy.includes(diffDate)
+    },
+
+    viado () {
+      this.preparaFidaputa = this.period.requests.map(item => ({
+        start: new Date(item.startDate),
+        end: new Date(item.finalDate)
+      }))
+
+      console.log('asdf: ', this.period.requests)
+      console.log('cads: ', this.preparaFidaputa)
     }
   }
 }
