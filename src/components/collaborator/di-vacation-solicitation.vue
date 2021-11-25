@@ -33,7 +33,7 @@
               is-inline
               mode="range"
               :color="rangeIsOk ? 'green' : 'red'"
-              :disabled-dates="preparaFidaputa"
+              :disabled-dates="disableDates"
             />
           </div>
           <div
@@ -173,7 +173,7 @@ export default {
       period: {},
       vacation: {},
       collaborator: {},
-      preparaFidaputa: [],
+      disableDates: [],
       rangeIsOk: false,
       moment,
       messageRange: '',
@@ -222,7 +222,7 @@ export default {
       this.period = { ...data.period }
       this.collaborator = { ...data.collaborator }
 
-      this.viado()
+      this.checkDateAcessibles()
     },
 
     onHide () {
@@ -328,14 +328,11 @@ export default {
       this.rangeIsOk = listValidy.includes(diffDate)
     },
 
-    viado () {
-      this.preparaFidaputa = this.period.requests.map(item => ({
+    checkDateAcessibles () {
+      this.disableDates = this.period.requests.map(item => ({
         start: new Date(item.startDate),
         end: new Date(item.finalDate)
       }))
-
-      console.log('asdf: ', this.period.requests)
-      console.log('cads: ', this.preparaFidaputa)
     }
   }
 }
