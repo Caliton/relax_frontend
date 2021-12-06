@@ -27,7 +27,7 @@
         <div class="row justify-around">
           <div class="col-md-5 flex flex-center">
             <q-img
-              src="~src/statics/new_person.png"
+              src="~src/statics/feedstatus.png"
               style="max-width: 500px; opacity: .8"
             />
           </div>

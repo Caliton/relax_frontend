@@ -66,11 +66,11 @@
 
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td auto-width :props="props" key="registration">{{
-            props.row.registration
+          <q-td auto-width :props="props" key="requestUserRegister">{{
+            props.row.requestUserRegister
           }}</q-td>
-          <q-td auto-width :props="props" key="person">{{
-            props.row.person
+          <q-td auto-width :props="props" key="requestUser">{{
+            props.row.requestUser
           }}</q-td>
           <q-td auto-width :props="props" key="startDate">{{
             props.row.startDate | moment('DD-MM-YYYY')
@@ -79,8 +79,8 @@
             props.row.finalDate | moment('DD-MM-YYYY')
           }}</q-td>
           <q-td auto-width :props="props" key="days">{{ props.row.days }}</q-td>
-          <q-td auto-width :props="props" key="vacationStatus">{{
-            props.row.vacationStatus
+          <q-td auto-width :props="props" key="status">{{
+            props.row.status
           }}</q-td>
         </q-tr>
       </template>
@@ -156,29 +156,29 @@ export default {
         rowsPerPage: 10
       },
       visibleColumns: [
-        'registration',
-        'person',
+        'requestUserRegister',
+        'requestUser',
         'startDate',
         'finalDate',
         'days',
-        'vacationStatus'
+        'status'
       ],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
           align: 'left',
-          name: 'registration',
+          name: 'requestUserRegister',
           label: 'Matricula',
-          field: 'registration',
+          field: 'requestUserRegister',
           sortable: true,
           style: 'width: 10px',
           headerStyle: 'width: 50px'
         },
         {
           align: 'left',
-          name: 'person',
+          name: 'requestUser',
           label: 'Colaborador',
-          field: 'person',
+          field: 'requestUser',
           sortable: true,
           style: 'width: 10px',
           headerStyle: 'width: 50px'
@@ -206,9 +206,9 @@ export default {
         },
         {
           align: 'left',
-          name: 'vacationStatus',
+          name: 'status',
           label: 'Status da Solicitação',
-          field: 'vacationStatus',
+          field: 'status',
           sortable: true
         }
       ],
@@ -239,23 +239,16 @@ export default {
 
       this.loading = true
 
-      const result = await this.$axios.get(api.vacationrequest)
-      let cleanDataResult = {}
-      const listVacations = []
-      result.data.forEach(item => {
-        cleanDataResult = Object.assign({}, cleanDataResult)
-        cleanDataResult.id = item.id
-        cleanDataResult.registration = item.person.registration
-        cleanDataResult.person = item.person.name
-        cleanDataResult.startDate = item.startDate
-        cleanDataResult.finalDate = item.finalDate
-        cleanDataResult.days = item.days
-        cleanDataResult.vacationStatus = item.vacationStatus.description
+      let { data } = await this.$axios.get(api.vacation)
 
-        listVacations.push(cleanDataResult)
-      })
+      data = data.map(item => ({
+        ...item,
+        requestUserRegister: item.requestUser.register,
+        requestUserId: item.requestUser.id,
+        requestUser: item.requestUser.name
+      }))
 
-      this.data.splice(0, this.data.length, ...listVacations)
+      this.data.splice(0, this.data.length, ...data)
 
       this.pagination.page = page
       this.pagination.rowsPerPage = rowsPerPage

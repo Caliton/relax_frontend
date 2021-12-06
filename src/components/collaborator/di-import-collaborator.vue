@@ -40,7 +40,8 @@
                 name: '',
                 birthday: '',
                 hiringdate: '',
-                lastperiod: ''
+                periodOk: '',
+                daysEnjoyed: ''
               }
             ]"
             separator=";"
@@ -50,7 +51,8 @@
               name: { title: 'nome' },
               birthday: { title: 'data_de_nascimento' },
               hiringdate: { title: 'data_de_admissao' },
-              lastperiod: { title: 'periodo_inadimplente' }
+              periodOk: { title: 'periodo_sem_pendencias' },
+              daysEnjoyed: { title: 'qtda_dias_usufruidos_recente' }
             }"
           >
             <q-btn
@@ -93,7 +95,8 @@
               'nome',
               'data_de_admissao',
               'data_de_nascimento',
-              'periodo_inadimplente'
+              'periodo_sem_pendencias',
+              'qtda_dias_usufruidos_recente'
             ]"
             autoMatchFields
             autoMatchIgnoreCase
@@ -259,7 +262,8 @@ export default {
         'DD/MM/YYYY'
       ).format('YYYY-MM-DD')
 
-      employee.lastperiod = item.periodo_inadimplente
+      employee.periodOk = parseInt(item.periodo_sem_pendencias)
+      employee.daysEnjoyed = parseInt(item.qtda_dias_usufruidos_recente)
       return employee
     },
 

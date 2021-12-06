@@ -207,6 +207,7 @@ export default {
         localStorage.setItem('token', token)
         localStorage.setItem('user_id', user.collaborator.id)
         localStorage.setItem('user_name', user.collaborator.name)
+        localStorage.setItem('user_hiringdate', user.collaborator.hiringdate)
         localStorage.setItem('user_role', user.role)
 
         this.$router.push('/dashboard')

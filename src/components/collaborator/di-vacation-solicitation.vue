@@ -4,6 +4,8 @@
     transition-show="scale"
     transition-hide="scale"
     style="height: auto !important"
+    :full-width="maximize"
+    :full-height="maximize"
   >
     <q-card
       style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto !important"
@@ -12,6 +14,27 @@
         <q-toolbar-title class="flex flex-center">
           Solicitar Férias
         </q-toolbar-title>
+
+        <q-btn
+          class="float-right"
+          v-if="maximize"
+          flat
+          round
+          dense
+          icon="eva-minus-outline"
+          @click="maximize = false"
+        />
+
+        <q-btn
+          v-else
+          class="float-right"
+          flat
+          round
+          dense
+          icon="eva-square-outline"
+          @click="maximize = true"
+        />
+
         <q-btn
           class="float-right"
           flat
@@ -24,13 +47,16 @@
 
       <q-card-section>
         <div class="row">
-          <div class="col-md-4">
+          <div
+            class="q-pa-md flex flex-center"
+            :class="{ 'col-md-6': maximize, 'col-md-4': !maximize }"
+          >
             <v-date-picker
               :min-date="period.start"
-              :max-date="period.ultimate"
               v-model="rangeDate"
-              :columns="1"
-              :rows="1"
+              :columns="maximize ? 2 : 1"
+              :rows="maximize ? 2 : 1"
+              :is-expanded="$screens({ default: true, lg: false })"
               is-range
               is-inline
               mode="range"
@@ -40,73 +66,71 @@
             />
           </div>
           <div
-            class="col-md-7"
-            :class="{ 'flex flex-center': !rangeIsNotNull }"
-            style="border-radius: .5rem; border: 1px solid #BDBDBF;"
+            class="q-pa-md"
+            :class="{
+              'flex flex-center': !rangeIsNotNull || maximize,
+              'col-md-6': maximize,
+              'col-md-7': !maximize
+            }"
           >
-            <div v-if="rangeIsNotNull">
-              <div class="column q-pa-md text-center">
-                <span class="text-h5 text-grey-8">
-                  Agendar férias a partir do dia
-                </span>
-                <span class="text-h5 text-grey-8">
-                  {{ rangeDate.start | moment('DD-MM-YYYY') }} ao dia
-                  {{ rangeDate.end | moment('DD-MM-YYYY') }}?
-                </span>
+            <div
+              class="q-pa-md"
+              style="border-radius: .5rem; border: 1px solid #BDBDBF; width: 100%"
+            >
+              <div v-if="rangeIsNotNull">
+                <div class="column q-pa-md text-center">
+                  <span class="text-h5 text-grey-8">
+                    Agendar férias a partir do dia
+                  </span>
+                  <span class="text-h5 text-grey-8">
+                    {{ rangeDate.start | moment('DD-MM-YYYY') }} ao dia
+                    {{ rangeDate.end | moment('DD-MM-YYYY') }}?
+                  </span>
+                </div>
+
+                <q-separator inset />
+
+                <div class="q-pa-md text-subtitle1">
+                  <span>
+                    Você pode escolher
+                    <b>{{ 30 - countDaysSolicited() }}</b> dias.
+                  </span>
+                  <br />
+                  <span>
+                    Prazo limite final:
+                    <b>{{ period.ultimate | moment('DD-MM-YYYY') }}</b>
+                  </span>
+                  <br />
+                  <span class="text-subtitle1">
+                    Dias Selecionados: <b>{{ qtdaDias }}</b>
+                  </span>
+                  <br />
+                  <span class="text-subtitle1">
+                    Periodo Referente:
+                    <b>{{ period.start | moment('DD-MM-YYYY') }}</b> à
+                    <b>{{ period.end | moment('DD-MM-YYYY') }}</b>
+                  </span>
+                </div>
+
+                <div class="text-center">
+                  <span class="text-red" v-show="!rangeIsOk">
+                    {{ messageRange }}
+                  </span>
+                </div>
               </div>
 
-              <q-separator inset />
-
-              <div class="q-pa-md text-subtitle1">
-                <span>
-                  Você pode escolher
-                  <b>{{ 30 - countDaysSolicited() }}</b> dias.
-                </span>
-                <br />
-                <span>
-                  Prazo limite final:
-                  <b>{{ period.ultimate | moment('DD-MM-YYYY') }}</b>
-                </span>
-                <br />
-                <span class="text-subtitle1">
-                  Dias Selecionados: <b>{{ qtdaDias }}</b>
-                </span>
-                <br />
-                <span class="text-subtitle1">
-                  Periodo Referente:
-                  <b>{{ period.start | moment('DD-MM-YYYY') }}</b> à
-                  <b>{{ period.end | moment('DD-MM-YYYY') }}</b>
+              <div class="flex-center flex" v-else>
+                <span class="text-h6 text-center text-grey-8">
+                  Escolha os dias que anseia em agendar as férias deste
+                  colaborador
                 </span>
               </div>
-
-              <div class="text-center">
-                <span class="text-red" v-show="!rangeIsOk">
-                  {{ messageRange }}
-                </span>
-              </div>
-            </div>
-
-            <div class="flex-center flex" v-else>
-              <span class="text-h6 text-center text-grey-8">
-                Escolha os dias que anseia em agendar as férias deste
-                colaborador
-              </span>
             </div>
           </div>
         </div>
       </q-card-section>
 
       <q-card-actions class="text-teal container-card absolute-bottom-right">
-        <q-btn
-          v-if="this.vacation.id"
-          color="red"
-          dense
-          no-caps
-          outline
-          rounded
-          label="Desfazer Solicitação"
-          @click="onShowDelete"
-        />
         <q-btn
           :color="rangeIsOk ? 'primary' : 'red'"
           dense
@@ -173,6 +197,7 @@ export default {
       show: false,
       loading: false,
       showDelete: false,
+      maximize: true,
       period: {},
       vacation: {},
       collaborator: {},
@@ -181,6 +206,7 @@ export default {
       moment,
       messageRange: '',
       rangeDate: { start: null, end: null },
+      holidayNational: [],
       attrs: []
     }
   },
@@ -284,6 +310,38 @@ export default {
       }
 
       const { start, end } = this.rangeDate
+
+      const isSelectFimdeSemana =
+        moment(start).weekday() === 5 || moment(start).weekday() === 6
+
+      const isSelectHoliday = this.holidayNational.some(
+        a =>
+          moment(a.date)
+            .subtract(2, 'd')
+            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD') ||
+          moment(a.date)
+            .subtract(1, 'd')
+            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD')
+      )
+
+      if (isSelectFimdeSemana) {
+        this.messageRange =
+          'Não é possível iniciar as férias dois dias antes de domingo'
+
+        this.rangeIsOk = false
+
+        return this.rangeIsOk
+      }
+
+      if (isSelectHoliday) {
+        this.messageRange =
+          'Não é possível iniciar as férias dois dias antes de um feriado'
+
+        this.rangeIsOk = false
+
+        return this.rangeIsOk
+      }
+
       const diffDate = moment(end).diff(moment(start), 'd')
       const listValidy = [10, 15, 20, 30]
 
@@ -332,11 +390,13 @@ export default {
       this.rangeIsOk = listValidy.includes(diffDate)
     },
 
-    checkDateAcessibles () {
-      this.disableDates = this.period.requests.map(item => ({
-        start: new Date(item.startDate),
-        end: new Date(item.finalDate)
-      }))
+    async checkDateAcessibles () {
+      this.disableDates = this.period.requests
+        .filter(a => a.status !== status.REFUSED)
+        .map(item => ({
+          start: new Date(item.startDate),
+          end: new Date(item.finalDate)
+        }))
 
       function setColor (sta) {
         let color = ''
@@ -382,24 +442,83 @@ export default {
         return color
       }
 
-      const disableDates = this.period.requests.map(item => ({
-        popover: {
-          label: setLabel(item.status),
-          visibility: 'hover',
-          hideIndicator: true
-        },
-        highlight: {
-          color: setColor(item.status),
-          fillMode: 'light'
-        },
-        dates: {
-          start: new Date(item.startDate),
-          end: new Date(item.finalDate)
-        }
-      }))
+      const disableDates = this.period.requests
+        .filter(a => a.status !== status.REFUSED)
+        .map(item => ({
+          popover: {
+            label: setLabel(item.status),
+            visibility: 'hover',
+            hideIndicator: true
+          },
+
+          highlight: {
+            color: setColor(item.status),
+            fillMode: 'light'
+          },
+
+          dates: {
+            start: new Date(item.startDate),
+            end: new Date(item.finalDate)
+          }
+        }))
 
       disableDates.forEach(item => {
         this.attrs.push(item)
+      })
+
+      const { data: holidayRegional } = await this.$axios.get(
+        this.$api.holydayRegional.replace(
+          '{year}',
+          moment(this.period.start).year()
+        )
+      )
+
+      const { data: holidayNationalStart } = await this.$axios.get(
+        this.$api.holydayNational.replace(
+          '{year}',
+          moment(this.period.start).year()
+        )
+      )
+
+      const { data: holidayNationalFinal } = await this.$axios.get(
+        this.$api.holydayNational.replace(
+          '{year}',
+          moment(this.period.end).year()
+        )
+      )
+
+      const { data: holidayNationalUltimate } = await this.$axios.get(
+        this.$api.holydayNational.replace(
+          '{year}',
+          moment(this.period.ultimate).year()
+        )
+      )
+
+      const holidayNational = [
+        ...holidayRegional,
+        ...holidayNationalStart,
+        ...holidayNationalFinal,
+        ...holidayNationalUltimate
+      ]
+
+      this.holidayNational = holidayNational
+
+      const listDateDot = holidayNational.map(a => new Date(a.date))
+
+      const dots = {
+        dot: true,
+        dates: listDateDot
+      }
+
+      this.attrs.push(dots)
+
+      holidayNational.forEach(a => {
+        this.attrs.push({
+          dates: new Date(a.date),
+          popover: {
+            label: a.name
+          }
+        })
       })
     }
   }

@@ -18,6 +18,7 @@ export const api = {
 
   getPeriodbyYear: 'collaborator/{id}/period',
 
+  holydayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
   importCollaborators: 'collaborator/import',
 
   kpis: 'kpis',

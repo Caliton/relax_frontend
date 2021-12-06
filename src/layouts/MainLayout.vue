@@ -155,13 +155,15 @@ export default {
   methods: {
     getPermissions (module) {
       const modulesCollaborator = ['vacationrequest']
-      const modulesSupervisor = [
-        'colaborator',
-        'reserva',
+
+      const modulesSupervisor = ['colaborator', 'reserva', 'vacationrequest']
+
+      const modulesAdmin = [
+        'vacationrequest',
         'settings',
-        ...modulesCollaborator
+        'colaborator',
+        'reserva'
       ]
-      const modulesAdmin = [...modulesSupervisor]
 
       const role = localStorage.getItem('user_role')
       let permissions = false
