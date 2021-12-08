@@ -3,24 +3,23 @@
     <div class="row">
       <div class="col-md-6 q-pa-md">
         <q-table
-          :data="dateRegional"
-          title="Regional"
+          :data="data"
           flat
           :columns="columns"
           row-key="id"
           :pagination.sync="pagination"
-          no-data-label="Ainda não temos feriados cadastrados"
+          no-data-label="Ainda não temos usuários cadastrados"
           :loading="loading"
           hide-pagination
           :filter="filter"
-          @request="onRequestRegional"
+          @request="onRequest"
           :visible-columns="visibleColumns"
           rows-per-page-label="Registros por páginas"
           binary-state-sort
         >
           <template v-slot:top>
             <div class="full-width">
-              <span class="text-h6 text-green text-left"> Regional </span>
+              <span class="text-h6 text-green text-left"> Usuários </span>
               <q-btn
                 color="green"
                 dense
@@ -28,7 +27,7 @@
                 round
                 icon="eva-plus-outline"
                 no-caps
-                @click="newHoliday"
+                @click="newUser"
                 class="q-ml-md q-mb-xs q-mt-xs"
               />
             </div>
@@ -37,48 +36,23 @@
           <template v-slot:body="props">
             <q-tr
               class="cursor-pointer"
-              @click="editHoliday(props.row)"
+              @click="editUser(props.row)"
               :props="props"
             >
-              <q-td key="name" :props="props">
-                {{ props.row.name }}
+              <q-td key="login" :props="props">
+                {{ props.row.login }}
               </q-td>
 
-              <q-td key="date" :props="props">
-                {{ props.row.date }}
+              <q-td key="collaborator" :props="props">
+                {{ props.row.collaborator.name }}
               </q-td>
 
-              <q-td key="type" :props="props">
-                <div class="text-pre-wrap">{{ props.row.type }}</div>
+              <q-td key="role" :props="props">
+                <div class="text-pre-wrap">
+                  {{ translateRole(props.row.role) }}
+                </div>
               </q-td>
             </q-tr>
-          </template>
-        </q-table>
-      </div>
-
-      <div class="col-md-6 q-pa-md">
-        <q-table
-          title="Feriados nacionais"
-          :data="dataNational"
-          flat
-          :columns="columns"
-          row-key="id"
-          :pagination.sync="pagination"
-          no-data-label="Ainda não temos feriados cadastrados"
-          :loading="loading"
-          hide-pagination
-          :filter="filter"
-          @request="onRequestNational"
-          :visible-columns="visibleColumns"
-          rows-per-page-label="Registros por páginas"
-          binary-state-sort
-        >
-          <template v-slot:top>
-            <div class=" full-width">
-              <span class="text-h6 text-green text-left">
-                Feriados nacionais
-              </span>
-            </div>
           </template>
         </q-table>
       </div>
@@ -104,32 +78,32 @@
             no-caps
             label="Sim, excluir!"
             color="red"
-            @click="deleteHoliday"
+            @click="deleteUser"
             v-close-popup
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <di-holiday ref="holiday" @on-close="refresh" />
+    <di-users ref="user" @on-close="refresh" />
   </div>
 </template>
 
 <script>
-import { EventBus } from 'src/functions/event_bus.js'
-import moment from 'moment'
-import diHoliday from 'src/components/settings/holiday/di-holiday.vue'
+import diUsers from 'src/components/settings/users/di-users.vue'
 
-const enumType = {
-  NATIONAL: 'national',
-  REGIONAL: 'regional'
+const enumRole = {
+  ADMIN: 'admin',
+  SUPERVISOR: 'supervisor',
+  COLLABORATOR: 'collaborator',
+  RH: 'rh'
 }
 
 export default {
-  name: 'dt-holiday',
+  name: 'dt-user',
 
   components: {
-    diHoliday
+    diUsers
   },
 
   data () {
@@ -144,37 +118,35 @@ export default {
         rowsPerPage: 10,
         rowsNumber: 10
       },
-      visibleColumns: ['name', 'date', 'type'],
+      visibleColumns: ['login', 'role', 'type', 'collaborator'],
       columns: [
         { align: 'left', name: 'id', label: 'id', field: 'id', sortable: true },
         {
           align: 'left',
-          name: 'name',
-          label: 'Feriado',
-          field: 'name',
+          name: 'login',
+          label: 'Login',
+          field: 'login',
           sortable: true,
           style: 'width: 10px',
           headerStyle: 'width: 50px'
         },
         {
           align: 'left',
-          name: 'date',
-          label: 'Data',
-          format: val => moment(val).format('DD-MM-YYYY'),
-          field: 'date',
+          name: 'collaborator',
+          label: 'Colaborador',
+          format: val => val.name,
+          field: 'collaborator',
           sortable: true
         },
         {
           align: 'left',
-          name: 'type',
-          format: val =>
-            `${val === enumType.NATIONAL ? 'nacional' : 'regional'}`,
-          label: 'Tipo',
-          field: 'type',
+          name: 'role',
+          label: 'Perfil de Acesso',
+          field: 'role',
           sortable: true
         }
       ],
-      dateRegional: [],
+      data: [],
       dataNational: []
     }
   },
@@ -183,14 +155,41 @@ export default {
     this.refresh()
   },
   methods: {
-    async onRequestRegional (props) {
+    translateRole (val) {
+      let role = ''
+      switch (val) {
+        case enumRole.ADMIN:
+          role = 'Admin'
+          break
+
+        case enumRole.RH:
+          role = 'Rh'
+          break
+
+        case enumRole.SUPERVISOR:
+          role = 'Gestor'
+          break
+
+        case enumRole.COLLABORATOR:
+          role = 'Colaborador'
+          break
+
+        default:
+          role = 'Não identificado'
+          break
+      }
+
+      return role
+    },
+
+    async onRequest (props) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       this.loading = true
 
-      const { data } = await this.$axios.get(this.$api.holidayRegional)
+      const { data } = await this.$axios.get(this.$api.user)
 
-      this.dateRegional.splice(0, this.dateRegional.length, ...data)
+      this.data.splice(0, this.data.length, ...data)
 
       this.pagination = {
         ...this.pagination,
@@ -203,43 +202,12 @@ export default {
       this.loading = false
     },
 
-    async onRequestNational (props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination
-
-      this.loading = true
-
-      const { data } = await this.$axios.get(
-        this.$api.holidayNational.replace(
-          '{year}',
-          moment()
-            .year()
-            .toString()
-        )
-      )
-
-      this.dataNational.splice(0, this.dataNational.length, ...data)
-
-      this.pagination = {
-        ...this.pagination,
-        page,
-        rowsPerPage,
-        sortBy,
-        descending
-      }
-
-      this.loading = false
+    newUser () {
+      this.$refs.user.onShow()
     },
 
-    newHoliday () {
-      this.$refs.holiday.onShow()
-    },
-
-    editHoliday (holiday) {
-      this.$refs.holiday.onShow(holiday)
-    },
-
-    openEdit (person) {
-      EventBus.$emit('on-edit-person', person)
+    editUser (user) {
+      this.$refs.user.onShow(user)
     },
 
     openDelete (evaluation) {
@@ -248,18 +216,13 @@ export default {
     },
 
     refresh () {
-      this.onRequestRegional({
-        pagination: this.pagination,
-        filter: undefined
-      })
-
-      this.onRequestNational({
+      this.onRequest({
         pagination: this.pagination,
         filter: undefined
       })
     },
 
-    async deleteHoliday () {
+    async deleteUser () {
       try {
         this.loading = true
 

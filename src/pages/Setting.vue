@@ -17,90 +17,121 @@
       </div>
     </div>
 
-    <q-card class="q-ma-md">
-      <q-card-section>
-        <q-btn
-          flat
-          no-caps
-          label="Tipos de Status"
-          @click="showSituation"
-          color="green"
-        />
-      </q-card-section>
+    <q-tabs inline-label v-model="tab" class="text-green" align="justify">
+      <q-tab name="general" icon="eva-grid-outline" label="Geral" no-caps />
+      <q-tab
+        name="typeStatus"
+        icon="eva-pricetags-outline"
+        label="Status dos Colaboradores"
+        no-caps
+      />
+      <q-tab
+        name="holiday"
+        icon="eva-calendar-outline"
+        label="Feriados"
+        no-caps
+      />
+      <q-tab name="users" icon="eva-person-outline" label="Usuários" no-caps />
+    </q-tabs>
 
-      <q-card-section>
-        <div class="row adsf" :key="item.id" v-for="item in listStatus">
-          <div class="row" @click="editSituation(item)">
-            <q-icon class="q-pa-sm" :color="item.color" :name="item.icon" />
-            <div class="q-pa-sm">
-              {{ item.description }}
+    <q-tab-panels v-model="tab" animated class="">
+      <q-tab-panel name="general">
+        <q-card class="q-ma-md">
+          <q-card-section>
+            <q-btn
+              flat
+              no-caps
+              label="Configurações Gerais"
+              @click="showSituation"
+              color="green"
+            />
+          </q-card-section>
+
+          <q-card-section>
+            <div class="row">
+              <q-input
+                class="col-md-3 q-ma-sm"
+                filled
+                v-model="daysAllowed"
+                label="Dias de direito"
+                dense
+              />
             </div>
 
-            <div class="q-pa-sm ">
-              {{ item.limitMonths }}
+            <div class="row">
+              <q-input
+                class="col-md-3 q-ma-sm"
+                filled
+                v-model="limitEnterprise"
+                label="Prazo limite pela empresa"
+                dense
+              />
             </div>
 
-            <div class="q-pa-sm ">
-              {{ item.tooltip }}
+            <div class="row">
+              <q-input
+                class="col-md-3 q-ma-sm"
+                filled
+                v-model="ultimate"
+                label="Prazo limite pela lei"
+                dense
+              />
             </div>
-          </div>
-        </div>
-      </q-card-section>
-    </q-card>
 
-    <q-card class="q-ma-md">
-      <q-card-section>
-        <q-btn
-          flat
-          no-caps
-          label="Configurações Gerais"
-          @click="showSituation"
-          color="green"
-        />
-      </q-card-section>
+            <div class="row q-mt-md">
+              <q-btn
+                label="Salvar alterações"
+                no-caps
+                rounded
+                color="green"
+                size="sm"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-tab-panel>
 
-      <q-card-section>
-        <div class="row">
-          <q-input
-            class="col-md-3 q-ma-sm"
-            filled
-            v-model="daysAllowed"
-            label="Dias de direito"
-            dense
-          />
-        </div>
+      <q-tab-panel name="typeStatus">
+        <q-card class="q-ma-md">
+          <q-card-section>
+            <q-btn
+              flat
+              no-caps
+              label="Tipos de Status"
+              @click="showSituation"
+              color="green"
+            />
+          </q-card-section>
 
-        <div class="row">
-          <q-input
-            class="col-md-3 q-ma-sm"
-            filled
-            v-model="limitEnterprise"
-            label="Prazo limite pela empresa"
-            dense
-          />
-        </div>
+          <q-card-section>
+            <div class="row adsf" :key="item.id" v-for="item in listStatus">
+              <div class="row" @click="editSituation(item)">
+                <q-icon class="q-pa-sm" :color="item.color" :name="item.icon" />
+                <div class="q-pa-sm">
+                  {{ item.description }}
+                </div>
 
-        <div class="row">
-          <q-input
-            class="col-md-3 q-ma-sm"
-            filled
-            v-model="ultimate"
-            label="Prazo limite pela lei"
-            dense
-          />
-        </div>
+                <div class="q-pa-sm ">
+                  {{ item.limitMonths }}
+                </div>
 
-        <div class="row q-mt-md">
-          <q-btn
-            label="Salvar alterações"
-            no-caps
-            rounded
-            color="green"
-            size="sm"
-          />
-        </div>
-      </q-card-section>
-    </q-card>
+                <div class="q-pa-sm ">
+                  {{ item.tooltip }}
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-tab-panel>
+
+      <q-tab-panel name="holiday">
+        <dt-holiday />
+      </q-tab-panel>
+
+      <q-tab-panel name="users">
+        <dt-users />
+      </q-tab-panel>
+    </q-tab-panels>
 
     <di-situation ref="situation" />
   </q-page>
@@ -108,12 +139,17 @@
 
 <script>
 import { api } from 'src/enumerator/api'
-import diSituation from 'src/components/settings/di-situation.vue'
+import diSituation from 'src/components/settings/situation/di-situation.vue'
+import dtHoliday from 'src/components/settings/holiday/dt-holiday.vue'
+import dtUsers from 'src/components/settings/users/dt-users.vue'
 
 export default {
   name: 'PageConfiguracoes',
+
   components: {
-    diSituation
+    diSituation,
+    dtHoliday,
+    dtUsers
   },
 
   data () {
@@ -121,6 +157,7 @@ export default {
       loading: false,
       listStatus: [],
       daysAllowed: 30,
+      tab: 'holiday',
       limitEnterprise: 6,
       ultimate: 23
     }

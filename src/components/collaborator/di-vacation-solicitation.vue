@@ -474,21 +474,21 @@ export default {
       )
 
       const { data: holidayNationalStart } = await this.$axios.get(
-        this.$api.holydayNational.replace(
+        this.$api.holidayNational.replace(
           '{year}',
           moment(this.period.start).year()
         )
       )
 
       const { data: holidayNationalFinal } = await this.$axios.get(
-        this.$api.holydayNational.replace(
+        this.$api.holidayNational.replace(
           '{year}',
           moment(this.period.end).year()
         )
       )
 
       const { data: holidayNationalUltimate } = await this.$axios.get(
-        this.$api.holydayNational.replace(
+        this.$api.holidayNational.replace(
           '{year}',
           moment(this.period.ultimate).year()
         )

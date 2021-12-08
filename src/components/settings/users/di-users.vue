@@ -11,7 +11,7 @@
     >
       <q-toolbar class="bg-primary text-white shadow-1">
         <q-toolbar-title class="flex flex-center">
-          Feriado
+          Usuário
         </q-toolbar-title>
         <q-btn
           class="float-right"
@@ -27,7 +27,7 @@
         <div class="row justify-around">
           <div class="col-md-5 flex flex-center">
             <q-img
-              src="~src/statics/holiday.png"
+              src="~src/statics/users.png"
               style="max-width: 350px; opacity: .8"
             />
           </div>
@@ -37,44 +37,46 @@
               <q-input
                 class="col-md-12 q-ma-sm"
                 filled
-                v-model="holiday.name"
-                label="Descrição"
+                v-model="user.login"
+                label="Login"
                 dense
                 error-message="Campo Precisa ser preenchido"
-                :error="$v.holiday.name.$error"
+                :error="$v.user.login.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-file-text-outline" />
+                  <q-icon name="eva-person-outline" />
                 </template>
               </q-input>
 
-              <q-input
+              <infinite-select
                 class="col-md-12 q-ma-sm"
-                filled
-                type="date"
-                v-model="holiday.date"
-                label="Data"
+                ref="moduleSelect"
                 dense
-                error-message="Campo Precisa ser preenchido"
-                :error="$v.holiday.date.$error"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="eva-calendar-outline" />
-                </template>
-              </q-input>
+                required
+                filled
+                notClear
+                :api="$api.userCollaborator"
+                fieldId="id"
+                v-model="user.collaborator"
+                bgColor="bg-red"
+                queryParamFilter="name"
+                fieldLabel="name"
+                label="Colaborador"
+                icon="eva-person"
+              />
 
               <q-select
                 class="col-md-12 q-ma-sm"
                 filled
-                :options="comboType"
-                v-model="holiday.type"
-                label="Tipo"
+                :options="comboRole"
+                v-model="user.role"
+                label="Perfil de Acesso"
                 dense
                 error-message="Campo Precisa ser preenchido"
-                :error="$v.holiday.type.$error"
+                :error="$v.user.role.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-more-vertical-outline" />
+                  <q-icon name="eva-credit-card-outline" />
                 </template>
               </q-select>
             </div>
@@ -101,12 +103,16 @@
 import { required } from 'vuelidate/lib/validators'
 import moment from 'moment'
 import { api } from 'src/enumerator/api'
+import infiniteSelect from 'src/components/common/InfiniteSelect.vue'
 
 export default {
-  name: 'di-holiday',
+  name: 'di-user',
 
   events: ['on-close'],
 
+  components: {
+    infiniteSelect
+  },
   computed: {
     draggingInfo () {
       return this.dragging ? 'under drag' : ''
@@ -117,10 +123,10 @@ export default {
     return {
       show: false,
       loading: false,
-      holiday: {
-        name: '',
-        type: { value: 'regional', label: 'Regional' },
-        date: moment().format('YYYY-MM-DD')
+      user: {
+        login: '',
+        role: { value: 'collaborator', label: 'Colaborador' },
+        collaborator: null
       },
 
       myLocale: {
@@ -135,30 +141,32 @@ export default {
         firstDayOfWeek: 1
       },
 
-      comboType: [
-        { value: 'national', label: 'Nacional' },
-        { value: 'regional', label: 'Regional' }
+      comboRole: [
+        { value: 'admin', label: 'Admin' },
+        { value: 'rh', label: 'Rh' },
+        { value: 'supervisor', label: 'Gestor' },
+        { value: 'collaborator', label: 'Colaborador' }
       ]
     }
   },
 
   validations: {
-    holiday: {
-      name: { required },
-      type: { required },
-      date: { required }
+    user: {
+      login: { required },
+      role: { required },
+      collaborator: { required }
     }
   },
 
   methods: {
-    onShow (holiday) {
+    onShow (user) {
       this.cleanFields()
 
       this.show = true
 
-      if (!holiday) return
+      if (!user) return
 
-      this.holiday = { ...holiday }
+      this.user = { ...user }
     },
 
     onHide () {
@@ -173,12 +181,12 @@ export default {
         }
 
         let axiosFunction = this.$axios.post
-        let url = api.holiday
+        let url = api.user
 
         const payLoad = {
-          ...this.holiday,
-          type: this.holiday.type.value,
-          date: moment(this.holiday.date).format('YYYY-MM-DD')
+          ...this.user,
+          type: this.user.type.value,
+          date: moment(this.user.date).format('YYYY-MM-DD')
         }
 
         if (payLoad.id) {
@@ -199,14 +207,14 @@ export default {
     },
 
     validationsFields () {
-      this.$v.holiday.$touch()
+      this.$v.user.$touch()
 
-      return !this.$v.holiday.$error
+      return !this.$v.user.$error
     },
 
     cleanFields () {
-      this.holiday = {}
-      this.$v.holiday.$reset()
+      this.user = {}
+      this.$v.user.$reset()
     },
 
     canceled () {

@@ -18,7 +18,10 @@ export const api = {
 
   getPeriodbyYear: 'collaborator/{id}/period',
 
-  holydayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
+  holidayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
+  holidayRegional: 'holiday/regional',
+  holiday: 'holiday',
+
   importCollaborators: 'collaborator/import',
 
   kpis: 'kpis',
@@ -37,5 +40,6 @@ export const api = {
 
   vacation: 'vacationrequest',
   vacationrequest: 'vacationrequest/{id}',
-  users: 'users'
+  user: 'user',
+  userCollaborator: 'collaborator/all'
 }
