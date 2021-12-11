@@ -124,8 +124,13 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props" class="custom-table">
-          <q-td style="width: 5%" :props="props" key="situation">
+        <q-tr :props="props" class="cursor-pointer custom-table">
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 5%"
+            :props="props"
+            key="situation"
+          >
             <q-icon
               size="md"
               :color="props.row.situation.color"
@@ -157,52 +162,78 @@
             </q-tooltip>
           </q-td>
 
-          <q-td style="width: 10%" :props="props" key="register">{{
-            props.row.register
-          }}</q-td>
-          <q-td style="width: 30%" :props="props" key="name">{{
-            props.row.name
-          }}</q-td>
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 10%"
+            :props="props"
+            key="register"
+          >
+            {{ props.row.register }}
+          </q-td>
 
-          <q-td style="width: 10%" :props="props" key="birthday">{{
-            props.row.birthday | moment('DD-MM-YYYY')
-          }}</q-td>
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 10%"
+            :props="props"
+            key="type"
+          >
+            {{ maskType(props.row.type) }}
+          </q-td>
 
-          <q-td style="width: 10%" :props="props" key="hiringdate">{{
-            props.row.hiringdate | moment('DD-MM-YYYY')
-          }}</q-td>
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 30%"
+            :props="props"
+            key="name"
+          >
+            {{ props.row.name }}
+          </q-td>
 
-          <q-td style="width: 20%">
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 10%"
+            :props="props"
+            key="birthday"
+          >
+            {{ props.row.birthday | moment('DD-MM-YYYY') }}
+          </q-td>
+
+          <q-td
+            @click="openVacation(props.row)"
+            style="width: 10%"
+            :props="props"
+            key="hiringdate"
+          >
+            {{ props.row.hiringdate | moment('DD-MM-YYYY') }}
+          </q-td>
+
+          <q-td style="width: 5%">
             <q-btn
-              size="sm"
-              flat
-              class="q-ma-xs bg-white"
-              color="green"
+              class="q-ml-sm"
+              color="grey"
               round
-              dense
-              icon="eva-sun-outline"
-              @click="openVacation(props.row)"
-            />
-            <q-btn
-              size="sm"
               flat
-              class="q-ma-xs bg-white"
-              color="light-blue"
-              round
-              dense
-              icon="eva-edit-outline"
-              @click="openEdit(props.row)"
-            />
-            <q-btn
-              size="sm"
-              flat
-              class="q-ma-xs bg-white"
-              color="red"
-              round
-              dense
-              icon="eva-trash-2-outline"
-              @click="openDelete(props.row)"
-            />
+              icon="eva-more-vertical-outline"
+            >
+              <q-menu transition-show="jump-down" transition-hide="jump-up">
+                <q-list style="min-width: 100px">
+                  <q-item clickable @click="openEdit(props.row)">
+                    <q-item-section>
+                      <q-icon color="blue" name="eva-edit-outline" />
+                    </q-item-section>
+                    <q-item-section class="text-blue">editar</q-item-section>
+                  </q-item>
+
+                  <q-item clickable @click="openDelete(props.row)">
+                    <q-item-section>
+                      <q-icon color="red" name="eva-trash-2-outline" />
+                    </q-item-section>
+
+                    <q-item-section class="text-red">excluir</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </q-td>
         </q-tr>
       </template>
@@ -284,6 +315,7 @@ export default {
       visibleColumns: [
         'situation',
         'register',
+        'type',
         'name',
         'hiringdate',
         'birthday'
@@ -305,6 +337,15 @@ export default {
           field: 'register',
           sortable: true
         },
+
+        {
+          align: 'left',
+          name: 'type',
+          label: 'Tipo',
+          field: 'type',
+          sortable: true
+        },
+
         {
           align: 'left',
           name: 'name',
@@ -362,6 +403,52 @@ export default {
       }
     },
 
+    async deleteCollaborator () {
+      try {
+        this.loading = true
+
+        await this.$axios.delete(
+          this.$api.collaboratorGetBy.replace(
+            '{id}',
+            this.collaboratorSelected.id
+          )
+        )
+
+        this.$q.notify({
+          color: 'positive',
+          type: 'positive',
+          message: 'Colaborador excluido com sucesso!'
+        })
+
+        this.collaboratorSelected = undefined
+        this.refresh()
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    maskType (type) {
+      let a = ''
+
+      switch (type) {
+        case 'effective':
+          a = 'Efetivo'
+          break
+
+        case 'intern':
+          a = 'Estagiário'
+          break
+
+        default:
+          a = 'não identificado'
+          break
+      }
+
+      return a
+    },
+
     customSort (rows, sortBy, descending) {
       const data = [...rows]
 
@@ -395,9 +482,9 @@ export default {
       this.$refs['di-collaborator'].onShow(person)
     },
 
-    openDelete (evaluation) {
+    openDelete (collaborator) {
       this.showDelete = true
-      this.collaboratorFocus = Object.assign({}, evaluation)
+      this.collaboratorSelected = { ...collaborator }
     },
 
     openVacation (data) {
@@ -408,29 +495,6 @@ export default {
       this.onRequest({
         filter: undefined
       })
-    },
-
-    async deleteCollaborator () {
-      try {
-        this.loading = true
-
-        await this.$axios.delete(
-          `${api.collaboratorGetBy.replace('{id}', this.collaboratorFocus.id)}/`
-        )
-
-        this.$q.notify({
-          color: 'positive',
-          type: 'positive',
-          message: 'Colaborador Excluido com Sucesso!'
-        })
-
-        this.collaboratorFocus = undefined
-        this.refresh()
-        this.loading = false
-      } catch (e) {
-        this.loading = false
-        console.log(e)
-      }
     }
   }
 }

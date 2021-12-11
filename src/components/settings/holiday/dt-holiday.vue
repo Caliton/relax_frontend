@@ -35,21 +35,30 @@
           </template>
 
           <template v-slot:body="props">
-            <q-tr
-              class="cursor-pointer"
-              @click="editHoliday(props.row)"
-              :props="props"
-            >
-              <q-td key="name" :props="props">
+            <q-tr class="cursor-pointer" :props="props">
+              <q-td @click="editHoliday(props.row)" key="name" :props="props">
                 {{ props.row.name }}
               </q-td>
 
-              <q-td key="date" :props="props">
-                {{ props.row.date }}
+              <q-td @click="editHoliday(props.row)" key="date" :props="props">
+                {{ props.row.date | moment('DD-MM-YYYY') }}
               </q-td>
 
-              <q-td key="type" :props="props">
+              <q-td @click="editHoliday(props.row)" key="type" :props="props">
                 <div class="text-pre-wrap">{{ props.row.type }}</div>
+              </q-td>
+
+              <q-td>
+                <q-btn
+                  size="sm"
+                  flat
+                  class="q-ma-xs bg-white"
+                  color="red"
+                  round
+                  dense
+                  icon="eva-trash-2-outline"
+                  @click="openDelete(props.row)"
+                />
               </q-td>
             </q-tr>
           </template>
@@ -175,7 +184,8 @@ export default {
         }
       ],
       dateRegional: [],
-      dataNational: []
+      dataNational: [],
+      holidaySelected: {}
     }
   },
 
@@ -242,9 +252,9 @@ export default {
       EventBus.$emit('on-edit-person', person)
     },
 
-    openDelete (evaluation) {
+    openDelete (data) {
       this.showDelete = true
-      this.evaluationFocus = Object.assign({}, evaluation)
+      this.holidaySelected = { ...data }
     },
 
     refresh () {
@@ -264,16 +274,16 @@ export default {
         this.loading = true
 
         await this.$axios.delete(
-          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
+          this.$api.holidayDelete.replace('{id}', this.holidaySelected.id)
         )
 
         this.$q.notify({
           color: 'positive',
           type: 'positive',
-          message: 'Colaborador Excluido com Sucesso!'
+          message: 'Usuario Excluido com Sucesso!'
         })
 
-        this.evaluationFocus = undefined
+        this.holidaySelected = undefined
         this.refresh()
         this.loading = false
       } catch (e) {

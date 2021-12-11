@@ -51,15 +51,40 @@
               <q-input
                 class="col-md-12 q-ma-sm"
                 filled
-                type="date"
-                v-model="holiday.date"
-                label="Data"
+                reverse-fill-mask
                 dense
-                error-message="Campo Precisa ser preenchido"
+                v-model="holiday.date"
+                mask="##-##-####"
+                maxlength="10"
+                label="Data"
+                error-message="Campo precisa ser preenchido"
                 :error="$v.holiday.date.$error"
+                @blur="$v.holiday.date.$touch()"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-calendar-outline" />
+                  <q-icon name="eva-calendar-outline" class="cursor-pointer">
+                    <q-popup-proxy
+                      ref="qDateProxy"
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="holiday.date"
+                        mask="DD-MM-YYYY"
+                        default-view="Years"
+                        :locale="myLocale"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Fechar"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
                 </template>
               </q-input>
 

@@ -536,7 +536,7 @@ export default {
           }) !== undefined
         )
       } else {
-        return this.value.Id === item[this.fieldId]
+        return this.value === item[this.fieldId]
       }
     },
 

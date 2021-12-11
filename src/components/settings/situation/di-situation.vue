@@ -108,7 +108,7 @@
         </div>
       </q-card-section>
 
-      <q-card-section></q-card-section>
+      <q-card-section />
       <q-card-actions
         style="margin: 10px;"
         class="text-teal container-card absolute-bottom-right"
@@ -135,6 +135,13 @@ export default {
   computed: {
     draggingInfo () {
       return this.dragging ? 'under drag' : ''
+    }
+  },
+
+  props: {
+    type: {
+      type: String,
+      default: ''
     }
   },
 
@@ -199,7 +206,7 @@ export default {
         let axiosFunction = this.$axios.post
         let url = api.collaborators
 
-        const payLoad = { ...this.situation }
+        const payLoad = { ...this.situation, type: this.type }
 
         if (payLoad.id) {
           url += `/${payLoad.id}/`

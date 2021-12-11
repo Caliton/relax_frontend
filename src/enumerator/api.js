@@ -10,7 +10,7 @@ export const api = {
   changePassword: 'auth/{id}/change-password',
   charts: 'charts',
   collaborators: 'collaborator',
-  collaboratorGetBy: '/collaborator/{id}',
+  collaboratorGetBy: 'collaborator/{id}',
   companies: 'companies',
 
   employees: 'employees',
@@ -21,6 +21,7 @@ export const api = {
   holidayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
   holidayRegional: 'holiday/regional',
   holiday: 'holiday',
+  holidayDelete: 'holiday/{id}',
 
   importCollaborators: 'collaborator/import',
 
@@ -35,11 +36,13 @@ export const api = {
   reports: 'reports/{id}',
 
   signin: 'login',
-  situation: 'periodstatus',
+  situation: 'periodstatus/{type}',
+  situationDelete: 'periodstatus/{id}',
   sendRecoverEmail: '/auth/send-recover-email',
 
   vacation: 'vacationrequest',
   vacationrequest: 'vacationrequest/{id}',
   user: 'user',
+  userDelete: 'user/{id}',
   userCollaborator: 'collaborator/all'
 }

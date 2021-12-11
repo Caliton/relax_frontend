@@ -34,23 +34,36 @@
           </template>
 
           <template v-slot:body="props">
-            <q-tr
-              class="cursor-pointer"
-              @click="editUser(props.row)"
-              :props="props"
-            >
-              <q-td key="login" :props="props">
+            <q-tr class="cursor-pointer" :props="props">
+              <q-td @click="editUser(props.row)" key="login" :props="props">
                 {{ props.row.login }}
               </q-td>
 
-              <q-td key="collaborator" :props="props">
+              <q-td
+                @click="editUser(props.row)"
+                key="collaborator"
+                :props="props"
+              >
                 {{ props.row.collaborator.name }}
               </q-td>
 
-              <q-td key="role" :props="props">
+              <q-td @click="editUser(props.row)" key="role" :props="props">
                 <div class="text-pre-wrap">
                   {{ translateRole(props.row.role) }}
                 </div>
+              </q-td>
+
+              <q-td>
+                <q-btn
+                  size="sm"
+                  flat
+                  class="q-ma-xs bg-white"
+                  color="red"
+                  round
+                  dense
+                  icon="eva-trash-2-outline"
+                  @click="openDelete(props.row)"
+                />
               </q-td>
             </q-tr>
           </template>
@@ -147,13 +160,15 @@ export default {
         }
       ],
       data: [],
-      dataNational: []
+      dataNational: [],
+      userSelected: {}
     }
   },
 
   mounted () {
     this.refresh()
   },
+
   methods: {
     translateRole (val) {
       let role = ''
@@ -183,23 +198,26 @@ export default {
     },
 
     async onRequest (props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination
+      try {
+        const { page, rowsPerPage, sortBy, descending } = props.pagination
 
-      this.loading = true
+        this.loading = true
 
-      const { data } = await this.$axios.get(this.$api.user)
+        const { data } = await this.$axios.get(this.$api.user)
 
-      this.data.splice(0, this.data.length, ...data)
+        this.data.splice(0, this.data.length, ...data)
 
-      this.pagination = {
-        ...this.pagination,
-        page,
-        rowsPerPage,
-        sortBy,
-        descending
+        this.pagination = {
+          ...this.pagination,
+          page,
+          rowsPerPage,
+          sortBy,
+          descending
+        }
+      } catch (e) {
+      } finally {
+        this.loading = false
       }
-
-      this.loading = false
     },
 
     newUser () {
@@ -210,9 +228,9 @@ export default {
       this.$refs.user.onShow(user)
     },
 
-    openDelete (evaluation) {
+    openDelete (data) {
       this.showDelete = true
-      this.evaluationFocus = Object.assign({}, evaluation)
+      this.userSelected = { ...data }
     },
 
     refresh () {
@@ -227,16 +245,16 @@ export default {
         this.loading = true
 
         await this.$axios.delete(
-          `${'/person/{id}'.replace('{id}', this.evaluationFocus.id)}/`
+          this.$api.userDelete.replace('{id}', this.userSelected.id)
         )
 
         this.$q.notify({
           color: 'positive',
           type: 'positive',
-          message: 'Colaborador Excluido com Sucesso!'
+          message: 'Usuario Excluido com Sucesso!'
         })
 
-        this.evaluationFocus = undefined
+        this.userSelected = null
         this.refresh()
         this.loading = false
       } catch (e) {

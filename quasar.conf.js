@@ -51,7 +51,7 @@ module.exports = function (ctx) {
         ? { API: JSON.stringify('http://localhost:3000/api/') }
         // ? { API: JSON.stringify('https://relax-heroku.herokuapp.com/api/v1/') }
         : {
-          API: JSON.stringify('https://relax-heroku.herokuapp.com/api/')
+          API: JSON.stringify('https://relax-teste.herokuapp.com/api/')
         },
 
       // rtl: false, // https://quasar.dev/options/rtl-support

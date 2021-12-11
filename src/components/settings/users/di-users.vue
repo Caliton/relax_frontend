@@ -33,7 +33,7 @@
           </div>
 
           <div class="col-md-5">
-            <div class="row justify-center">
+            <div class="column justify-center">
               <q-input
                 class="col-md-12 q-ma-sm"
                 filled
@@ -50,7 +50,7 @@
 
               <infinite-select
                 class="col-md-12 q-ma-sm"
-                ref="moduleSelect"
+                ref="collaborator"
                 dense
                 required
                 filled
@@ -58,8 +58,7 @@
                 :api="$api.userCollaborator"
                 fieldId="id"
                 v-model="user.collaborator"
-                bgColor="bg-red"
-                queryParamFilter="name"
+                queryParamFilter="filter"
                 fieldLabel="name"
                 label="Colaborador"
                 icon="eva-person"
@@ -79,6 +78,67 @@
                   <q-icon name="eva-credit-card-outline" />
                 </template>
               </q-select>
+
+              <div class="col-12">
+                <q-btn
+                  v-if="isEditing"
+                  label="Alterar senha"
+                  class="q-mb-md"
+                  rounded
+                  :outline="!showPassword"
+                  size="sm"
+                  color="green"
+                  no-caps
+                  @click="showPassword = !showPassword"
+                />
+
+                <q-slide-transition>
+                  <div class="" v-if="showPassword || !isEditing">
+                    <q-input
+                      filled
+                      dense
+                      class="q-ma-sm"
+                      :maxlength="50"
+                      label="Senha do Usuário"
+                      v-model="user.password"
+                      minlenght
+                      :type="isPwd ? 'password' : 'text'"
+                      :error="this.$v.user.password.$error"
+                      error-message="Campo obrigatório"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
+
+                    <q-input
+                      filled
+                      dense
+                      class="q-ma-sm"
+                      :maxlength="50"
+                      label="Confirmar senha"
+                      v-model="confirmPassword"
+                      minlenght
+                      :type="isPwd ? 'password' : 'text'"
+                      debounce="300"
+                      :error="!isEqualPassword"
+                      error-message="As senhas não são iguais. Tente novamente."
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
+                  </div>
+                </q-slide-transition>
+              </div>
             </div>
           </div>
         </div>
@@ -100,8 +160,7 @@
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators'
-import moment from 'moment'
+import { required, requiredIf } from 'vuelidate/lib/validators'
 import { api } from 'src/enumerator/api'
 import infiniteSelect from 'src/components/common/InfiniteSelect.vue'
 
@@ -113,11 +172,6 @@ export default {
   components: {
     infiniteSelect
   },
-  computed: {
-    draggingInfo () {
-      return this.dragging ? 'under drag' : ''
-    }
-  },
 
   data () {
     return {
@@ -126,20 +180,14 @@ export default {
       user: {
         login: '',
         role: { value: 'collaborator', label: 'Colaborador' },
-        collaborator: null
+        collaborator: null,
+        password: ''
       },
 
-      myLocale: {
-        days: 'Domingo_Segunda_Terça_Quarta_Quinta_Sexta_Sábado'.split('_'),
-        daysShort: 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
-        months: 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split(
-          '_'
-        ),
-        monthsShort: 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split(
-          '_'
-        ),
-        firstDayOfWeek: 1
-      },
+      showPassword: false,
+      isEditing: false,
+      confirmPassword: '',
+      isPwd: 'password',
 
       comboRole: [
         { value: 'admin', label: 'Admin' },
@@ -154,7 +202,19 @@ export default {
     user: {
       login: { required },
       role: { required },
+      password: {
+        required: requiredIf(function () {
+          return this.showPassword || !this.isEditing
+        })
+      },
+
       collaborator: { required }
+    }
+  },
+
+  computed: {
+    isEqualPassword: function () {
+      return this.confirmPassword === this.user.password
     }
   },
 
@@ -162,11 +222,17 @@ export default {
     onShow (user) {
       this.cleanFields()
 
+      this.user = { ...this.user, password: '' }
+      this.showPassword = false
+      this.isEditing = false
+
       this.show = true
 
       if (!user) return
 
-      this.user = { ...user }
+      this.isEditing = true
+
+      this.user = { ...user, password: '' }
     },
 
     onHide () {
@@ -176,7 +242,7 @@ export default {
 
     async confirm () {
       try {
-        if (!this.validationsFields()) {
+        if (this.validationsFields()) {
           return
         }
 
@@ -185,8 +251,8 @@ export default {
 
         const payLoad = {
           ...this.user,
-          type: this.user.type.value,
-          date: moment(this.user.date).format('YYYY-MM-DD')
+          collaboratorId: this.user.collaborator.id,
+          role: this.user.role.value
         }
 
         if (payLoad.id) {
@@ -209,7 +275,9 @@ export default {
     validationsFields () {
       this.$v.user.$touch()
 
-      return !this.$v.user.$error
+      this.$refs.collaborator.validyEmptyError()
+
+      return this.$v.user.$error || !this.isEqualPassword
     },
 
     cleanFields () {

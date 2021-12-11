@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
-    "build:prod": "cross-env MY_API=https://relax-heroku.herokuapp.com/ quasar build",
+    "build:prod": "cross-env MY_API=https://relax-teste.herokuapp.com/ quasar build",
     "build:test": "cross-env MY_API=https://relax-heroku.herokuapp.com/ quasar build"
   },
   "dependencies": {
