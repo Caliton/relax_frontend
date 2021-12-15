@@ -34,9 +34,10 @@
 
           <div class="col-md-5">
             <div class="row justify-start">
-              <q-input
+              <q-select
                 class="col-md-12 q-ma-sm"
                 filled
+                :options="comboIcon"
                 v-model="situation.icon"
                 label="Icone"
                 dense
@@ -44,9 +45,44 @@
                 :error="$v.situation.icon.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-file-text-outline" />
+                  <q-icon
+                    :style="{
+                      color: `${
+                        isHexColor(situation.color) ? situation.color : ''
+                      }`
+                    }"
+                    :color="
+                      `${!isHexColor(situation.color) ? situation.color : ''}`
+                    "
+                    :name="situation.icon.value"
+                    class="cursor-pointer"
+                  />
                 </template>
-              </q-input>
+
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                    <q-item-section avatar>
+                      <q-icon
+                        :style="{
+                          color: `${
+                            isHexColor(situation.color) ? situation.color : ''
+                          }`
+                        }"
+                        :color="
+                          `${
+                            !isHexColor(situation.color) ? situation.color : ''
+                          }`
+                        "
+                        :name="scope.opt.icon"
+                      />
+                    </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label v-html="scope.opt.label" />
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
 
               <q-input
                 class="col-md-12 q-ma-sm"
@@ -58,7 +94,51 @@
                 :error="$v.situation.color.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-file-text-outline" />
+                  <q-icon
+                    name="eva-color-palette-outline"
+                    class="cursor-pointer"
+                  >
+                    <q-popup-proxy
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-color
+                        no-header
+                        no-footer
+                        format-model="hex"
+                        default-view="palette"
+                        v-model="situation.color"
+                      />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+
+                <template v-slot:append>
+                  <q-icon
+                    :color="
+                      `${!isHexColor(situation.color) ? situation.color : ''}`
+                    "
+                    :style="{
+                      color: `${
+                        isHexColor(situation.color) ? situation.color : ''
+                      }`
+                    }"
+                    name="colorize"
+                    class="cursor-pointer"
+                  >
+                    <q-popup-proxy
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-color
+                        no-header
+                        no-footer
+                        format-model="hex"
+                        default-view="palette"
+                        v-model="situation.color"
+                      />
+                    </q-popup-proxy>
+                  </q-icon>
                 </template>
               </q-input>
 
@@ -72,7 +152,7 @@
                 :error="$v.situation.description.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-file-text-outline" />
+                  <q-icon name="eva-stop-circle-outline" />
                 </template>
               </q-input>
 
@@ -81,12 +161,13 @@
                 filled
                 v-model="situation.limitMonths"
                 label="Diferença do prazo final em meses"
+                mask="NNN"
                 dense
                 error-message="Campo Precisa ser preenchido"
                 :error="$v.situation.limitMonths.$error"
               >
                 <template v-slot:prepend>
-                  <q-icon name="eva-file-text-outline" />
+                  <q-icon name="eva-calendar-outline" />
                 </template>
               </q-input>
 
@@ -94,8 +175,10 @@
                 class="col-md-12 q-ma-sm"
                 filled
                 v-model="situation.tooltip"
-                label="Diferença do prazo final em meses"
+                label="Descrição"
                 dense
+                maxlength="80"
+                type="textarea"
                 error-message="Campo Precisa ser preenchido"
                 :error="$v.situation.tooltip.$error"
               >
@@ -153,21 +236,81 @@ export default {
         description: '',
         limitMonths: '',
         tooltip: '',
-        icon: '',
-        color: ''
+        icon: {
+          label: 'eva-person-outline',
+          value: 'eva-person-outline',
+          icon: 'eva-person-outline'
+        },
+        color: 'grey'
       },
 
-      myLocale: {
-        days: 'Domingo_Segunda_Terça_Quarta_Quinta_Sexta_Sábado'.split('_'),
-        daysShort: 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
-        months: 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split(
-          '_'
-        ),
-        monthsShort: 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split(
-          '_'
-        ),
-        firstDayOfWeek: 1
-      }
+      comboIcon: [
+        {
+          label: 'eva-person',
+          value: 'eva-person',
+          icon: 'eva-person'
+        },
+        {
+          label: 'eva-alert-circle-outline',
+          value: 'eva-alert-circle-outline',
+          icon: 'eva-alert-circle-outline'
+        },
+        {
+          label: 'eva-alert-triangle-outline',
+          value: 'eva-alert-triangle-outline',
+          icon: 'eva-alert-triangle-outline'
+        },
+        {
+          label: 'eva-activity-outline',
+          value: 'eva-activity-outline',
+          icon: 'eva-activity-outline'
+        },
+        {
+          label: 'eva-checkmark-circle-outline',
+          value: 'eva-checkmark-circle-outline',
+          icon: 'eva-checkmark-circle-outline'
+        },
+        {
+          label: 'eva-clock-outline',
+          value: 'eva-clock-outline',
+          icon: 'eva-clock-outline'
+        },
+        {
+          label: 'eva-close-outline',
+          value: 'eva-close-outline',
+          icon: 'eva-close-outline'
+        },
+        {
+          label: 'eva-star-outline',
+          value: 'eva-star-outline',
+          icon: 'eva-star-outline'
+        },
+        {
+          label: 'eva-camera-outline',
+          value: 'eva-camera-outline',
+          icon: 'eva-camera-outline'
+        },
+        {
+          label: 'eva-briefcase-outline',
+          value: 'eva-briefcase-outline',
+          icon: 'eva-briefcase-outline'
+        },
+        {
+          label: 'eva-checkmark-outline',
+          value: 'eva-checkmark-outline',
+          icon: 'eva-checkmark-outline'
+        },
+        {
+          label: 'eva-person',
+          value: 'eva-person',
+          icon: 'eva-person'
+        },
+        {
+          label: 'eva-person',
+          value: 'eva-person',
+          icon: 'eva-person'
+        }
+      ]
     }
   },
 
@@ -184,12 +327,19 @@ export default {
   methods: {
     onShow (situation) {
       this.cleanFields()
-
       this.show = true
 
       if (!situation) return
 
       this.situation = situation
+    },
+
+    isHexColor (a) {
+      let b = false
+
+      if (a) b = a.includes('#')
+
+      return b
     },
 
     onHide () {
@@ -204,12 +354,19 @@ export default {
         }
 
         let axiosFunction = this.$axios.post
-        let url = api.collaborators
+        let url = api.situation
 
-        const payLoad = { ...this.situation, type: this.type }
+        const payLoad = {
+          ...this.situation,
+          icon: this.situation.icon.value,
+          type: this.type
+        }
+
+        console.log(payLoad)
 
         if (payLoad.id) {
-          url += `/${payLoad.id}/`
+          url = api.situationGetBy
+          url = url.replace('{id}', this.situation.id)
           axiosFunction = this.$axios.put
         }
 
@@ -232,7 +389,18 @@ export default {
     },
 
     cleanFields () {
-      this.situation = {}
+      this.situation = {
+        description: '',
+        limitMonths: '',
+        tooltip: '',
+        icon: {
+          label: 'eva-person',
+          value: 'eva-person',
+          icon: 'eva-person'
+        },
+        color: 'grey'
+      }
+
       this.$v.situation.$reset()
     },
 

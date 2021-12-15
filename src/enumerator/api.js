@@ -36,13 +36,16 @@ export const api = {
   reports: 'reports/{id}',
 
   signin: 'login',
-  situation: 'periodstatus/{type}',
-  situationDelete: 'periodstatus/{id}',
+  situation: 'periodstatus',
+  situationType: 'periodstatus/{type}',
+  situationGetBy: 'periodstatus/{id}',
   sendRecoverEmail: '/auth/send-recover-email',
 
   vacation: 'vacationrequest',
   vacationrequest: 'vacationrequest/{id}',
   user: 'user',
   userDelete: 'user/{id}',
-  userCollaborator: 'collaborator/all'
+  userCollaborator: 'collaborator/all',
+
+  globalsettings: 'globalsettings'
 }

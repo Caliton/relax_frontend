@@ -36,59 +36,7 @@
 
     <q-tab-panels v-model="tab" animated class="">
       <q-tab-panel name="general">
-        <q-card class="q-ma-md">
-          <q-card-section>
-            <q-btn
-              flat
-              no-caps
-              label="Configurações Gerais"
-              @click="showSituation"
-              color="green"
-            />
-          </q-card-section>
-
-          <q-card-section>
-            <div class="row">
-              <q-input
-                class="col-md-3 q-ma-sm"
-                filled
-                v-model="daysAllowed"
-                label="Dias de direito"
-                dense
-              />
-            </div>
-
-            <div class="row">
-              <q-input
-                class="col-md-3 q-ma-sm"
-                filled
-                v-model="limitEnterprise"
-                label="Prazo limite definido pela empresa (meses)"
-                dense
-              />
-            </div>
-
-            <div class="row">
-              <q-input
-                class="col-md-3 q-ma-sm"
-                filled
-                v-model="ultimate"
-                label="Prazo limite definido pela lei (meses)"
-                dense
-              />
-            </div>
-
-            <div class="row q-mt-md">
-              <q-btn
-                label="Salvar alterações"
-                no-caps
-                rounded
-                color="green"
-                size="sm"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
+        <fo-settings />
       </q-tab-panel>
 
       <q-tab-panel name="typeStatus">
@@ -110,11 +58,11 @@
 </template>
 
 <script>
-import { api } from 'src/enumerator/api'
 import diSituation from 'src/components/settings/situation/di-situation.vue'
 import dtSituation from 'src/components/settings/situation/dt-situation.vue'
 import dtHoliday from 'src/components/settings/holiday/dt-holiday.vue'
 import dtUsers from 'src/components/settings/users/dt-users.vue'
+import foSettings from 'src/components/settings/globalsettings/fo-settings.vue'
 
 export default {
   name: 'PageConfiguracoes',
@@ -123,7 +71,8 @@ export default {
     diSituation,
     dtHoliday,
     dtUsers,
-    dtSituation
+    dtSituation,
+    foSettings
   },
 
   data () {
@@ -137,25 +86,9 @@ export default {
     }
   },
 
-  mounted () {
-    this.onRequest()
-  },
-
   methods: {
     showSituation (data) {
       this.$refs.situation.onShow(data)
-    },
-
-    async onRequest () {
-      try {
-        this.loading = true
-        const { data } = await this.$axios.get(api.situation)
-
-        this.listStatus.splice(0, this.listStatus.length, ...data)
-      } catch (e) {
-      } finally {
-        this.loading = false
-      }
     },
 
     editSituation (data) {
