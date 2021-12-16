@@ -297,7 +297,8 @@ export default {
         const payload = {
           ...this.collaborator,
           hiringdate: moment(hiringdate, 'DD-MM-YYYY').format('YYYY-MM-DD'),
-          birthday: moment(birthday, 'DD-MM-YYYY').format('YYYY-MM-DD')
+          birthday: moment(birthday, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+          type: this.collaborator.type.value
         }
 
         if (payload.id) {

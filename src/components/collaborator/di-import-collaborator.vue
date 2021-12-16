@@ -25,7 +25,7 @@
             color="primary"
           />
           <span class="q-ml-sm"
-            >Passo 1) Baixe o Modelo a baixo e preencha-o conforme seu
+            >Passo 1) Baixe o Modelo abaixo e preencha-o conforme seu
             Layout!</span
           >
           <!-- <span class="q-ml-sm">Importe a lista dos colaboradores de sua Empresa por aqui!</span> -->

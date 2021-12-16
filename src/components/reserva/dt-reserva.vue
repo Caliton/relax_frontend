@@ -227,7 +227,7 @@ export default {
         {
           align: 'left',
           name: 'daysAllowed',
-          label: 'Qtda dias com Direito a Férias',
+          label: 'Qtd. dias com Direito a Férias',
           field: 'daysAllowed',
           sortable: true
         },

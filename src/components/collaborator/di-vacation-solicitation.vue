@@ -327,11 +327,11 @@ export default {
         let color = ''
         switch (sta) {
           case status.APPROVED:
-            color = 'intervalo Aprovada'
+            color = 'intervalo Aprovado'
             break
 
           case status.REQUESTED:
-            color = 'intervalo Solicitada'
+            color = 'intervalo Solicitado'
             break
 
           case status.REFUSED:
