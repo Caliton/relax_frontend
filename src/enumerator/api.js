@@ -21,6 +21,7 @@ export const api = {
   holidayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
   holidayRegional: 'holiday/regional',
   holiday: 'holiday',
+  holidayAll: 'holiday/all/{year}',
   holidayDelete: 'holiday/{id}',
 
   importCollaborators: 'collaborator/import',

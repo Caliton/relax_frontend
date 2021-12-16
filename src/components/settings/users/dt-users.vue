@@ -19,12 +19,10 @@
         >
           <template v-slot:top>
             <div class="full-width">
-              <span class="text-h6 text-green text-left"> Usuários </span>
               <q-btn
                 color="green"
-                dense
-                size="sm"
-                round
+                label="Usuários"
+                flat
                 icon="eva-plus-outline"
                 no-caps
                 @click="newUser"

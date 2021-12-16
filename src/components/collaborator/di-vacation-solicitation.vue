@@ -197,7 +197,7 @@ export default {
       show: false,
       loading: false,
       showDelete: false,
-      maximize: true,
+      maximize: false,
       period: {},
       vacation: {},
       collaborator: {},
@@ -222,10 +222,7 @@ export default {
 
     qtdaDias: function () {
       if (this.rangeDate) {
-        return moment(this.rangeDate.end).diff(
-          moment(this.rangeDate.start),
-          'days'
-        )
+        return this.diffRange(this.rangeDate.start, this.rangeDate.end)
       } else {
         return 0
       }
@@ -296,106 +293,12 @@ export default {
       }
     },
 
-    countDaysSolicited () {
-      if (!this.period.requests.length) return 0
-      return this.period.requests
-        .filter(item => item.status !== status.REFUSED)
-        .map(item => moment(item.finalDate).diff(item.startDate, 'day'))
-        .reduce((a, b) => a + b)
-    },
-
-    checkRangeDate () {
-      if (!this.rangeDate || !this.rangeDate.start || !this.rangeDate.end) {
-        return false
-      }
-
-      const { start, end } = this.rangeDate
-
-      const isSelectFimdeSemana =
-        moment(start).weekday() === 5 || moment(start).weekday() === 6
-
-      const isSelectHoliday = this.holidayNational.some(
-        a =>
-          moment(a.date)
-            .subtract(2, 'd')
-            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD') ||
-          moment(a.date)
-            .subtract(1, 'd')
-            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD')
-      )
-
-      if (isSelectFimdeSemana) {
-        this.messageRange =
-          'Não é possível iniciar as férias dois dias antes de domingo'
-
-        this.rangeIsOk = false
-
-        return this.rangeIsOk
-      }
-
-      if (isSelectHoliday) {
-        this.messageRange =
-          'Não é possível iniciar as férias dois dias antes de um feriado'
-
-        this.rangeIsOk = false
-
-        return this.rangeIsOk
-      }
-
-      const diffDate = moment(end).diff(moment(start), 'd')
-      const listValidy = [10, 15, 20, 30]
-
-      let qtdDaysEnjoed = 0
-      let pieceMessageRange = '10, 15, 20, 30'
-
-      qtdDaysEnjoed = this.countDaysSolicited()
-
-      switch (qtdDaysEnjoed) {
-        case 10:
-          listValidy.splice(listValidy.indexOf(15), 1)
-          listValidy.splice(listValidy.indexOf(30), 1)
-          pieceMessageRange = '10 ou 20'
-          break
-
-        case 15:
-          listValidy.splice(listValidy.indexOf(10), 1)
-          listValidy.splice(listValidy.indexOf(20), 1)
-          listValidy.splice(listValidy.indexOf(30), 1)
-          pieceMessageRange = '15'
-          break
-
-        case 20:
-          listValidy.splice(listValidy.indexOf(15), 1)
-          listValidy.splice(listValidy.indexOf(20), 1)
-          listValidy.splice(listValidy.indexOf(30), 1)
-          pieceMessageRange = '10'
-          break
-
-        case 30:
-          listValidy.splice(listValidy.indexOf(10), 1)
-          listValidy.splice(listValidy.indexOf(15), 1)
-          listValidy.splice(listValidy.indexOf(20), 1)
-          listValidy.splice(listValidy.indexOf(30), 1)
-          break
-
-        default:
-          break
-      }
-
-      this.messageRange =
-        qtdDaysEnjoed === 30
-          ? 'Este periodo atingiu a quantidade máxima de dias de direito solicitado'
-          : `Intervalo de dias permitidos: ${pieceMessageRange}`
-
-      this.rangeIsOk = listValidy.includes(diffDate)
-    },
-
     async checkDateAcessibles () {
       this.disableDates = this.period.requests
         .filter(a => a.status !== status.REFUSED)
         .map(item => ({
-          start: new Date(item.startDate),
-          end: new Date(item.finalDate)
+          start: new Date(moment(item.startDate).format('YYYY/MM/DD')),
+          end: new Date(moment(item.finalDate).format('YYYY/MM/DD'))
         }))
 
       function setColor (sta) {
@@ -457,8 +360,8 @@ export default {
           },
 
           dates: {
-            start: new Date(item.startDate),
-            end: new Date(item.finalDate)
+            start: new Date(moment(item.startDate).format('YYYY/MM/DD')),
+            end: new Date(moment(item.finalDate).format('YYYY/MM/DD'))
           }
         }))
 
@@ -466,44 +369,15 @@ export default {
         this.attrs.push(item)
       })
 
-      const { data: holidayRegional } = await this.$axios.get(
-        this.$api.holydayRegional.replace(
-          '{year}',
-          moment(this.period.start).year()
-        )
+      const { data: holidayNational } = await this.$axios.get(
+        this.$api.holidayAll.replace('{year}', moment(this.period.start).year())
       )
-
-      const { data: holidayNationalStart } = await this.$axios.get(
-        this.$api.holidayNational.replace(
-          '{year}',
-          moment(this.period.start).year()
-        )
-      )
-
-      const { data: holidayNationalFinal } = await this.$axios.get(
-        this.$api.holidayNational.replace(
-          '{year}',
-          moment(this.period.end).year()
-        )
-      )
-
-      const { data: holidayNationalUltimate } = await this.$axios.get(
-        this.$api.holidayNational.replace(
-          '{year}',
-          moment(this.period.ultimate).year()
-        )
-      )
-
-      const holidayNational = [
-        ...holidayRegional,
-        ...holidayNationalStart,
-        ...holidayNationalFinal,
-        ...holidayNationalUltimate
-      ]
 
       this.holidayNational = holidayNational
 
-      const listDateDot = holidayNational.map(a => new Date(a.date))
+      const listDateDot = holidayNational.map(
+        a => new Date(moment(a.date).format('YYYY/MM/DD'))
+      )
 
       const dots = {
         dot: true,
@@ -514,12 +388,118 @@ export default {
 
       holidayNational.forEach(a => {
         this.attrs.push({
-          dates: new Date(a.date),
+          dates: new Date(moment(a.date).format('YYYY/MM/DD')),
           popover: {
             label: a.name
           }
         })
       })
+    },
+
+    countDaysSolicited () {
+      if (!this.period.requests.length) return 0
+      return this.period.requests
+        .filter(item => item.status !== status.REFUSED)
+        .map(item => this.diffRange(item.startDate, item.finalDate))
+        .reduce((a, b) => a + b)
+    },
+
+    diffRange (init, final) {
+      return moment(final).diff(moment(init), 'd') + 1
+    },
+
+    checkRangeDate () {
+      if (!this.rangeDate || !this.rangeDate.start || !this.rangeDate.end) {
+        return false
+      }
+
+      const { start, end } = this.rangeDate
+
+      const isSelectFimdeSemana =
+        moment(start).weekday() === 5 || moment(start).weekday() === 6
+
+      const isSelectHoliday = this.holidayNational.some(
+        a =>
+          moment(a.date)
+            .subtract(2, 'd')
+            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD') ||
+          moment(a.date)
+            .subtract(1, 'd')
+            .format('YYYY-MM-DD') === moment(start).format('YYYY-MM-DD')
+      )
+
+      if (isSelectFimdeSemana) {
+        this.messageRange =
+          'Não é possível iniciar as férias dois dias antes de domingo'
+
+        this.rangeIsOk = false
+
+        return this.rangeIsOk
+      }
+
+      if (isSelectHoliday) {
+        this.messageRange =
+          'Não é possível iniciar as férias dois dias antes de um feriado'
+
+        this.rangeIsOk = false
+
+        return this.rangeIsOk
+      }
+
+      const diffDate = this.diffRange(start, end)
+      const listValidy = [10, 15, 20, 30]
+
+      let qtdDaysEnjoed = 0
+      let pieceMessageRange = '10, 15, 20, 30'
+
+      qtdDaysEnjoed = this.countDaysSolicited()
+
+      switch (qtdDaysEnjoed) {
+        case 10:
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '10 ou 20'
+          break
+
+        case 15:
+          listValidy.splice(listValidy.indexOf(10), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '15'
+          break
+
+        case 20:
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          pieceMessageRange = '10'
+          break
+
+        case 30:
+          listValidy.splice(listValidy.indexOf(10), 1)
+          listValidy.splice(listValidy.indexOf(15), 1)
+          listValidy.splice(listValidy.indexOf(20), 1)
+          listValidy.splice(listValidy.indexOf(30), 1)
+          break
+
+        default:
+          break
+      }
+
+      this.messageRange =
+        qtdDaysEnjoed === 30
+          ? 'Este periodo atingiu a quantidade máxima de dias de direito solicitado'
+          : `Intervalo de dias permitidos: ${pieceMessageRange}`
+
+      this.rangeIsOk = listValidy.includes(diffDate)
+    },
+
+    isHexColor (a) {
+      let b = false
+
+      if (a) b = a.includes('#')
+
+      return b
     }
   }
 }

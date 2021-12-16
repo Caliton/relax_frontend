@@ -64,7 +64,14 @@ export default {
         MAX_DAYS_PER_PERIOD: 30,
         PARAM_LIMIT_DATE_ENTERPRISE: 6,
         PARAM_LIMIT_DATE_GOVERNE: 23
-      }
+      },
+
+      loading: false,
+      listStatus: [],
+      daysAllowed: 30,
+      tab: 'typeStatus',
+      limitEnterprise: 6,
+      ultimate: 23
     }
   },
 

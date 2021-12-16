@@ -80,7 +80,7 @@ export default {
       loading: false,
       listStatus: [],
       daysAllowed: 30,
-      tab: 'typeStatus',
+      tab: 'general',
       limitEnterprise: 6,
       ultimate: 23
     }

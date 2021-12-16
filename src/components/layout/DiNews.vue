@@ -1,6 +1,11 @@
 <template>
-  <q-dialog v-model="onShow" transition-show="scale" transition-hide="scale" persistent>
-    <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto">
+  <q-dialog
+    v-model="onShow"
+    transition-show="scale"
+    transition-hide="scale"
+    persistent
+  >
+    <q-card style="max-width: 90vw; max-height: 80vh; height: auto">
       <q-toolbar class="bg-primary text-white shadow-1">
         <q-toolbar-title class="flex flex-center">Novidades!</q-toolbar-title>
       </q-toolbar>
@@ -8,33 +13,73 @@
       <q-card-section class="flex flex-center">
         <div class="row justify-around">
           <div class="col-5">
-            <img src="../../statics/news_02.png" style="width: 100%"/>
+            <img src="../../statics/news_02.png" style="width: 100%" />
           </div>
 
           <div class="col-6">
             <div class="login-logo">
-              <span>Relax</span>
+              <span> Relax 2021 - Versão 2.0 </span>
             </div>
 
             <ul class="text-weight-light" style="font-size: 18px">
-              <li>Acesso liberado para equipe de RH e Gestão</li>
-              <li>Visualização de Status</li>
+              <li>
+                Acesso aos colaboradores para realização do agendamento das
+                próprias férias.
+              </li>
+              <li>
+                Controle de acessos aos perfis admin, colaborador, RH e gestor.
+              </li>
+              <li>
+                Configuração de status de situação por colaborador efetivo e
+                colaborador estagiário.
+              </li>
+              <li>
+                Geração automática de períodos, dias de direito e dias
+                usufruídos de férias.
+              </li>
+              <li>Aprovação de agendamento de férias.</li>
+              <li>Filtro de férias agendadas por período.</li>
+              <li>
+                Interface para cadastros:
+                <ul style="font-size: 16px">
+                  <li>Usuários.</li>
+                  <li>Feriados.</li>
+                  <li>
+                    Dias de direito de férias, prazo limite da empresa e prazo
+                    limite da CLT.
+                  </li>
+                  <li>
+                    Dados para gerar os status de situação dos colaboradores.
+                  </li>
+                </ul>
+              </li>
             </ul>
           </div>
         </div>
       </q-card-section>
 
-      <q-card-section>
-      </q-card-section>
-      <q-card-section>
-      </q-card-section>
+      <q-card-section> </q-card-section>
+      <q-card-section> </q-card-section>
 
       <q-card-actions class="text-teal absolute-bottom-right">
-        <q-btn rounded color="primary" dense no-caps label="Fechar" @click="confirm" />
+        <q-btn
+          rounded
+          color="primary"
+          dense
+          no-caps
+          label="Fechar"
+          @click="confirm"
+        />
       </q-card-actions>
 
       <q-card-actions class="text-teal absolute-bottom-left">
-        <q-checkbox keep-color v-model="reveleNews" @input="setStateNews" label="Não mostrar novamente" color="cyan" />
+        <q-checkbox
+          keep-color
+          v-model="reveleNews"
+          @input="setStateNews"
+          label="Não mostrar novamente"
+          color="cyan"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -47,7 +92,7 @@ export default {
   name: 'di-news',
 
   created () {
-    EventBus.$on('on-show-news', (event) => {
+    EventBus.$on('on-show-news', event => {
       this.onShowDialog()
     })
 
@@ -109,5 +154,4 @@ export default {
 .login-logo
   text-align left
   font-size 1.5rem
-
 </style>

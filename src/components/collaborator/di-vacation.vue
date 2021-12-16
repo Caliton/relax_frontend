@@ -256,7 +256,7 @@
                         moment(item.finalDate).diff(
                           moment(item.startDate),
                           'days'
-                        )
+                        ) + 1
                       }}
                       dias
                     </span>
@@ -525,12 +525,12 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .card-vacation
   max-width: 90vw
   min-width: 80vw
   min-height: 80vh
-  max-height: 120vh
+  max-height: 300vh
 
 .list-guest {
   list-style: none;
@@ -561,6 +561,7 @@ export default {
   box-sizing: border-box;
   // cursor: pointer;
   border-radius: 30px;
+
   background-color: white;
   list-style-type: none;
   align-items: center;
@@ -587,6 +588,7 @@ export default {
 
 .caixa-ul {
   padding: 0;
+  width: 550px
   // border: 1px sol100#dfe3e6;
   border-radius: 15px;
   overflow: hidden;

@@ -20,12 +20,11 @@
         >
           <template v-slot:top>
             <div class="full-width">
-              <span class="text-h6 text-green text-left"> Regional </span>
               <q-btn
                 color="green"
-                dense
-                size="sm"
-                round
+                size="lg"
+                flat
+                label="Regional"
                 icon="eva-plus-outline"
                 no-caps
                 @click="newHoliday"
@@ -83,10 +82,47 @@
           binary-state-sort
         >
           <template v-slot:top>
-            <div class=" full-width">
-              <span class="text-h6 text-green text-left">
-                Feriados nacionais
-              </span>
+            <div class=" ">
+              <q-btn
+                color="green"
+                size="lg"
+                flat
+                label="Feriados nacionais"
+                no-caps
+                class="q-ml-md q-mb-xs q-mt-xs"
+              />
+            </div>
+
+            <div class="float-right">
+              <div class="flex flex-centers">
+                <q-btn
+                  color="green"
+                  size="md"
+                  dense
+                  round
+                  flat
+                  icon="eva-chevron-left-outline"
+                  no-caps
+                  @click="setYear('previous')"
+                  class=""
+                />
+
+                <span class="text-green text-center flex flex-center">
+                  {{ year }}
+                </span>
+
+                <q-btn
+                  color="green"
+                  dense
+                  size="md"
+                  round
+                  flat
+                  @click="setYear('next')"
+                  icon="eva-chevron-right-outline"
+                  no-caps
+                  class=""
+                />
+              </div>
             </div>
           </template>
         </q-table>
@@ -146,6 +182,7 @@ export default {
       filter: '',
       showDelete: false,
       loading: false,
+      year: moment().year(),
       pagination: {
         sortBy: 'desc',
         descending: false,
@@ -290,6 +327,30 @@ export default {
         this.loading = false
         console.log(e)
       }
+    },
+
+    async setYear (op) {
+      switch (op) {
+        case 'next':
+          this.year++
+          break
+
+        case 'previous':
+          this.year--
+          break
+
+        case 'current':
+          break
+
+        default:
+          return false
+      }
+
+      const { data } = await this.$axios.get(
+        this.$api.holidayNational.replace('{year}', this.year)
+      )
+
+      this.dataNational.splice(0, this.dataNational.length, ...data)
     }
   }
 }

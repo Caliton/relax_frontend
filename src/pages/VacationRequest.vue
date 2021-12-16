@@ -1,75 +1,7 @@
 <template>
-  <q-page class="flex flex-center min-height">
+  <q-page class=" min-height">
     <q-card class="card-vacation" flat>
-      <q-toolbar class="text-white shadow-1 bg-green">
-        <q-toolbar-title class="flex flex-center">
-          Olá {{ collaborator.name }}
-        </q-toolbar-title>
-      </q-toolbar>
-
-      <q-card-section :class="`bg-${period.situation.color} q-pt-sm q-pb-sm`">
-        <div class="text-white justify-center flex">
-          <div class="q-pa-sm">
-            <q-btn
-              round
-              flat
-              dense
-              :disable="
-                moment(period.start).year() - 1 <
-                  moment(collaborator.hiringdate).year()
-              "
-              @click="setPeriod('previous')"
-              icon="eva-chevron-left-outline"
-            />
-          </div>
-
-          <div>
-            <span
-              class="text-weight-medium flex-center flex q-pa-sm"
-              style="font-size: 1.3rem"
-            >
-              {{ period.start | moment('DD-MM-YYYY') }}
-              à
-              {{ period.end | moment('DD-MM-YYYY') }}
-            </span>
-          </div>
-
-          <div class="q-pa-sm">
-            <q-btn
-              round
-              flat
-              dense
-              @click="setPeriod('next')"
-              icon="eva-chevron-right-outline"
-            />
-          </div>
-        </div>
-      </q-card-section>
-
-      <q-card-section class="flex flex-center text-subtitle1 q-pt-sm q-pb-sm">
-        <span :style="{ color: period.situation.color }">
-          <q-icon
-            size="md"
-            :color="period.situation.color"
-            :name="period.situation.icon"
-          />
-          {{ period.situation.tooltip }}
-          <q-tooltip
-            content-class="bg-grey-1 "
-            :offset="[10, 10]"
-            :delay="300"
-            :content-style="{
-              fontSize: '16px',
-              border: '2px solid #BDBDBF',
-              color: period.situation.color
-            }"
-          >
-            {{ period.situation.description }}
-          </q-tooltip>
-        </span>
-      </q-card-section>
-
-      <q-card-section class="q-ml-xl q-mt-sm q-mr-xl">
+      <q-card-section class="q-ml-md q-mt-sm q-mr-xl">
         <div style="width: 100%">
           <div class="row">
             <div class="col-md-4" style="display: block">
@@ -82,7 +14,8 @@
               <span
                 style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
               >
-                Controle de Férias
+                Olá
+                {{ collaborator.name.split(' ')[0] }}
               </span>
               <p class="subtitle">
                 Aqui você pode agendar suas férias com seu gestor.
@@ -99,192 +32,325 @@
                 size="md"
               />
             </div>
-
-            <div
-              class="col-md-7 bg-grey-3 offset-md-1 justify-around"
-              style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
-            >
-              <div class="q-pa-sm text-center text-subtitle1">
-                <span
-                  v-if="period.limitEnterprise"
-                  :style="{ color: period.situation.color }"
-                >
-                  Período
-                  {{ period.start | moment('DD-MM-YYYY') }} ao
-                  {{ period.end | moment('DD-MM-YYYY') }}
-                </span>
-              </div>
-
-              <q-separator inset />
-
-              <div
-                class="text-center text-weight-regular"
-                style="font-size: 1.2rem"
-              >
-                Dias de direito
-              </div>
-
-              <div class="row justify-evenly">
-                <div
-                  class="column justify-center text-center"
-                  style="transform: scale(.9);"
-                >
-                  <span style="display: inline-block;">{{
-                    period.daysAllowed
-                  }}</span>
-                  <span class="text-weight-regular text-h6">Totais</span>
-                </div>
-
-                <q-separator vertical inset />
-
-                <div
-                  class="column justify-center text-center"
-                  style="transform: scale(.9);"
-                >
-                  <span style="display: inline-block;">
-                    {{ period.daysBalance }}
-                  </span>
-                  <span class="text-weight-regular text-h6">
-                    Disponíveis
-                  </span>
-                </div>
-
-                <q-separator vertical inset />
-
-                <div
-                  class="column justify-center text-center"
-                  style="transform: scale(.9);"
-                >
-                  <span style="display: inline-block;">
-                    {{ period.daysScheduled }}
-                  </span>
-                  <span class="text-weight-regular text-h6">
-                    Agendados
-                  </span>
-                </div>
-
-                <q-separator vertical inset />
-
-                <div
-                  class="column justify-center text-center"
-                  style="transform: scale(.9);"
-                >
-                  <span style="display: inline-block;">
-                    {{ period.daysEnjoyed }}
-                  </span>
-                  <span class="text-weight-regular text-h6">
-                    Usufruidos
-                  </span>
-                </div>
-              </div>
-
-              <q-separator inset />
-
-              <div class="q-pa-sm text-center text-subtitle1">
-                <span
-                  v-if="period.limitEnterprise"
-                  :style="{ color: period.situation.color }"
-                >
-                  Prazo limite com 6 meses
-                  {{ period.limitEnterprise | moment('DD-MM-YYYY') }}
-                  <br />
-                  Prazo limite final
-                  {{ period.ultimate | moment('DD-MM-YYYY') }}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </q-card-section>
 
-      <q-card-section class="q-ml-xl q-mt-lg q-mr-xl">
-        <div class="row">
-          <div v-if="period.requests.length" class="col-md-5">
-            <ul class="caixa-ul" style="overflow: auto; max-height: 30vh;">
-              <li
-                v-for="item in period.requests"
-                :key="item.id"
-                class="row justify-between box-li q-ma-sm"
+      <q-card-section class="q-mt-md q-pt-sm q-pb-sm">
+        <div class="col-md-12">
+          <div
+            class="justify-center flex text-white q-mb-sm"
+            style="border-radius: 1rem"
+            :style="{
+              color: `${
+                isHexColor(period.situation.color) ? period.situation.color : ''
+              } !important`
+            }"
+            :class="
+              `bg-${
+                !isHexColor(period.situation.color)
+                  ? period.situation.color
+                  : ''
+              }`
+            "
+          >
+            <div class="q-pa-sm">
+              <q-btn
+                round
+                flat
+                dense
+                :disable="
+                  moment(period.start).year() - 1 <
+                    moment(collaborator.hiringdate).year()
+                "
+                @click="setPeriod('previous')"
+                icon="eva-chevron-left-outline"
+              />
+            </div>
+
+            <div>
+              <span
+                class="text-weight-medium flex-center flex q-pa-sm"
+                style="font-size: 1.3rem"
               >
-                <div class="row justify-between flex-center">
-                  <div class="q-ma-md">
-                    <circle-calendar :date="item.startDate" />
-                  </div>
+                {{ period.start | moment('DD-MM-YYYY') }}
+                à
+                {{ period.end | moment('DD-MM-YYYY') }}
+              </span>
+            </div>
 
-                  <div class="column">
-                    <q-icon
-                      color="grey"
-                      size="md"
-                      name="eva-arrow-forward-outline"
-                    />
-                    <span class="text-grey">
-                      {{ item.startDate | moment('YYYY') }}
-                    </span>
-                  </div>
-
-                  <div class="q-ma-md">
-                    <circle-calendar :date="item.finalDate" />
-                  </div>
-
-                  <div class="q-ma-md ">
-                    <span class="texto">Férias</span>
-                    <br />
-                    <span>
-                      {{
-                        moment(item.finalDate).diff(
-                          moment(item.startDate),
-                          'days'
-                        )
-                      }}
-                      dias
-                    </span>
-                  </div>
-                </div>
-
-                <div class="float-right">
-                  <q-chip
-                    clickable
-                    :color="setColor(item.status)"
-                    text-color="white"
-                  >
-                    {{ setLabel(item.status) }}
-                  </q-chip>
-                </div>
-
-                <div>
-                  <q-btn
-                    v-show="
-                      item.status !== status.APPROVED &&
-                        item.status !== status.REFUSED
-                    "
-                    class="q-ml-sm"
-                    color="grey"
-                    round
-                    flat
-                    icon="eva-more-vertical-outline"
-                  >
-                    <q-menu
-                      transition-show="jump-down"
-                      transition-hide="jump-up"
-                    >
-                      <q-list style="min-width: 100px">
-                        <q-item clickable @click="excluirVacationRequest(item)">
-                          <q-item-section>Excluir</q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </div>
-              </li>
-            </ul>
+            <div class="q-pa-sm">
+              <q-btn
+                round
+                flat
+                dense
+                @click="setPeriod('next')"
+                icon="eva-chevron-right-outline"
+              />
+            </div>
           </div>
 
-          <div v-else class="col-md-6">
-            <q-img src="~src/statics/calendar.png" style="max-width: 285px;" />
-            <br />
-            <span style="color: #999999" class="text-subtitle1">
-              Não há nenhuma solicitação de férias agendadas
-            </span>
+          <div class="row ">
+            <div
+              class="justify-center flex col-md-12 flex-center q-ml-md q-mr-sm"
+            >
+              <q-icon
+                size="sm"
+                class="q-mr-sm"
+                :style="{
+                  color: `${
+                    isHexColor(period.situation.color)
+                      ? period.situation.color
+                      : ''
+                  } !important`
+                }"
+                :color="
+                  `${
+                    !isHexColor(period.situation.color)
+                      ? period.situation.color
+                      : ''
+                  }`
+                "
+                :name="period.situation.icon"
+              />
+
+              <span
+                class="text-subtitle2"
+                :style="{
+                  color: `${
+                    isHexColor(period.situation.color)
+                      ? period.situation.color
+                      : ''
+                  } !important`
+                }"
+                :class="
+                  `text-${
+                    !isHexColor(period.situation.color)
+                      ? period.situation.color
+                      : ''
+                  }`
+                "
+              >
+                {{ period.situation.tooltip }}
+                <q-tooltip
+                  :offset="[10, 10]"
+                  :delay="300"
+                  :content-style="{
+                    fontSize: '16px',
+                    border: '2px solid #BDBDBF',
+                    color: `${
+                      isHexColor(period.situation.color)
+                        ? period.situation.color
+                        : ''
+                    } !important`
+                  }"
+                  :content-class="
+                    `bg-grey-1 text-${
+                      !isHexColor(period.situation.color)
+                        ? period.situation.color
+                        : ''
+                    }`
+                  "
+                >
+                  {{ period.situation.description }}
+                </q-tooltip>
+              </span>
+            </div>
+
+            <div class="flex flex-center "></div>
+          </div>
+        </div>
+
+        <q-space class="q-pa-lg" />
+        <div class="row">
+          <div class="col-md-6">
+            <div v-if="period.requests.length" class="col-md-5">
+              <ul class="caixa-ul" style="overflow: auto; max-height: 30vh;">
+                <li
+                  v-for="item in period.requests"
+                  :key="item.id"
+                  class="row justify-between box-li q-ma-sm"
+                >
+                  <div class="row justify-between flex-center">
+                    <div class="q-ma-md">
+                      <circle-calendar :date="item.startDate" />
+                    </div>
+
+                    <div class="column">
+                      <q-icon
+                        color="grey"
+                        size="md"
+                        name="eva-arrow-forward-outline"
+                      />
+                      <span class="text-grey">
+                        {{ item.startDate | moment('YYYY') }}
+                      </span>
+                    </div>
+
+                    <div class="q-ma-md">
+                      <circle-calendar :date="item.finalDate" />
+                    </div>
+
+                    <div class="q-ma-md ">
+                      <span class="texto">Férias</span>
+                      <br />
+                      <span>
+                        {{
+                          moment(item.finalDate).diff(
+                            moment(item.startDate),
+                            'days'
+                          ) + 1
+                        }}
+                        dias
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="float-right">
+                    <q-chip
+                      clickable
+                      :color="setColor(item.status)"
+                      text-color="white"
+                    >
+                      {{ setLabel(item.status) }}
+                    </q-chip>
+                  </div>
+
+                  <div>
+                    <q-btn
+                      v-show="
+                        item.status !== status.APPROVED &&
+                          item.status !== status.REFUSED
+                      "
+                      class="q-ml-sm"
+                      color="grey"
+                      round
+                      flat
+                      icon="eva-more-vertical-outline"
+                    >
+                      <q-menu
+                        transition-show="jump-down"
+                        transition-hide="jump-up"
+                      >
+                        <q-list style="min-width: 100px">
+                          <q-item
+                            clickable
+                            @click="excluirVacationRequest(item)"
+                          >
+                            <q-item-section>Excluir</q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-menu>
+                    </q-btn>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div v-else class="column flex-center">
+              <q-img
+                src="~src/statics/calendar.png"
+                style="max-width: 285px;"
+              />
+              <br />
+              <span style="color: #999999" class="text-subtitle1">
+                Não há nenhuma solicitação de férias agendadas
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="col-md-6 bg-grey-3 "
+            style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif; border-radius: .5rem; border: 1px solid #BDBDBF; transform: scale(.8);"
+          >
+            <div class="q-pa-sm text-center text-subtitle1">
+              <span
+                v-if="period.limitEnterprise"
+                :style="{ color: period.situation.color }"
+              >
+                Período
+                {{ period.start | moment('DD-MM-YYYY') }} ao
+                {{ period.end | moment('DD-MM-YYYY') }}
+              </span>
+            </div>
+
+            <q-separator inset />
+
+            <div
+              class="text-center text-weight-regular"
+              style="font-size: 1.2rem"
+            >
+              Dias de direito
+            </div>
+
+            <div class="row justify-evenly">
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">{{
+                  period.daysAllowed
+                }}</span>
+                <span class="text-weight-regular text-h6">Totais</span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">
+                  {{ period.daysBalance }}
+                </span>
+                <span class="text-weight-regular text-h6">
+                  Disponíveis
+                </span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">
+                  {{ period.daysScheduled }}
+                </span>
+                <span class="text-weight-regular text-h6">
+                  Agendados
+                </span>
+              </div>
+
+              <q-separator vertical inset />
+
+              <div
+                class="column justify-center text-center"
+                style="transform: scale(.9);"
+              >
+                <span style="display: inline-block;">
+                  {{ period.daysEnjoyed }}
+                </span>
+                <span class="text-weight-regular text-h6">
+                  Usufruidos
+                </span>
+              </div>
+            </div>
+
+            <q-separator inset />
+
+            <div class="q-pa-sm text-center text-subtitle1">
+              <span
+                v-if="period.limitEnterprise"
+                :style="{ color: period.situation.color }"
+              >
+                Prazo limite com 6 meses
+                {{ period.limitEnterprise | moment('DD-MM-YYYY') }}
+                <br />
+                Prazo limite final
+                {{ period.ultimate | moment('DD-MM-YYYY') }}
+              </span>
+            </div>
           </div>
         </div>
       </q-card-section>
@@ -421,6 +487,14 @@ export default {
       return noCan
     },
 
+    isHexColor (a) {
+      let b = false
+
+      if (a) b = a.includes('#')
+
+      return b
+    },
+
     setColor (sta) {
       let color = ''
       switch (sta) {
@@ -470,12 +544,10 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .card-vacation
-  max-width: 90vw
-  min-width: 80vw
-  min-height: 80vh
-  max-height: 120vh
+  width: 95%
+  background-color: #FAFAFA !important
 
 .list-guest {
   list-style: none;

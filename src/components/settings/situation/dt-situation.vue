@@ -91,47 +91,6 @@
             </q-tr>
           </template>
         </q-table>
-
-        <!-- <q-card
-          :key="item.id"
-          v-for="item in data"
-          class="q-ma-sm"
-          style="width: 400px"
-        >
-          <q-card-section
-            class="cursor-pointer q-pa-xs"
-            @click="editSituation(item)"
-          >
-            <div class="q-pa-sm">
-              <q-icon class="q-pa-sm" :color="item.color" :name="item.icon" />
-              {{ item.description }}
-
-              <div class="q-pa-sm float-right">
-                {{ item.limitMonths }} meses.
-                <q-tooltip>
-                  Diferença de meses com relação ao prazo final
-                </q-tooltip>
-              </div>
-            </div>
-
-            <div class="q-pa-sm " style="overflow: auto; max-height: 80px">
-              {{ item.tooltip }}
-            </div>
-          </q-card-section>
-
-          <q-card-actions class="justify-end q-pa-xs">
-            <q-btn
-              size="sm"
-              flat
-              class="q-ma-xs bg-white"
-              color="red"
-              round
-              dense
-              icon="eva-trash-2-outline"
-              @click="openDelete(item)"
-            />
-          </q-card-actions>
-        </q-card> -->
       </q-card-section>
     </q-card>
 

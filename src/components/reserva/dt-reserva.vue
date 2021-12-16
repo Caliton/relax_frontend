@@ -29,8 +29,9 @@
               />
               <span
                 style="font: 25px/36px Avenir Next W01,Helvetica,Arial,sans-serif"
-                >Agendamentos</span
               >
+                Agendamentos
+              </span>
               <p class="subtitle">
                 Lista de todas solicitações de agendamentos de seus
                 colaboradores.
@@ -38,6 +39,16 @@
             </div>
           </div>
           <div class="col-md-6 col-sm-5">
+            <q-btn flat color="green" round icon="eva-funnel-outline">
+              <q-menu>
+                <div class="q-pa-md">
+                  <filter-date
+                    @get-range-start="start => (filterRange.start = start)"
+                    @get-range-final="final => (filterRange.final = final)"
+                  />
+                </div>
+              </q-menu>
+            </q-btn>
             <q-input
               class="q-ml-lg float-right"
               dense
@@ -78,7 +89,9 @@
           <q-td auto-width :props="props" key="finalDate">{{
             props.row.finalDate | moment('DD-MM-YYYY')
           }}</q-td>
-          <q-td auto-width :props="props" key="days">{{ props.row.days }}</q-td>
+          <q-td auto-width :props="props" key="daysAllowed">{{
+            props.row.daysAllowed
+          }}</q-td>
           <q-td auto-width :props="props" key="status">{{
             props.row.status
           }}</q-td>
@@ -138,15 +151,27 @@
 <script>
 import { EventBus } from 'src/functions/event_bus.js'
 import { api } from 'src/enumerator/api'
+import filterDate from 'src/components/common/filter-date.vue'
+import moment from 'moment'
 
 export default {
   name: 'dt-colaborator',
 
   props: ['btn-primary'],
 
+  components: {
+    filterDate
+  },
+
   data () {
     return {
       filter: '',
+      filterRange: {
+        start: moment()
+          .subtract(1, 'month')
+          .format('DD-MM-YYYY'),
+        final: moment().format('DD-MM-YYYY')
+      },
       showDelete: false,
       loading: false,
       pagination: {
@@ -155,10 +180,12 @@ export default {
         page: 1,
         rowsPerPage: 10
       },
+
       visibleColumns: [
         'requestUserRegister',
         'requestUser',
         'startDate',
+        'daysAllowed',
         'finalDate',
         'days',
         'status'
@@ -199,9 +226,9 @@ export default {
         },
         {
           align: 'left',
-          name: 'days',
+          name: 'daysAllowed',
           label: 'Qtda dias com Direito a Férias',
-          field: 'days',
+          field: 'daysAllowed',
           sortable: true
         },
         {
@@ -239,7 +266,13 @@ export default {
 
       this.loading = true
 
-      let { data } = await this.$axios.get(api.vacation)
+      const { start, final } = this.filterRange
+      const params = {
+        initialDate: moment(start, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+        finalDate: moment(final, 'DD-MM-YYYY').format('YYYY-MM-DD')
+      }
+
+      let { data } = await this.$axios.get(api.vacation, { params })
 
       data = data.map(item => ({
         ...item,
