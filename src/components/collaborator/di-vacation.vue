@@ -224,13 +224,13 @@
           <div v-if="period.requests.length" class="col-md-5">
             <ul class="caixa-ul" style="overflow: auto; max-height: 30vh;">
               <li
-                v-for="item in period.requests"
-                :key="item.id"
+                v-for="request in period.requests"
+                :key="request.id"
                 class="row justify-between box-li q-ma-sm"
               >
                 <div class="row justify-between flex-center">
                   <div class="q-ma-md">
-                    <circle-calendar :date="item.startDate" />
+                    <circle-calendar :date="request.startDate" />
                   </div>
 
                   <div class="column">
@@ -240,12 +240,12 @@
                       name="eva-arrow-forward-outline"
                     />
                     <span class="text-grey">
-                      {{ item.startDate | moment('YYYY') }}
+                      {{ request.startDate | moment('YYYY') }}
                     </span>
                   </div>
 
                   <div class="q-ma-md">
-                    <circle-calendar :date="item.finalDate" />
+                    <circle-calendar :date="request.finalDate" />
                   </div>
 
                   <div class="q-ma-md ">
@@ -253,8 +253,8 @@
                     <br />
                     <span>
                       {{
-                        moment(item.finalDate).diff(
-                          moment(item.startDate),
+                        moment(request.finalDate).diff(
+                          moment(request.startDate),
                           'days'
                         ) + 1
                       }}
@@ -263,30 +263,56 @@
                   </div>
                 </div>
 
+                <div class="text-grey">
+                  {{
+                    request.approvalVacation.filter(el =>
+                      [status.APPROVED, status.REFUSED].includes(el.status)
+                    ).length
+                  }}/2
+
+                  <q-tooltip>Solicitações respondidas</q-tooltip>
+                </div>
+
                 <div
-                  v-if="item.status !== status.REQUESTED"
+                  v-if="request.status !== status.REQUESTED"
                   class="float-right"
                 >
                   <q-chip
                     clickable
-                    :color="
-                      item.status === status.APPROVED ? 'green-13' : 'red'
-                    "
+                    :color="getColorStatus(request.status)"
                     text-color="white"
                   >
-                    {{
-                      item.status === status.APPROVED ? 'Aprovado' : 'Recusado'
-                    }}
+                    {{ getLabelStatus(request.status) }}
                   </q-chip>
                 </div>
 
-                <div class="q-ma-md" v-if="item.status === status.REQUESTED">
+                <div
+                  v-if="
+                    request.status === status.REQUESTED && jaAprovei(request)
+                  "
+                  class="float-right"
+                >
+                  <q-chip
+                    clickable
+                    :color="getColorStatus(request.status)"
+                    text-color="white"
+                  >
+                    {{ getLabelStatus(request.status) }}
+                  </q-chip>
+                </div>
+
+                <div
+                  class="q-ma-md"
+                  v-if="
+                    request.status === status.REQUESTED && !jaAprovei(request)
+                  "
+                >
                   <q-btn
                     color="red"
                     round
                     flat
                     push
-                    @click="alterStatusVacation(item, status.REFUSED)"
+                    @click="alterStatusVacation(request, status.REFUSED)"
                     icon="eva-close-circle-outline"
                   >
                     <q-tooltip>Rejeitar</q-tooltip>
@@ -296,14 +322,14 @@
                     color="green-13"
                     round
                     push
-                    @click="alterStatusVacation(item, status.APPROVED)"
+                    @click="alterStatusVacation(request, status.APPROVED)"
                     icon="eva-checkmark-circle-outline"
                   >
                     <q-tooltip>Aprovar</q-tooltip>
                   </q-btn>
                 </div>
 
-                <div v-if="item.status !== status.REQUESTED">
+                <div v-if="jaAprovei(request)">
                   <q-btn
                     class="q-ml-sm"
                     color="grey"
@@ -331,15 +357,15 @@
                                 clickable
                                 @click="
                                   alterStatusVacation(
-                                    item,
-                                    item.status === status.REFUSED
+                                    request,
+                                    request.status === status.REFUSED
                                       ? status.APPROVED
                                       : status.REFUSED
                                   )
                                 "
                               >
                                 <q-item-section
-                                  v-if="item.status === status.REFUSED"
+                                  v-if="request.status === status.REFUSED"
                                 >
                                   Aprovar
                                 </q-item-section>
@@ -349,7 +375,7 @@
                                 dense
                                 clickable
                                 @click="
-                                  alterStatusVacation(item, status.REQUESTED)
+                                  alterStatusVacation(request, status.REQUESTED)
                                 "
                               >
                                 <q-item-section>Aguardar</q-item-section>
@@ -440,9 +466,76 @@ export default {
           this.$api.period.replace('{id}', this.collaborator.id)
         )
         this.period = { ...data }
+
+        this.period.requests = this.period.requests.map(el => ({
+          ...el,
+          status: this.handleStatus(el.approvalVacation)
+        }))
       } catch (e) {
         console.log(e)
       }
+    },
+
+    getColorStatus (a) {
+      let color = ''
+      switch (a) {
+        case status.APPROVED:
+          color = 'green-13'
+          break
+
+        case status.REQUESTED:
+          color = 'amber-13'
+          break
+
+        case status.REFUSED:
+          color = 'red'
+          break
+
+        default:
+          color = 'grey'
+          break
+      }
+      return color
+    },
+
+    getLabelStatus (a) {
+      let label = ''
+      switch (a) {
+        case status.APPROVED:
+          label = 'Aprovado'
+          break
+
+        case status.REQUESTED:
+          label = 'Aguardando'
+          break
+
+        case status.REFUSED:
+          label = 'Recusado'
+          break
+
+        default:
+          label = 'indefinido'
+          break
+      }
+      return label
+    },
+
+    handleStatus (approvalVacations) {
+      if (!approvalVacations.length) return status.REQUESTED
+
+      const getApproved = approvalVacations.filter(
+        el => el.status === status.APPROVED
+      ).length
+
+      const getRefused = approvalVacations.filter(
+        el => el.status === status.REFUSED
+      ).length
+
+      if (getRefused > 0) return status.REFUSED
+
+      if (getApproved === 2) return status.APPROVED
+
+      return status.REQUESTED
     },
 
     async setPeriod (op) {
@@ -472,6 +565,21 @@ export default {
       )
 
       this.period = { ...data }
+
+      this.period.requests = this.period.requests.map(el => ({
+        ...el,
+        status: this.handleStatus(el.approvalVacation)
+      }))
+    },
+
+    jaAprovei (request) {
+      const collaboratorId = localStorage.getItem('user_collaborator_id')
+
+      const jaAprovei = request.approvalVacation.find(
+        el => el.approval.id === collaboratorId
+      )
+
+      return !!jaAprovei
     },
 
     async excluirVacationRequest (request) {
@@ -492,9 +600,12 @@ export default {
       try {
         this.loading = true
         const sendStatus = {
-          id: request.id,
+          vacationRequestId: request.id,
+          approvalId: localStorage.getItem('user_id'),
           status
         }
+
+        console.log(sendStatus)
 
         await this.$axios.post(this.$api.vacationstatus, sendStatus)
 

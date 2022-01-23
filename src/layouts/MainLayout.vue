@@ -168,11 +168,12 @@ export default {
       const role = localStorage.getItem('user_role')
       let permissions = false
       switch (role) {
+        case 'hr':
         case 'admin':
           permissions = modulesAdmin.includes(module)
           break
 
-        case 'supervisor':
+        case 'manager':
           permissions = modulesSupervisor.includes(module)
           break
         case 'collaborator':

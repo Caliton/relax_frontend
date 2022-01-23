@@ -73,7 +73,7 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-icon size="2em" name="thumb_down" color="red" />
-          <span class="q-ml-sm">Deseja mesmo excluir o Feriado?</span>
+          <span class="q-ml-sm">Deseja mesmo excluir o Usuário?</span>
         </q-card-section>
 
         <q-card-actions align="right">

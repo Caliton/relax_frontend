@@ -191,8 +191,8 @@ export default {
 
       comboRole: [
         { value: 'admin', label: 'Admin' },
-        { value: 'rh', label: 'Rh' },
-        { value: 'supervisor', label: 'Gestor' },
+        { value: 'hr', label: 'Rh' },
+        { value: 'manager', label: 'Gestor' },
         { value: 'collaborator', label: 'Colaborador' }
       ]
     }
