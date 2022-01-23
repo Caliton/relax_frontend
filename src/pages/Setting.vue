@@ -31,6 +31,18 @@
         label="Feriados"
         no-caps
       />
+      <q-tab
+        name="departament"
+        icon="eva-briefcase-outline"
+        label="Departamentos"
+        no-caps
+      />
+      <q-tab
+        name="profile"
+        icon="eva-bookmark-outline"
+        label="Cargos"
+        no-caps
+      />
       <q-tab name="users" icon="eva-person-outline" label="Usuários" no-caps />
     </q-tabs>
 
@@ -48,6 +60,14 @@
         <dt-holiday />
       </q-tab-panel>
 
+      <q-tab-panel name="departament">
+        <dt-departament />
+      </q-tab-panel>
+
+      <q-tab-panel name="profile">
+        <dt-profile />
+      </q-tab-panel>
+
       <q-tab-panel name="users">
         <dt-users />
       </q-tab-panel>
@@ -63,6 +83,8 @@ import dtSituation from 'src/components/settings/situation/dt-situation.vue'
 import dtHoliday from 'src/components/settings/holiday/dt-holiday.vue'
 import dtUsers from 'src/components/settings/users/dt-users.vue'
 import foSettings from 'src/components/settings/globalsettings/fo-settings.vue'
+import DtDepartament from 'src/components/settings/departament/dt-departament.vue'
+import DtProfile from 'src/components/settings/profile/dt-profile.vue'
 
 export default {
   name: 'PageConfiguracoes',
@@ -72,7 +94,9 @@ export default {
     dtHoliday,
     dtUsers,
     dtSituation,
-    foSettings
+    foSettings,
+    DtDepartament,
+    DtProfile
   },
 
   data () {

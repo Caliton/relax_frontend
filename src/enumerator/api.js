@@ -13,10 +13,13 @@ export const api = {
   collaboratorGetBy: 'collaborator/{id}',
   companies: 'companies',
 
+  departament: 'departament',
+  departamentDelete: 'departament/{id}',
+
   employees: 'employees',
   employeesMany: 'employees/many',
 
-  getPeriodbyYear: 'collaborator/{id}/period',
+  getPeriodbyYear: 'period/{id}/collaborator',
 
   holidayNational: 'https://brasilapi.com.br/api/feriados/v1/{year}',
   holidayRegional: 'holiday/regional',
@@ -28,7 +31,10 @@ export const api = {
 
   kpis: 'kpis',
 
-  period: 'collaborator/{id}/period',
+  period: 'period/{id}/collaborator',
+
+  profile: 'profile',
+  profileDelete: 'profile/{id}',
 
   vacationstatus: 'vacationrequest/status',
 
