@@ -167,13 +167,13 @@
             <div v-if="period.requests.length" class="col-md-5">
               <ul class="caixa-ul" style="overflow: auto; max-height: 30vh;">
                 <li
-                  v-for="item in period.requests"
-                  :key="item.id"
+                  v-for="request in period.requests"
+                  :key="request.id"
                   class="row justify-between box-li q-ma-sm"
                 >
                   <div class="row justify-between flex-center">
                     <div class="q-ma-md">
-                      <circle-calendar :date="item.startDate" />
+                      <circle-calendar :date="request.startDate" />
                     </div>
 
                     <div class="column">
@@ -183,12 +183,12 @@
                         name="eva-arrow-forward-outline"
                       />
                       <span class="text-grey">
-                        {{ item.startDate | moment('YYYY') }}
+                        {{ request.startDate | moment('YYYY') }}
                       </span>
                     </div>
 
                     <div class="q-ma-md">
-                      <circle-calendar :date="item.finalDate" />
+                      <circle-calendar :date="request.finalDate" />
                     </div>
 
                     <div class="q-ma-md ">
@@ -196,8 +196,8 @@
                       <br />
                       <span>
                         {{
-                          moment(item.finalDate).diff(
-                            moment(item.startDate),
+                          moment(request.finalDate).diff(
+                            moment(request.startDate),
                             'days'
                           ) + 1
                         }}
@@ -206,21 +206,31 @@
                     </div>
                   </div>
 
+                  <div class="text-grey">
+                    {{
+                      request.approvalVacation.filter(el =>
+                        [status.APPROVED, status.REFUSED].includes(el.status)
+                      ).length
+                    }}/2
+
+                    <q-tooltip>Solicitações respondidas</q-tooltip>
+                  </div>
+
                   <div class="float-right">
                     <q-chip
                       clickable
-                      :color="setColor(item.status)"
+                      :color="setColor(request.status)"
                       text-color="white"
                     >
-                      {{ setLabel(item.status) }}
+                      {{ setLabel(request.status) }}
                     </q-chip>
                   </div>
 
                   <div>
                     <q-btn
                       v-show="
-                        item.status !== status.APPROVED &&
-                          item.status !== status.REFUSED
+                        request.status !== status.APPROVED &&
+                          request.status !== status.REFUSED
                       "
                       class="q-ml-sm"
                       color="grey"
@@ -235,7 +245,7 @@
                         <q-list style="min-width: 100px">
                           <q-item
                             clickable
-                            @click="excluirVacationRequest(item)"
+                            @click="excluirVacationRequest(request)"
                           >
                             <q-item-section>Excluir</q-item-section>
                           </q-item>
@@ -381,11 +391,10 @@ export default {
 
   data () {
     return {
-      show: false,
       moment,
       status,
       collaborator: {
-        id: localStorage.getItem('user_id'),
+        id: localStorage.getItem('user_collaborator_id'),
         name: localStorage.getItem('user_name'),
         hiringdate: localStorage.getItem('user_hiringdate')
       },
@@ -405,9 +414,32 @@ export default {
           this.$api.period.replace('{id}', this.collaborator.id)
         )
         this.period = { ...data }
+
+        this.period.requests = this.period.requests.map(el => ({
+          ...el,
+          status: this.handleStatus(el.approvalVacation)
+        }))
       } catch (e) {
         console.log(e)
       }
+    },
+
+    handleStatus (approvalVacations) {
+      if (!approvalVacations.length) return status.REQUESTED
+
+      const getApproved = approvalVacations.filter(
+        el => el.status === status.APPROVED
+      ).length
+
+      const getRefused = approvalVacations.filter(
+        el => el.status === status.REFUSED
+      ).length
+
+      if (getRefused > 0) return status.REFUSED
+
+      if (getApproved === 2) return status.APPROVED
+
+      return status.REQUESTED
     },
 
     async setPeriod (op) {
@@ -437,6 +469,11 @@ export default {
       )
 
       this.period = { ...data }
+
+      this.period.requests = this.period.requests.map(el => ({
+        ...el,
+        status: this.handleStatus(el.approvalVacation)
+      }))
     },
 
     async excluirVacationRequest (request) {
