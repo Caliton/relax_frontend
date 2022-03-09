@@ -117,9 +117,14 @@ export default {
       },
       leftDrawerOpen: false,
       modules: [
-        // { icon: 'home', text: 'Inicio', page: 'dashboard' },
         {
-          icon: 'person',
+          icon: 'eva-grid-outline',
+          text: 'Dashboard',
+          page: 'dashboard',
+          canView: this.getPermissions('dashboard')
+        },
+        {
+          icon: 'eva-person-outline',
           text: 'Colaboradores',
           page: 'colaborator',
           canView: this.getPermissions('colaborator')
@@ -156,9 +161,15 @@ export default {
     getPermissions (module) {
       const modulesCollaborator = ['vacationrequest']
 
-      const modulesSupervisor = ['colaborator', 'reserva', 'vacationrequest']
+      const modulesManager = [
+        'dashboard',
+        'colaborator',
+        'reserva',
+        'vacationrequest'
+      ]
 
       const modulesAdmin = [
+        'dashboard',
         'vacationrequest',
         'settings',
         'colaborator',
@@ -174,7 +185,7 @@ export default {
           break
 
         case 'manager':
-          permissions = modulesSupervisor.includes(module)
+          permissions = modulesManager.includes(module)
           break
         case 'collaborator':
           permissions = modulesCollaborator.includes(module)
@@ -246,30 +257,7 @@ export default {
   padding-top: 1rem;
   cursor: pointer;
 }
-</style>
 
-<style lang="sass">
-.YL
-  &__toolbar-input-container
-    min-width: 100px
-    width: 55%
-  &__toolbar-input-btn
-    border-radius: 0
-    border-style: solid
-    border-width: 1px 1px 1px 0
-    border-color: rgba(0,0,0,.24)
-    max-width: 60px
-    width: 100%
-  &__drawer-footer-link
-    color: inherit
-    text-decoration: none
-    font-weight: 500
-    font-size: .75rem
-    &:hover
-      color: #000
-</style>
-
-<style lang="stylus">
 @media (max-width: 1368px) {
   body {
     zoom: 80%;

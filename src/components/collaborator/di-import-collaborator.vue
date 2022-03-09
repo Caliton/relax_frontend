@@ -32,7 +32,7 @@
         </div>
 
         <div class="row items-center justify-center">
-          <vue-json-to-csv
+          <!-- <vue-json-to-csv
             v-if="true"
             :json-data="[
               {
@@ -63,7 +63,16 @@
               color="secondary"
               icon="eva-cloud-download-outline"
             />
-          </vue-json-to-csv>
+          </vue-json-to-csv> -->
+          <q-btn
+            class="q-ma-sm"
+            no-caps
+            dense
+            label="Baixar Modelo!"
+            color="secondary"
+            icon="eva-cloud-download-outline"
+            @click="getModelCollaborator"
+          />
         </div>
         <!-- {{this.csv}} -->
       </q-card-section>
@@ -78,15 +87,15 @@
 
         <div class="q-mb-lg">
           <q-icon size="2em" name="eva-settings-outline" color="primary" />
-          <span class="q-ml-sm"
-            >Passo 2) Salve seu Modelo preenchido e arraste-o para esta area
-            abaixo!</span
-          >
+          <span class="q-ml-sm">
+            Passo 2) Salve seu Modelo preenchido e arraste-o para esta area
+            abaixo!
+          </span>
           <!-- <span class="q-ml-sm">Importe a lista dos colaboradores de sua Empresa por aqui!</span> -->
         </div>
 
         <div class="row justify-center">
-          <vue-csv-import
+          <!-- <vue-csv-import
             v-model="csv"
             inputClass="col-md-12 custom-file-input"
             :headers="true"
@@ -101,7 +110,9 @@
             autoMatchFields
             autoMatchIgnoreCase
             @reset-csv="csv = []"
-          />
+          /> -->
+
+          <input type="file" @change="uploadFile" ref="file" />
         </div>
       </q-card-section>
 
@@ -201,7 +212,6 @@
 </template>
 
 <script>
-import VueJsonToCsv from 'vue-json-to-csv'
 import VueCsvImport from 'src/components/common/VueCsvImport'
 import { api } from 'src/enumerator/api'
 import { EventBus } from 'src/functions/event_bus'
@@ -210,7 +220,6 @@ export default {
   name: 'di-import-colaborador',
 
   components: {
-    'vue-json-to-csv': VueJsonToCsv,
     'vue-csv-import': VueCsvImport
   },
 
@@ -240,6 +249,7 @@ export default {
       csv: [],
       failImportation: false,
       listFails: [],
+      fileCollaborator: null,
       sendCsv: [],
       listCategories: [],
       loading: false,
@@ -265,6 +275,31 @@ export default {
       employee.periodOk = parseInt(item.periodo_sem_pendencias)
       employee.daysEnjoyed = parseInt(item.qtda_dias_usufruidos_recente)
       return employee
+    },
+
+    async getModelCollaborator () {
+      try {
+        this.loading = true
+
+        this.$axios
+          .get(this.$api.collaboratorModelImport, { responseType: 'blob' })
+          .then(response => {
+            var blob = new Blob([response.data], {
+              type:
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            })
+
+            var url = window.URL.createObjectURL(blob)
+            var fileLink = document.createElement('a')
+            fileLink.href = url
+            fileLink.download = 'Importação Colaboradores'
+            fileLink.click()
+          })
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
     },
 
     showDialog () {
@@ -302,6 +337,17 @@ export default {
 
     confirm () {
       this.registerEmployees()
+    },
+
+    async uploadFile () {
+      try {
+        this.fileCollaborator = this.$refs.file.files[0]
+
+        const formData = new FormData()
+        formData.append('file', this.fileCollaborator)
+      } catch (e) {
+        console.log(e)
+      }
     },
 
     cleanItens () {

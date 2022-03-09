@@ -9,9 +9,15 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
+        path: '/index',
+        name: 'index',
+        component: () => import('pages/Index.vue')
+      },
+
+      {
         path: '/dashboard',
         name: 'dashboard',
-        component: () => import('pages/Index.vue')
+        component: () => import('pages/Dashboard.vue')
       },
 
       {

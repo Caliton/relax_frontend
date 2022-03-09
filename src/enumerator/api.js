@@ -11,6 +11,7 @@ export const api = {
   charts: 'charts',
   collaborators: 'collaborator',
   collaboratorGetBy: 'collaborator/{id}',
+  collaboratorModelImport: 'collaborator/modelimport',
   companies: 'companies',
 
   departament: 'departament',
