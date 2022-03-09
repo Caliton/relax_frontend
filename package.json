@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.11.5",
-    "axios": "^0.18.1",
+    "axios": "^0.21.2",
     "cross-env": "^5.2.0",
     "mime-types": "^2.1.24",
     "papaparse": "^5.0.0",
